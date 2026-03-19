@@ -14,7 +14,7 @@ def krijo_vecori_te_reja(input_file, output_file):
 
     df.to_csv(output_file, index=False)
 
-    print("Inxhinieria përfundoi! Dataset-i final është gati për trajnim.")
+    print("Inxhinieria perfundoi! Dataset-i final eshte gati per trajnim.")
     print(f"E ruajtur tek: {output_file}")
     print(f"Kolonat finale: {list(df.columns)}\n")
 
