@@ -3,7 +3,6 @@ import pandas as pd
 
 def integro_motin_me_nje_vlere_reale(file_moti, file_ajri):
     print("1. Lexojme datasetet.")
-    # Ndryshimi ketu: Perdorim variablat e funksionit
     moti_df = pd.read_csv(file_moti)
     ajri_df = pd.read_csv(file_ajri)
 
@@ -13,12 +12,11 @@ def integro_motin_me_nje_vlere_reale(file_moti, file_ajri):
 
     ajri_df = ajri_df[ajri_df['value'] != -999.0]
 
-    print("3. Sinkronizojme formatet e kohes (ZGJIDHJA).")
-    # I kthejme ne format kohe, i rrumbullakosim ne Ore ('h') dhe fshijme Timezone
+    print("3. Sinkronizojme formatet e kohes.")
     moti_df['time'] = pd.to_datetime(moti_df['time'], utc=True).dt.round('h').dt.tz_localize(None)
     ajri_df['time'] = pd.to_datetime(ajri_df['time'], utc=True).dt.round('h').dt.tz_localize(None)
 
-    print("4. Mbajme VETeM 1 vlere reale per çdo ore.")
+    print("4. Mbajme vetem 1 vlere reale per çdo ore.")
     ajri_df = ajri_df.drop_duplicates(subset=['time', 'parameter.name'], keep='first')
 
     print("5. Pergatisim formatin e ri (kolonat pm10 dhe pm25).")
@@ -31,15 +29,13 @@ def integro_motin_me_nje_vlere_reale(file_moti, file_ajri):
     output_name = '../Datasetet/processed_dataset/prishtina_integrated_data.csv'
     df_perfundimtare.to_csv(output_name, index=False)
 
-    print("\n--- INTEGRIMI PeRFUNDOI ME SUKSES ---")
+    print("\n--- integrimi perfundoi me sukses---")
     print(f"Numri i rreshtave ne fund: {len(df_perfundimtare)}")
     print(f"E ruajtur si: {output_name}")
 
 
 if __name__ == "__main__":
-    # Rruget ku ndodhen te dhenat e tua
     skedari_moti = '../Datasetet/unprocessed_datasets/prishtina_weather_raw_2020_now.csv'
     skedari_ajri = '../Datasetet/unprocessed_datasets/prishtina_air_quality.csv'
 
-    # Therrasim funksionin
     integro_motin_me_nje_vlere_reale(skedari_moti, skedari_ajri)

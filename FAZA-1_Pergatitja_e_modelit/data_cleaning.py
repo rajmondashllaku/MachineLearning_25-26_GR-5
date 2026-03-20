@@ -27,7 +27,7 @@ def largo_outliers_iqr(df, kolonat, kufijte_mjedisor):
 
 
 def pastro_te_dhenat(input_file, output_file):
-    print("--- FILLIMI I PASTRIMIT TË TË DHËNAVE ---")
+    print("--- Pastrimi i te dhenave ---")
     df = pd.read_csv(input_file)
     print(f"Madhesia e dataset-it PARA pastrimit: {len(df)} rreshta")
 

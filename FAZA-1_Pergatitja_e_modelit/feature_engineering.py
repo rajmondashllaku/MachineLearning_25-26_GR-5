@@ -9,12 +9,13 @@ def krijo_vecori_te_reja(input_file, output_file):
 
     df['muaji'] = df['time'].dt.month
     df['ora'] = df['time'].dt.hour
+    df['sezoni_ngrohjes'] = df['muaji'].isin([10, 11, 12, 1, 2, 3]).astype(int)
 
     df = df.drop(columns=['time'])
 
     df.to_csv(output_file, index=False)
 
-    print("Inxhinieria perfundoi! Dataset-i final eshte gati per trajnim.")
+    print("Dataset-i final eshte gati per trajnim.")
     print(f"E ruajtur tek: {output_file}")
     print(f"Kolonat finale: {list(df.columns)}\n")
 

@@ -22,7 +22,7 @@ def vlereso_te_dhenat(file_para, file_pas):
     tipet.columns = ['Kolona', 'Tipi']
     print(tipet.to_string(index=False))
 
-    print("\n4. PeRJASHTUESIT (OUTLIERS) PeR TARGETIN:")
+    print("\n4. Outliers per Target Variable:")
     print("PARA Pastrimit (kishte vlera negative dhe anomali):")
     print(f"PM10 -> Min: {df_para['pm10'].min()}, Max: {df_para['pm10'].max()}")
     print(f"PM25 -> Min: {df_para['pm25'].min()}, Max: {df_para['pm25'].max()}")
