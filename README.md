@@ -72,13 +72,15 @@ MachineLearning_25-26_GR-5/
 │   ├── data_integration.py          # Bashkimi dhe integrimi i serive kohore
 │   ├── data_assessment.py           # Vlerësimi fillestar dhe perfundimtar i cilësisë së të dhënave
 │   ├── data_cleaning.py             # Pastrimi (Metoda Hibride e bazuar në Domen)
-│   ├── feature_engineering.py       # Ekstraktimi i veçorive kohore
+│   └── feature_engineering.py       # Ekstraktimi i veçorive kohore
 │
 ├── FAZA-2_Trajnimi_i_modelit/       # [Në zhvillim] Trajnimi i Modeleve (RF, XGBoost, etj.)
 │
 ├── FAZA-3_Analiza_dhe_Evaluimi/     # [Në zhvillim] Vlerësimi i modeleve (RMSE, R2, Vizualizime)
 │
+├── images/                          # Imazhet per Dokumentim
 ├── .gitattributes
+├── LICENSE                          # MIT LICENSE
 ├── ReadMe.md                        # Dokumentimi i projektit
 └── .gitignore                       # Rregullat e ignorimit për Git
 ````
@@ -158,10 +160,46 @@ python FAZA-1_Pergatitja_e_modelit/data_assessment.py
 ![Konsola e Pastrimit](images/Data_Cleaning.png)
 
 **3. Krijimi i veçorive (`feature_engineering.py`):**
-![Konsola e Feature Engineering](images/Feature_Engineering1.png)
+![Konsola e Feature Engineering](images/Feature_Engineering2.png)
 
 **4. Vlerësimi përfundimtar (`data_assessment.py`):**
-![Konsola e Vlerësimit](images/Data_Assessment1.png)
+![Konsola e Vlerësimit](images/DataAssessment2.png)
+
+### Analiza Vizuale e Datasetit (EDA)
+
+![Matrica e Korrelacionit](images/Korrelacioni.png)
+_Figura 1.**Matrica e Korrelacionit (Pearson)** për datasetin tonë (`prishtina_ml_ready_data.csv`)._
+<br>Ky vizualizim tregon lidhjet lineare mes kushteve meteorologjike, veçorive të derivuara kohore dhe nivelit të ndotjes (PM2.5 dhe PM10) në Prishtinë.
+
+Nga ky grafik nxjerrim disa përfundime kritike që udhëheqin zgjedhjen e algoritmeve për Fazën 2:
+* **Lidhja PM2.5 & PM10:** Ekziston një korrelacion i lartë pozitiv (**0.58**), që vërteton se të dy ndotësit lëvizin paralelisht, kryesisht si pasojë e djegies së lëndëve fosile dhe aktivitetit urban.
+* **Era si Faktor Pastrues:** Shpejtësia e erës tregon korrelacion negativ me ndotjen, duke konfirmuar rolin e saj kritik në shpërndarjen e smogut në Prishtinë.
+* **Zbulimi i Jolinearitetit:** Variablat kohore si `ora` dhe `muaji` shfaqin korrelacion afër **0.00**. Kjo nuk tregon mungesë influence, por dëshmon se ndotja ka natyrë **ciklike (jolineare)**. 
+    > **Implikimi për ML:** Ky fakt justifikon përdorimin e modeleve të bazuara në pemë (si *Random Forest* ose *XGBoost*) në vend të regresionit linear, pasi këto modele janë të shkëlqyera në kapjen e cikleve komplekse.
+### 2. Shpërndarja Sezonale (Box Plot)
+![Box Plot Sezonal](images/boxplot_sezoni.png)
+*Figura 2: Analiza e variancës së PM2.5 mes sezonit të ngrohjes dhe verës.*
+
+* **Vërtetimi i Pastrimit:** Pas aplikimit të kufijve manualë (**Verë < 60, Dimër < 300**), vërehet një dataset i pastër. Kemi eliminuar me sukses "zhurmën" teknike të sensorëve gjatë muajve të nxehtë.
+* **Diferenca Dimër-Verë:** Sezoni i ngrohjes shfaq një mesatare dhe variancë dukshëm më të lartë. Ky vizualizim konfirmon se "sinjali" i ndotjes dimërore është ruajtur, duke e orientuar modelin drejt parashikimeve më të sakta në periudhat kritike.
+
+---
+
+### 3. Cikli Ditor i Ndotjes (Line Charts)
+![Line Charts Orare](images/trendi_orar_ndare.png)
+*Figura 3: Trendi mesatar orar (24h) për PM2.5 dhe PM10.*
+
+* **Piku i Mbrëmjes (PM2.5):** Vërehet një rritje dramatike pas orës **18:00**, që përkon me ndezjen masive të ngrohjes shtëpiake. Mesatarja e PM2.5 pas pastrimit stabilizohet rreth vlerës **21 µg/m³**, por me luhatje të forta orare.
+* **Aktiviteti i Ditës (PM10):** PM10 shfaq pika kulminante më herët gjatë ditës (ora 08:00 - 16:00), gjë që lidhet me pluhurin nga trafiku dhe aktivitetet ndërtimore në qytet.
+* **Forma "U":** Trajektorja e këtyre grafiqeve është prova përfundimtare e natyrës ciklike të ndotjes, duke kërkuar veçori (features) të forta orare për trajnimin e modelit.
+
+---
+
+### Konkluzionet për Fazën e Machine Learning
+Gjetjet nga EDA (mesatarja 21 µg/m³, korrelacioni i përmirësuar me sezonin dhe ciklet e qarta orare) na lejojnë të kalojmë me siguri në trajnimin e modelit. 
+
+**Objektivi:** Minimizimi i gabimit parashikues (**MAE**) duke shfrytëzuar ndërveprimin mes temperaturës së ulët dhe sezonit të ngrohjes.
+
 -----
 ### FAZA 2 : Trajnimi i Modelit [Në Zhvillim]
 
