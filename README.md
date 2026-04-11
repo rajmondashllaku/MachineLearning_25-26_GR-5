@@ -1,4 +1,9 @@
-# Zhvillimi i një Modeli parashikues të smogut në Prishtinë
+
+# Zhvillimi i një Modeli parashikues të smogut në Kosovë (Prishtinë, Prizren, Pejë)
+![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Scikit--Learn%20%7C%20XGBoost-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-Phase%201%20Done-success)
 <table>
   <tr>
     <td width="150" align="center" valign="center">
@@ -24,212 +29,213 @@
 
 ## Përmbajtja
 
-- [Pasqyra e Projektit](#-pasqyra-e-projektit)
-- [Struktura e Repozitorit](#-struktura-e-repozitorit)
-- [Përshkrimi i Datasetit](#-përshkrimi-i-datasetit)
-- [Modulet e Implementuara](#-modulet-e-implementuara)
-- [Teknologjitë e Përdorura](#-teknologjitë-e-përdorura)
-- [Instalimi & Konfigurimi](#-instalimi--konfigurimi)
+- [Pasqyra e Projektit](#pasqyra-e-projektit)
+- [Struktura e Repozitorit](#struktura-e-repozitorit)
+- [Përshkrimi i Datasetit](#përshkrimi-i-datasetit)
+- [Modulet dhe Skriptat e Implementuara](#modulet-dhe-skriptat-e-implementuara)
+- [Analiza Vizuale (EDA)](#analiza-vizuale-eda)
+- [Teknologjitë e Përdorura](#teknologjitë-e-përdorura)
+- [Instalimi & Konfigurimi](#instalimi--konfigurimi)
 
 ---
 ## Pasqyra e Projektit
 
-Ky repozitor implementon një tubacion (pipeline) gjithëpërfshirës të Machine Learning për parashikimin e **Cilësisë së Ajrit (nivelet e PM2.5 dhe PM10) në Prishtinë, Kosovë**. 
+Ky repozitor implementon një tubacion (pipeline) gjithëpërfshirës të Machine Learning për parashikimin e **Cilësisë së Ajrit (nivelet e PM2.5 dhe PM10) në Kosovë**, me fokus në analizën krahasuese mes tri qyteteve kryesore: **Prishtinë, Prizren dhe Pejë**. 
 Projekti demonstron një cikël të plotë jetësor (end-to-end) të shkencës së të dhënave, duke u shtrirë në tri faza kryesore:
 
-1. **Faza 1 (Përgatitja e të Dhënave):** Mbledhja e të dhënave historike përmes API-ve, pastrimi inteligjent i anomalive (Metoda Hibride e bazuar në Njohuritë e Domenit), integrimi i serive kohore dhe inxhinieria e veçorive (Feature Engineering).
-2. **Faza 2 (Trajnimi i Modelit):** Aplikimi dhe optimizimi i algoritmeve të Machine Learning (si Random Forest, XGBoost, ose Regression) për të gjetur lidhjet e fshehura mes kushteve meteorologjike dhe ndotjes së ajrit.
-3. **Faza 3 (Analiza dhe Vlerësimi):** Testimi i saktësisë së modeleve, nxjerrja e metrikave dhe krijimi i raporteve vizuale për të kuptuar se cilët faktorë ndikojnë më shumë në smog-un e qytetit.
+1. **Faza 1 (Përgatitja e të Dhënave):** Mbledhja e të dhënave historike përmes API-ve për të tria qytetet, pastrimi inteligjent i anomalive (Metoda Hibride e bazuar në Njohuritë e Domenit), integrimi i serive kohore, inxhinieria e veçorive dhe krijimi i një **Dataseti Global** të unifikuar.
+2. **Faza 2 (Trajnimi i Modelit):** Aplikimi dhe optimizimi i algoritmeve të Machine Learning (si Random Forest, XGBoost, ose Regression) për të gjetur lidhjet e fshehura mes kushteve meteorologjike, lokacionit gjeografik dhe ndotjes së ajrit.
+3. **Faza 3 (Analiza dhe Vlerësimi):** Testimi i saktësisë së modeleve, nxjerrja e metrikave dhe krijimi i raporteve vizuale për të kuptuar se cilët faktorë ndikojnë më shumë në smog-un sipas rajoneve.
 
 ### Qëllimet e Projektit
-- **Ndërtimi i një Modeli Parashikues:** Krijimi i një algoritmi të aftë të parashikojë nivelet e PM2.5 dhe PM10 bazuar në të dhënat e motit (temperatura, era, lagështia) si dhe te dhenat e kualitetit te ajrit per 6 vitet e fundit.
-- **Paraprocesimi Inovativ:** Aplikimi i teknikave të avancuara të pastrimit për të menaxhuar dështimet harduerike të sensorëve, duke ruajtur në të njëjtën kohë vlerat reale të ndotjes ekstreme gjatë dimrit në Prishtinë.
-- **Inxhinieria e Veçorive:** Transformimi i serive kohore në inpute të kuptueshme për ML (nxjerrja e muajit, orës, stinës) për të kapur ciklet ditore dhe sezonale.
-- **Krahasimi i Algoritmeve:** Trajnimi i disa modeleve të ndryshme të Machine Learning dhe përzgjedhja e atij me performancën më të lartë dhe gabimin më të vogël.
+- **Ndërtimi i një Modeli Parashikues Rajonal:** Krijimi i një algoritmi të aftë të parashikojë ndotjen bazuar në motin dhe lokacionin (qytetin) për 6 vitet e fundit.
+- **Paraprocesimi Inovativ:** Aplikimi i teknikave të avancuara të pastrimit për të menaxhuar dështimet e sensorëve, duke ruajtur vlerat reale të ndotjes ekstreme dimërore.
+- **Inxhinieria e Veçorive Globale:** Transformimi i të dhënave në inpute parashikuese numerike (kodimi i qyteteve, nxjerrja e orës/muajit) dhe krijimi i veçorive të domenit si `sezoni_i_ngrohjes` për të kapur "Efektin e Prishtinës".
+- **Krahasimi i Algoritmeve:** Trajnimi i modeleve për të gjetur performancën më të lartë dhe gabimin më të vogël.
+
 ---
 
 ## Struktura e Repozitorit
 
-Ky repozitor është i strukturuar në faza të dallueshme për të mbajtur një rrjedhë pune të pastër, profesionale dhe të riprodhueshme të Machine Learning.
-
 ```text
 MachineLearning_25-26_GR-5/
 │
-├── Data_Gathering/                  # Skriptat e automatizuara për marrjen e të dhënave
-│   ├── prishtina_air_quality_data.py
-│   └── prishtina_weather_data.py
+├── Data_Gathering/                  
+│   └── data_gathering.py            # Skripta e automatizuar për marrjen e të dhënave
 │
-├── Datasetet/                       # Hapësira qendrore e ruajtjes së të dhënave
-│   ├── unprocessed_datasets/        # Të dhënat e papërpunuara direkte nga burimet
-│   │   ├── prishtina_air_quality.csv
-│   │   └── prishtina_weather_raw_2020_now.csv
-│   └── processed_dataset/           # Rezultatet hap pas hapi të pastrimit
-│       ├── prishtina_integrated_data.csv
-│       ├── prishtina_cleaned_data.csv
-│       └── prishtina_ml_ready_data.csv
+├── Datasetet/                       
+│   ├── unprocessed_datasets/        # Të dhënat e papërpunuara
+│   ├── processed_dataset/           # Rezultatet e integrimit fillestar
+│   ├── cleaned_dataset/             # Rezultatet pas fshirjes së nulls/outliers
+│   └── ml_ready_dataset/            # Datasetet finale numerike dhe ai GLOBAL
+│       ├── prishtine_ml_data.csv
+│       ├── prizren_ml_data.csv
+│       ├── peje_ml_data.csv
+│       └── kosova_global_ml_data.csv # DATASETI PER TRAJNIM
 │
 ├── FAZA-1_Pergatitja_e_modelit/     # Faza kryesore e Paraprocesimit
-│   ├── data_integration.py          # Bashkimi dhe integrimi i serive kohore
-│   ├── data_assessment.py           # Vlerësimi fillestar dhe perfundimtar i cilësisë së të dhënave
-│   ├── data_cleaning.py             # Pastrimi (Metoda Hibride e bazuar në Domen)
-│   └── feature_engineering.py       # Ekstraktimi i veçorive kohore
+│   ├── data_integration.py          
+│   ├── data_cleaning.py             
+│   ├── feature_engineering.py       
+│   ├── data_merging.py       
+│   └── eda_analysis.py              
 │
-├── FAZA-2_Trajnimi_i_modelit/       # [Në zhvillim] Trajnimi i Modeleve (RF, XGBoost, etj.)
+├── FAZA-2_Trajnimi_i_modelit/       # [Në zhvillim] 
 │
-├── FAZA-3_Analiza_dhe_Evaluimi/     # [Në zhvillim] Vlerësimi i modeleve (RMSE, R2, Vizualizime)
+├── FAZA-3_Analiza_dhe_Evaluimi/     # [Në zhvillim] 
 │
-├── images/                          # Imazhet per Dokumentim
+├── images/                          # Imazhet e gjeneruara nga EDA (Kombinim Global & Lokal)
 ├── .gitattributes
 ├── LICENSE                          # MIT LICENSE
-├── ReadMe.md                        # Dokumentimi i projektit
-└── .gitignore                       # Rregullat e ignorimit për Git
+├── README.md                        # Dokumentimi i projektit
+└── .gitignore                       
 ````
 
 -----
 
 ## Përshkrimi i Datasetit
 
-Projekti përdor dy burime kryesore të të dhënave që mbulojnë periudhën nga **2020 deri më sot**, duke rezultuar në një dataset me granularitet të lartë orar.
+Projekti përdor burime të të dhënave që mbulojnë periudhën nga **2020 deri më sot**. Të dhënat e ndara fillimisht janë bashkuar në një skedar master: **`kosova_global_ml_data.csv`**.
 
-### Atributet Kryesore
+### Atributet Kryesore (Dataseti Global)
 
 | Atributi                | Kolona | Tipi | Përshkrimi |
 |-------------------------|--------|------|-------------|
-| **Kohore (Origjinale)** | `time` | DateTime | Vula kohore orare e regjistrimit (Hiqet në datasetin final) |
-| **Targeti (Ajri)**      | `pm25` | Float | Përqendrimi i grimcave \< 2.5 µm (µg/m³) |
-| **Targeti (Ajri)**      | `pm10` | Float | Përqendrimi i grimcave \< 10 µm (µg/m³) |
-| **Meteorologjike**      | `temperature_2m` | Float | Temperatura e ajrit në 2 metra lartësi (°C) |
-| **Meteorologjike**      | `relative_humidity_2m`| Float | Lagështia relative (%) |
-| **Meteorologjike**      | `wind_speed_10m` | Float | Shpejtësia e erës në 10 metra lartësi (km/h) |
-| **Kohore (E derivuar)** | `muaji` | Integer | Muaji i vitit (1-12) për të kapur sezonalitetin vjetor |
-| **Kohore (E derivuar)** | `ora` | Integer | Ora e ditës (0-23) për të kapur ciklet ditore të trafikut |
-| **Domeni (E derivuar)** | `sezoni_ngrohjes` | Integer | Indikator i smogut dimëror (1 = Tetor-Mars, 0 = Prill-Shtator) |
------
-## Modulet e Implementuara
-## FAZA 1 : Pergatitja e modelit
-
-Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave, duke adresuar sfidat unike të serive kohore mjedisore.
-
-| **Hapi** | **Faza**                  | **Përshkrimi** | **Veprimet Kryesore**                                                                                                                             | **Moduli**                                                                              |
-|----------|---------------------------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| **1**    | **Mbledhja e të Dhënave** | Marrja e të dhënave historike | - Kërkesa API për Motin (Open-Meteo) <br> - Kërkesa API për Ajrin (OpenAQ)                                                                        | `Data_Gathering/prishtina_air_quality.py` , `Data_Gathering/prishtina_weather_data.py`  |
-| **2**    | **Integrimi**             | Bashkimi i burimeve të të dhënave | - Bashkim `inner` në kolonën `time` <br> - Lidhja e vulave kohore orare                                                                           | `data_integration.py`                                                                   |
-| **3**    | **Vlerësimi (Assessment)** | Kontrolli diagnostikues | - Llogaritja e vlerave që mungojnë (Null) <br> - Identifikimi i madhësisë dhe memories <br> - Gjendja para dhe pas procesimit                     | `data_assessment.py`                                                                    |
-| **4**    | **Pastrimi**              | Menaxhimi i anomalive dhe gabimeve | - Fshirja e targeteve `NaN` <br> - Fshirja e gabimeve fizike negative <br> - Aplikimi i **Limiteve Hibride Mjedisore** (Max: PM2.5=300, PM10=500) | `data_cleaning.py`                                                                      |
-| **5** | **Krijimi i Veçorive**     | Krijimi i inputeve parashikuese | - Konvertimi i `time` në Datetime <br> - Ekstraktimi i Muajit (sezonaliteti) dhe Orës (ciklet ditore) <br> - Krijimi i veçorisë së domenit `sezoni_ngrohjes` | `feature_engineering.py` |
-
-### Logjika e Moduleve
-
-#### 1\. Mbledhja e te Dhenave ('Data_Gathering(`prishtina_air_quality.py` | `prishtina_weather_data.py`))
-*  **Funksionaliteti:** Automatizimi i procesit të shkarkimit të të dhënave historike nga burime të besueshme të jashtme (API).
-*  **Logjika:** Përdor librarinë requests për të tërhequr të dhënat meteorologjike (si temperatura dhe era) nga **Open-Meteo** API dhe matjet e ndotjes (PM2.5, PM10) nga **OpenAQ** API. Të dhënat e marra ruhen në formatin CSV brenda dosjes `unprocessed_datasets`, duke na siguruar një pikënisje statike, të papërpunuar dhe të gatshme për t'u integruar.
-
-#### 2\. Integrimi i të Dhënave (`data_integration.py`)
-
-  * **Funksionaliteti:** Bashkon datasetet e ndara të motit dhe cilësisë së ajrit në një dataframe të vetëm analitik.
-  * **Logjika:** Përdor `pandas.merge()` me një bashkim `inner` në kolonën `time`, duke u siguruar që të mbahen vetëm orët që përmbajnë si kushtet meteorologjike ashtu edhe matjet e ndotjes.
-
-#### 3\. Pastrimi i te Dhenave (`data_cleaning.py`)
-
-  * **Funksionaliteti:** Adreson "Problemin e Ekstrapolimit" të zakonshëm në Machine Learning Mjedisor.
-  * **Logjika:** Zbulimi standard statistikor i anomalive (si metoda e rreptë IQR) dështon në të dhënat e ajrit të Prishtinës duke fshirë gabimisht ditët e vërteta me ndotje të lartë në dimër. Ky modul implementon një qasje hibride: Përcakton kufijtë maksimalë bazuar në realitetin fizik atmosferik (`pm25 <= 300`, `pm10 <= 500`), duke fshirë kështu vetëm keqfunksionimet absurde të sensorëve, ndërkohë që detyron modelin ML të mësojë moshën dhe modelet e smogut të rëndë dimëror.
-
-#### 4. Krijimi i Veçorive (`feature_engineering.py`)
-
-  * **Funksionaliteti:** Pasuron datasetin me veçori ciklike kohore dhe njohuri nga domeni (Domain Knowledge), kritike për algoritmet ML.
-  * **Logjika:** Modelet e Machine Learning nuk mund të kuptojnë në mënyrë native një string me datë dhe kohë. Kjo skriptë e ndan vulën kohore në kolona numerike `Month` (Muaji) dhe `Hour` (Ora), duke i lejuar modelit të njohë ciklet e ndotjes. Gjithashtu, prezanton një veçori inovative binare `sezoni_ngrohjes` (1 = Tetor-Mars, 0 = Prill-Shtator), për t'i dhënë algoritmit një "shkurtore" logjike drejt kuptimit të smogut ekstrem dimëror në Prishtinë të shkaktuar nga djegia e thëngjillit.
-
-**Ekzekutoni Pipeline te Faza-1:**
-Navigoni në dosjen kryesore të projektit dhe ekzekutoni skriptat një nga një për të riprodhuar datasetin përfundimtar `prishtina_ml_ready_data.csv`:
-
-```bash
-python FAZA-1_Pergatitja_e_modelit/data_integration.py
-python FAZA-1_Pergatitja_e_modelit/data_cleaning.py
-python FAZA-1_Pergatitja_e_modelit/feature_engineering.py
-python FAZA-1_Pergatitja_e_modelit/data_assessment.py 
-
-# Ekzekutimi i data_assessment.py eshte opsional 
-# Nuk ben ndryshime mirepo jep info per ndryshimet e bera ne te dhena
-```
-### Rezultatet e Ekzekutimit (Console Output)
-
-**1. Integrimi i të dhënave (`data_integration.py`):**
-![Konsola e Integrimit](images/Data_Integration.png)
-
-**2. Pastrimi i te dhenave (`data_cleaning.py`):**
-![Konsola e Pastrimit](images/Data_Cleaning.png)
-
-**3. Krijimi i veçorive (`feature_engineering.py`):**
-![Konsola e Feature Engineering](images/Feature_Engineering2.png)
-
-**4. Vlerësimi përfundimtar (`data_assessment.py`):**
-![Konsola e Vlerësimit](images/DataAssessment2.png)
-
-### Analiza Vizuale e Datasetit (EDA)
-#### 1. Matrica e Korrelacionit
-![Matrica e Korrelacionit](images/Korrelacioni.png)
-_Figura 1.**Matrica e Korrelacionit (Pearson)** për datasetin tonë (`prishtina_ml_ready_data.csv`)._
-<br>Ky vizualizim tregon lidhjet lineare mes kushteve meteorologjike, veçorive të derivuara kohore dhe nivelit të ndotjes (PM2.5 dhe PM10) në Prishtinë.
-
-Nga ky grafik nxjerrim disa përfundime kritike që udhëheqin zgjedhjen e algoritmeve për Fazën 2:
-* **Lidhja PM2.5 & PM10:** Ekziston një korrelacion i lartë pozitiv (**0.49**), që vërteton se të dy ndotësit lëvizin paralelisht, kryesisht si pasojë e djegies së lëndëve fosile dhe aktivitetit urban.
-* **Era si Faktor Pastrues:** Shpejtësia e erës tregon korrelacion negativ me ndotjen, duke konfirmuar rolin e saj kritik në shpërndarjen e smogut në Prishtinë.
-* **Zbulimi i Jolinearitetit:** Variablat kohore si `ora` dhe `muaji` shfaqin korrelacion afër **0.00**. Kjo nuk tregon mungesë influence, por dëshmon se ndotja ka natyrë **ciklike (jolineare)**. 
-    > **Implikimi për ML:** Ky fakt justifikon përdorimin e modeleve të bazuara në pemë (si *Random Forest* ose *XGBoost*) në vend të regresionit linear, pasi këto modele janë të shkëlqyera në kapjen e cikleve komplekse.
-#### 2. Shpërndarja Sezonale (Box Plot)
-![Box Plot Sezonal](images/boxplot_sezoni.png)
-*Figura 2: Analiza e variancës së PM2.5 mes sezonit të ngrohjes dhe verës.*
-
-* **Vërtetimi i Pastrimit:** Pas aplikimit të kufijve manualë (**Verë < 60, Dimër < 300**), vërehet një dataset i pastër. Kemi eliminuar me sukses "zhurmën" teknike të sensorëve gjatë muajve të nxehtë.
-* **Diferenca Dimër-Verë:** Sezoni i ngrohjes shfaq një mesatare dhe variancë dukshëm më të lartë. Ky vizualizim konfirmon se "sinjali" i ndotjes dimërore është ruajtur, duke e orientuar modelin drejt parashikimeve më të sakta në periudhat kritike.
-
----
-
-#### 3. Cikli Ditor i Ndotjes (Line Charts)
-![Line Charts Orare](images/trendi_orar_ndare.png)
-*Figura 3: Trendi mesatar orar (24h) për PM2.5 dhe PM10.*
-
-* **Peak-u i Mbrëmjes (PM2.5):** Vërehet një rritje dramatike pas orës **18:00**, që përkon me ndezjen masive të ngrohjes shtëpiake. Mesatarja e PM2.5 pas pastrimit stabilizohet rreth vlerës **21 µg/m³**, por me luhatje të forta orare.
-* **Aktiviteti i Ditës (PM10):** PM10 shfaq pika kulminante më herët gjatë ditës (ora 08:00 - 16:00), gjë që lidhet me pluhurin nga trafiku dhe aktivitetet ndërtimore në qytet.
-* **Forma "U":** Trajektorja e këtyre grafiqeve është prova përfundimtare e natyrës ciklike të ndotjes, duke kërkuar veçori (features) të forta orare për trajnimin e modelit.
-
----
-
-### Konkluzione
-Gjetjet nga EDA (mesatarja 21 µg/m³, korrelacioni i përmirësuar me sezonin dhe ciklet e qarta orare) na lejojnë të kalojmë me siguri në trajnimin e modelit. 
-
-**Objektivi:** Minimizimi i gabimit parashikues (**MAE**) duke shfrytëzuar ndërveprimin mes temperaturës së ulët dhe sezonit të ngrohjes.
+| **Targeti (Ajri)** | `pm2_5` | Float | Përqendrimi i grimcave \< 2.5 µm (µg/m³) |
+| **Targeti (Ajri)** | `pm10` | Float | Përqendrimi i grimcave \< 10 µm (µg/m³) |
+| **Meteorologjike** | `temperature_2m` | Float | Temperatura e ajrit në 2 metra lartësi (°C) |
+| **Meteorologjike** | `relative_humidity_2m`| Float | Lagështia relative (%) |
+| **Meteorologjike** | `wind_speed_10m` | Float | Shpejtësia e erës në 10 metra lartësi (km/h) |
+| **Kohore (E derivuar)** | `month` | Integer | Muaji i vitit (1-12) për të kapur sezonalitetin |
+| **Kohore (E derivuar)** | `hour` | Integer | Ora e ditës (0-23) për të kapur ciklet e trafikut |
+| **Domeni (E derivuar)** | `sezoni_i_ngrohjes` | Integer | Indikator i smogut (1=Dimër në Prishtinë, 0=Tjera) |
+| **Gjeografike** | `qyteti` | Integer | Kodi i lokacionit (**1**=Prishtinë, **2**=Prizren, **3**=Pejë) |
 
 -----
+
+## Modulet dhe Skriptat e Implementuara
+
+### FAZA 1 : Përgatitja e modelit
+
+Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave përmes disa skriptave kryesore:
+
+1.  **`data_integration.py`**
+
+      * **Çfarë bën:** Lexon datasetet e papërpunuara të motit dhe cilësisë së ajrit për secilin qytet dhe i bashkon ato në një skedar analitik të vetëm.
+      * **Logjika:**  
+         * **Sinkronizimi Kohor**: Për të garantuar përputhjen e saktë mes API-ve të ndryshme, skripta konverton formatet e datave, rrumbullakos kohën në orën më të afërt (round('h')) dhe standardizon zonat kohore. 
+         * **Pivotimi i të Dhënave**: Shumë burime të ajrit (si OpenAQ) vijnë në format të gjatë (parametrat janë rreshta). Skripta filtron vlerat e korruptuara si -999.0, fshin matjet e dyfishta për të njëjtën orë, dhe përdor funksionin pivot për t'i kthyer ndotësit (PM2.5, PM10) në kolona të rregullta. Nëse detekton format satelitor, e përshtat automatikisht pa pivot. 
+         * Në fund, kryhet bashkimi inner në kolonën time, duke ruajtur vetëm rreshtat ku plotësohen të dyja kushtet (moti dhe ajri).
+
+
+2.  **`data_cleaning.py`**
+
+      * **Çfarë bën:** Së pari, siguron që çdo vlerë tekstuale e gabuar (si 'None') të konvertohet në NaN dhe fshin plotësisht rreshtat që kanë vlera të munguara. Më pas, bën një skanim statistikor për të detektuar anomali (Outliers) në çdo qytet.
+      * **Logjika "Hands Off" (Mos-ndërhyrje):** Për të zbuluar vlerat jashtë normales, skripta përdor metodën e rreptë statistikore IQR (Interquartile Range). Megjithatë, ajo vetëm i raporton (numëron) këto vlera dhe nuk i fshin. Kjo është një zgjedhje inxhinierike e qëllimshme: fshirja e rreshtave me PM2.5 ose PM10 shumë të lartë do të "fshinte" ditët me smog ekstrem gjatë dimrit në Kosovë, duke e lënë modelin të verbër ndaj kulmeve të vërteta të ndotjes.
+
+3.  **`feature_engineering.py` (Inxhinieria e Veçorive)**
+
+    * **Çfarë bën:** Merr të dhënat e pastruara dhe i shndërron ato në formate thjesht numerike, të gatshme për t'u ushqyer në modelet e Machine Learning.
+    * **Logjika:** 
+         
+      * **Ekstraktimi Kohor:** Nga kolona e datës (time), nxjerr kolonat month (për sezonalitetin), hour (për ciklet e ditës/natës) dhe day_of_week. 
+      * **Njohuritë e Domenit (Domain Knowledge)**: Shton kolonën is_weekend (1 për fundjavë, 0 për ditë pune) për të kapur ndryshimet në fluksin e trafikut të makinave. Gjithashtu, zbaton një rregull specifik gjeografik: shton kolonën sezoni_i_ngrohjes (muajt e ftohtë 10-3) vetëm për qytetin e Prishtinës, pasi aty ndikimi i djegies së thëngjillit është më agresiv. 
+      * **Gati për ML:** Në fund, skripta fshin përfundimisht kolonën tekstuale/datetime time, duke lënë pas vetëm atribute numerike (int dhe float) që kërkohen nga algoritme si Random Forest dhe XGBoost.
+4.  **`data_merging.py` (Krijimi i Datasetit Global)**
+
+      * **Çfarë bën:** Merr datasetet e gatshme të të tria qyteteve dhe i shton njëra mbi tjetrën (bashkim vertikal) për të krijuar një *Master Dataset* (`kosova_global_ml_data.csv`).
+      * **Logjika:** Shton kolonën e re `qyteti` (Kodet 1, 2, 3) për t'i mundësuar modelit të dallojë lokacionin. Gjithashtu, i jep vlerën `0` sezonit të ngrohjes për Prizrenin dhe Pejën, duke e lënë vlerën `1` vetëm për Prishtinën, për të kapur "Efektin e bllokimit të tymit" tipik të kryeqytetit.
+
+5.  **`eda_analysis.py` (Analiza dhe Vizualizimi)**
+
+      * **Çfarë bën:** Skripta finale automatike që lexon datasetet dhe gjeneron një set grafikësh shkencorë për të analizuar sjelljen e të dhënave, duke i ruajtur ato në folderin `images/`.
+
+-----
+
+## Analiza Vizuale (EDA)
+
+Përmes skriptës `eda_analysis.py`, ne analizuam sjelljen e ndotësve si në nivel lokal (qytet) ashtu edhe atë rajonal.
+
+### 1\. Analiza Lokale
+
+Këtu vëzhgojmë korrelacionin (lidhjen mes motit dhe ndotjes) si dhe trendin mesatar të ndotjes gjatë një dite (00:00 - 23:00) për çdo qytet.
+
+#### Prishtina
+| Matrica e Korrelacionit | Cikli Ditor (Trendi Orar) |
+|:---:|:---:|
+| ![Korrelacioni Prishtinë](images/korrelacioni_prishtine.png) | ![Trendi Prishtinë](images/trendi_orar_prishtine.png) |
+
+#### Prizreni
+| Matrica e Korrelacionit | Cikli Ditor (Trendi Orar) |
+|:---:|:---:|
+| ![Korrelacioni Prizren](images/korrelacioni_prizren.png) | ![Trendi Prizren](images/trendi_orar_prizren.png) |
+
+
+#### Peja
+| Matrica e Korrelacionit | Cikli Ditor (Trendi Orar) |
+|:---:|:---:|
+| ![Korrelacioni Pejë](images/korrelacioni_peje.png) | ![Trendi Pejë](images/trendi_orar_peje.png) |
+
+**Gjetje nga Analiza Lokale:** \* Të tria qytetet shfaqin formën karakteristike "U" gjatë ditës (ndotje më e ulët gjatë drekës, rritje në mbrëmje).
+
+  * Era (Wind Speed) është pastruesi kryesor natyral, pasi shfaq korrelacion negativ në të tria matricat.
+  * Ndërsa Prishtina kapërcen lehtësisht vlerat 20-30 µg/m³ gjatë mbrëmjeve, Prizreni dhe Peja mbajnë një balancë dukshëm më të ulët, falë mungesës së centraleve të mëdha industriale dhe relievit më të favorshëm të ajrimit.
+
+-----
+
+### 2\. Analiza Globale (Krahasimi Rajonal)
+
+Duke përdorur Datasetin Master të unifikuar, ne krijuam një hartëvizuale se si diferencojnë qytetet nga njëri-tjetri.
+
+#### Matrica e Korrelacionit Global
+![Matrica e Korrelacionit Global](images/korrelacioni_global.png)
+*Figura 1.**Matrica e Korrelacionit (Pearson)** për datasetin e unifikuar (`kosova_global_ml_data.csv`).*
+
+#### Krahasimi i Qyteteve (Boxplot)
+![Krahasimi i Qyteteve](images/krahasimi_qyteteve_boxplot.png)
+*Figura 2: Analiza e variancës së PM2.5 mes Prishtinës, Prizrenit dhe Pejës.*
+
+  * **Ndotja Ekstreme:** Prishtina shfaq një shpërndarje (box) më të gjerë dhe vlera ekstreme (outliers) dukshëm më të larta, duke vërtetuar se smogu i rëndë është kryesisht problem i kryeqytetit.
+
+#### Cikli Ditor i Ndotjes - Krahasim
+![Line Chart Krahasues](images/trendi_orar_global.png)
+*Figura 3: Trendi mesatar orar (24h) për PM2.5.*
+
+  * **Dinamika Dite-Natë:** Të tria qytetet ndjekin një model të ngjashëm gjatë ditës, por linja e Prishtinës (e kuqe) shkëputet drastikisht pas orës 17:00, duke krijuar atë që quhet "Peak i Mbrëmjes".
+
+
+### 3. Konkluzione të Avancuara nga EDA (Gjetje Shkencore)
+Projekti tani posedon një **Master Dataset** të pastruar nga anomalitë, me mungesa të trajtuara logjikisht, dhe të pasuruar me Features numerike. Jemi gati për t'i ushqyer këto të dhëna në modelet (Random Forest, XGBoost) për të filluar parashikimet\!
+Nga vizualizimet e mësipërme, kemi nxjerrë disa përfundime thelbësore që ndikojnë drejtpërdrejt në qasjen tonë të Machine Learning:
+
+* **Inversioni Termik dhe Meteorologjia:** Matrica e korrelacionit tregon një lidhje të fortë negative mes temperaturës dhe ndotjes. Kjo vërteton se smogu në Kosovë nuk është një problem konstant industrial, por një problem sezonal. Temperaturat e ulëta të kombinuara me lagështinë e lartë krijojnë "inversionin termik", duke e mbajtur ndotjen të bllokuar afër sipërfaqes së tokës.
+* **Burimi i "Peak-ut" të Mbrëmjes:** Rritja e ndotjes pas orës 17:00 nuk i atribuohet vetëm trafikut. Fakti që nivelet e PM2.5/PM10 vazhdojnë të rriten në mënyrë agresive deri në mesnatë (kur makinat ndalojnë së lëvizuri) tregon se burimi kryesor është **ngrohja shtëpiake** (djegia e biomasës dhe thëngjillit gjatë natës).
+* **Ndikimi Topografik (Pse Prishtina vuan më shumë):** *Boxplot*-et tregojnë anomali ekstreme për Prishtinën. Kryeqyteti ka një reliev që favorizon bllokimin e tymrave, ndërsa Peja dhe Prizreni, të pozicionuara pranë masiveve malore (Bjeshkët e Nemuna, Malet e Sharrit), përfitojnë nga rrymat ajrore që ndihmojnë në ventilimin natyror gjatë natës.
+* **Justifikimi i Algoritmeve (Natyra Jo-Lineare):** Lidhjet mes motit, lokacionit dhe ndotjes janë thellësisht jo-lineare. Për të kapur këtë kompleksitet, modelet e thjeshta si *Linear Regression* janë të pamjaftueshme. Kjo është arsyeja pse në Fazën 2 përdorim **modele të bazuara në pemë** (*Random Forest*, *XGBoost*), të cilat janë të afta të zbulojnë rregulla komplekse logjike nga të dhënat:
+  > *Shembull se si "mendon" modeli:* **NËSE** Ora > 18:00 **DHE** Temperatura < 0°C **DHE** Shpejtësia e Erës < 5 km/h **ATËHERË** Parashiko Ndotje Ekstreme (PM2.5 > 150).
+-----
+
 ## FAZA 2 : Trajnimi i Modelit [Në Zhvillim]
-
 
 ## FAZA 3 : Analiza dhe Vlerësimi [Në Zhvillim]
 
+-----
 
 ## Teknologjitë e Përdorura
 
-### Teknologjitë Kryesore
-
   - **Python 3.x** - Gjuha kryesore e programimit
-  - **pandas** - Libraria bazë për manipulimin e të dhënave, integrimin e serive kohore dhe analizën
-  - **Requests** - Për marrjen e të dhënave përmes API
+  - **pandas / numpy** - Manipulimi i të dhënave dhe integrimi i serive kohore
+  - **matplotlib / seaborn** - Vizualizimi shkencor i të dhënave (EDA)
+  - **requests** - Për marrjen e të dhënave përmes API
 
 -----
 
 ## Instalimi & Konfigurimi
 
-### Parakushtet
-
-  - Python 3.8 ose më i lartë
-  - Menaxheri i paketave `pip`
-
-### Ekzekutimi
-
 **1. Klononi repozitorin:**
 
 ```bash
- git clone https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5.git
+ git clone [https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5.git](https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5.git)
  cd MachineLearning_25-26_GR-5
 ```
 
@@ -246,9 +252,10 @@ source .venv/bin/activate
 **3. Instaloni libraritë e nevojshme:**
 
 ```bash
-pip install pandas requests
+pip install pandas numpy matplotlib seaborn requests
 ```
 
 ## Licenca
 
-Ky projekt është i licencuar nën kushtet e **MIT License**. Për më shumë detaje, shikoni skedarin [LICENSE](LICENSE) në këtë repozitor.
+Ky projekt është i licencuar nën kushtet e **MIT License**. Për më shumë detaje, shikoni skedarin [LICENSE](https://www.google.com/search?q=LICENSE) në këtë repozitor.
+
