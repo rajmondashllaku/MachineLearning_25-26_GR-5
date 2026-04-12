@@ -5,3 +5,4 @@ Datasetet/processed_dataset/prishtina_ml_ready_data.csv filter=lfs diff=lfs merg
 Datasetet/processed_dataset/prishtina_integrated_data.csv filter=lfs diff=lfs merge=lfs -text
 Datasetet/processed_dataset/prishtina_cleaned_data.csv filter=lfs diff=lfs merge=lfs -text
 Datasetet/processed_dataset/prishtina_ml_ready_data.csv filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text
