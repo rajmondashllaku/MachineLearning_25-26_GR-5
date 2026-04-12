@@ -161,18 +161,18 @@ Përmes skriptës `eda_analysis.py`, ne analizuam sjelljen e ndotësve si në ni
 Këtu vëzhgojmë korrelacionin (lidhjen mes motit dhe ndotjes) si dhe trendin mesatar të ndotjes gjatë një dite (00:00 - 23:00) për çdo qytet.
 
 #### Prishtina
-| Matrica e Korrelacionit | Cikli Ditor (Trendi Orar) |
-|:---:|:---:|
+| Matrica e Korrelacionit |                 Cikli Ditor (Trendi )                 |
+|:---:|:-----------------------------------------------------:|
 | ![Korrelacioni Prishtinë](images/korrelacioni_prishtine.png) | ![Trendi Prishtinë](images/trendi_orar_prishtine.png) |
 
 #### Prizreni
-| Matrica e Korrelacionit | Cikli Ditor (Trendi Orar) |
-|:---:|:---:|
+| Matrica e Korrelacionit |               Cikli Ditor (Trendi )               |
+|:---:|:-------------------------------------------------:|
 | ![Korrelacioni Prizren](images/korrelacioni_prizren.png) | ![Trendi Prizren](images/trendi_orar_prizren.png) |
 
 
 #### Peja
-| Matrica e Korrelacionit | Cikli Ditor (Trendi Orar) |
+| Matrica e Korrelacionit | Cikli Ditor (Trendi ) |
 |:---:|:---:|
 | ![Korrelacioni Pejë](images/korrelacioni_peje.png) | ![Trendi Pejë](images/trendi_orar_peje.png) |
 
@@ -183,7 +183,7 @@ Këtu vëzhgojmë korrelacionin (lidhjen mes motit dhe ndotjes) si dhe trendin m
 
 -----
 
-### 2\. Analiza Globale (Krahasimi Rajonal)
+### 2\. Analiza E Pergjithshme
 
 Duke përdorur Datasetin Master të unifikuar, ne krijuam një hartëvizuale se si diferencojnë qytetet nga njëri-tjetri.
 
@@ -205,7 +205,7 @@ Duke përdorur Datasetin Master të unifikuar, ne krijuam një hartëvizuale se 
 
 
 ### 3. Konkluzione të Avancuara nga EDA (Gjetje Shkencore)
-Projekti tani posedon një **Master Dataset** të pastruar nga anomalitë, me mungesa të trajtuara logjikisht, dhe të pasuruar me Features numerike. Jemi gati për t'i ushqyer këto të dhëna në modelet (Random Forest, XGBoost) për të filluar parashikimet\!
+
 Nga vizualizimet e mësipërme, kemi nxjerrë disa përfundime thelbësore që ndikojnë drejtpërdrejt në qasjen tonë të Machine Learning:
 
 * **Inversioni Termik dhe Meteorologjia:** Matrica e korrelacionit tregon një lidhje të fortë negative mes temperaturës dhe ndotjes. Kjo vërteton se smogu në Kosovë nuk është një problem konstant industrial, por një problem sezonal. Temperaturat e ulëta të kombinuara me lagështinë e lartë krijojnë "inversionin termik", duke e mbajtur ndotjen të bllokuar afër sipërfaqes së tokës.
@@ -213,7 +213,14 @@ Nga vizualizimet e mësipërme, kemi nxjerrë disa përfundime thelbësore që n
 * **Ndikimi Topografik (Pse Prishtina vuan më shumë):** *Boxplot*-et tregojnë anomali ekstreme për Prishtinën. Kryeqyteti ka një reliev që favorizon bllokimin e tymrave, ndërsa Peja dhe Prizreni, të pozicionuara pranë masiveve malore (Bjeshkët e Nemuna, Malet e Sharrit), përfitojnë nga rrymat ajrore që ndihmojnë në ventilimin natyror gjatë natës.
 * **Justifikimi i Algoritmeve (Natyra Jo-Lineare):** Lidhjet mes motit, lokacionit dhe ndotjes janë thellësisht jo-lineare. Për të kapur këtë kompleksitet, modelet e thjeshta si *Linear Regression* janë të pamjaftueshme. Kjo është arsyeja pse në Fazën 2 përdorim **modele të bazuara në pemë** (*Random Forest*, *XGBoost*), të cilat janë të afta të zbulojnë rregulla komplekse logjike nga të dhënat:
   > *Shembull se si "mendon" modeli:* **NËSE** Ora > 18:00 **DHE** Temperatura < 0°C **DHE** Shpejtësia e Erës < 5 km/h **ATËHERË** Parashiko Ndotje Ekstreme (PM2.5 > 150).
------
+
+Projekti tani posedon një **Master Dataset** të pastruar nga anomalitë, me mungesa të trajtuara logjikisht, dhe të pasuruar me Features numerike.
+
+### 4. Sfidat e të Dhënave dhe "Paradoksi i Mesatares"
+Gjatë analizës vizuale, u vu re se trendi mesatar ditor (Line Chart) për Prishtinën dhe Prizrenin duket i ngjashëm (rreth 25-30 µg/m³). Megjithatë, kjo fsheh realitetin e smogut ekstrem në Prishtinë për shkak të dy faktorëve:
+* **Efekti i Hollimit (Dilution Effect):** Dataseti përmban ~43,000 orë matje. Kulmet ekstreme të ndotjes në Prishtinë (deri në 250 µg/m³) ndodhin gjatë netëve të ftohta të dimrit, por ato "hollohen" matematikisht në mesatare nga mijëra orë me ajër të pastër gjatë pranverës/verës.
+* **Rezolucioni i API-t Satelitor:** Të dhënat historike bazohen në modele satelitore (CAMS) të cilat masin ndotjen në blloqe të mëdha regjionale (10x10 km), duke e pasur të vështirë të izolojnë "mikro-ndotjen" (smogun e bllokuar në luginën e Prishtinës) në krahasim me sensorët tokësorë. 
+*Kjo justifikon edhe më shumë përdorimin e algoritmeve Tree-Based në Fazën 2, pasi ato mësojnë nga rreshtat individualë dhe vlerat ekstreme (outliers), duke mos u mashtruar nga mesatarja.*
 
 ## FAZA 2 : Trajnimi i Modelit [Në Zhvillim]
 
