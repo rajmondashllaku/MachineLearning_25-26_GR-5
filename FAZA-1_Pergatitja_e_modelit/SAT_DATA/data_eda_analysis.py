@@ -101,6 +101,59 @@ def vizualizo_global(file_path, output_dir):
     print(f"   -> U ruajt: {os.path.basename(linechart_path)}")
 
 
+def gjenero_vizualizime_te_avancuara(file_path, output_dir):
+    if not os.path.exists(file_path):
+        print(f"   [!] Gabim: Nuk u gjet {file_path}")
+        return
+
+    df = pd.read_csv(file_path)
+    sns.set_theme(style="whitegrid")
+
+    # 1. Hartë e Nxehtësisë Kohore
+    print("   -> Gjenerimi i Heatmap-it kohor...")
+    plt.figure(figsize=(12, 6))
+    heatmap_data = df.pivot_table(values='pm2_5', index='hour', columns='month', aggfunc='mean')
+    sns.heatmap(heatmap_data, cmap='YlOrRd', annot=False, fmt=".1f", cbar_kws={'label': 'PM2.5 (µg/m³)'})
+    plt.title('Harta e Nxehtësisë: PM2.5 Mesatar sipas Muajit dhe Orës (Global)', fontsize=14, fontweight='bold')
+    plt.xlabel('Muaji (1 = Janar, 12 = Dhjetor)')
+    plt.ylabel('Ora e Ditës (00:00 - 23:00)')
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'heatmap_kohore.png'), dpi=300)
+    plt.close()
+
+    # 2. Efekti Meteorologjik (Inversioni Termik)
+    print("   -> Gjenerimi i Scatter Plot (Temperatura vs PM2.5)...")
+    plt.figure(figsize=(10, 6))
+    df_sample = df.sample(n=5000, random_state=42) if len(df) > 5000 else df
+    city_map = {1: 'Prishtinë', 2: 'Prizren', 3: 'Pejë'}
+    df_sample['Emri_Qytetit'] = df_sample['qyteti'].map(city_map)
+    sns.scatterplot(data=df_sample, x='temperature_2m', y='pm2_5', hue='Emri_Qytetit', alpha=0.6, palette="Set1")
+    plt.title('Ndikimi i Temperaturës në Ndotjen e Ajrit (Inversioni Termik)', fontsize=14, fontweight='bold')
+    plt.xlabel('Temperatura (°C)')
+    plt.ylabel('PM2.5 (µg/m³)')
+    plt.axvline(x=0, color='blue', linestyle='--', linewidth=1, label='Pika e Ngrirjes (0°C)')
+    plt.legend(title='Qyteti')
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'scatter_temperatura_pm25.png'), dpi=300)
+    plt.close()
+
+    # 3. Dinamika e Trafikut
+    if 'is_weekend' in df.columns:
+        print("   -> Gjenerimi i krahasimit Ditë Pune vs Fundjavë...")
+        plt.figure(figsize=(8, 5))
+        sns.barplot(data=df, x='is_weekend', y='pm2_5', hue='qyteti', errorbar=None, palette="muted")
+        plt.title('Ndotja Mesatare: Ditë Pune vs. Fundjavë', fontsize=14, fontweight='bold')
+        plt.xticks(ticks=[0, 1], labels=['Ditë Pune (Hën-Pre)', 'Fundjavë (Sht-Die)'])
+        plt.xlabel('')
+        plt.ylabel('PM2.5 (µg/m³)')
+        plt.legend(title='Qyteti (1=PR, 2=PZ, 3=PE)', loc='upper right')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'bar_fundjava.png'), dpi=300)
+        plt.close()
+
+
+
 if __name__ == "__main__":
     qytetet = ['prishtine', 'prizren', 'peje']
 
@@ -129,6 +182,15 @@ if __name__ == "__main__":
     print(f"\nDuke procesuar grafiket per: Kosove")
     vizualizo_korrelacionin_global(skedari_global, follderi_imazheve)
     vizualizo_global(skedari_global, follderi_imazheve)
+
+    print("\n========================================")
+    print("Te gjitha vizualizimet perfunduan me sukses! Shiko follderin 'images/'.")
+    print(f"\nDuke procesuar grafiket per: Kosove")
+    vizualizo_korrelacionin_global(skedari_global, follderi_imazheve)
+    vizualizo_global(skedari_global, follderi_imazheve)
+
+    print(f"\nDuke gjeneruar vizualizimet e avancuara...")
+    gjenero_vizualizime_te_avancuara(skedari_global, follderi_imazheve)
 
     print("\n========================================")
     print("Te gjitha vizualizimet perfunduan me sukses! Shiko follderin 'images/'.")
