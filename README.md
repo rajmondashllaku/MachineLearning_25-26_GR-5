@@ -77,7 +77,8 @@ MachineLearning_25-26_GR-5/
 │   ├── data_integration.py          
 │   ├── data_cleaning.py             
 │   ├── feature_engineering.py       
-│   ├── data_merging.py       
+│   ├── data_merging.py
+│   ├── data_assessment.py       
 │   └── eda_analysis.py              
 │
 ├── FAZA-2_Trajnimi_i_modelit/       # [Në zhvillim] 
@@ -113,7 +114,7 @@ Projekti përdor burime të të dhënave që mbulojnë periudhën nga **2020 der
 
 -----
 
-## Modulet dhe Skriptat e Implementuara
+## Modulet
 
 ### FAZA 1 : Përgatitja e modelit
 
@@ -145,8 +146,12 @@ Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave 
 
       * **Çfarë bën:** Merr datasetet e gatshme të të tria qyteteve dhe i shton njëra mbi tjetrën (bashkim vertikal) për të krijuar një *Master Dataset* (`kosova_global_ml_data.csv`).
       * **Logjika:** Shton kolonën e re `qyteti` (Kodet 1, 2, 3) për t'i mundësuar modelit të dallojë lokacionin. Gjithashtu, i jep vlerën `0` sezonit të ngrohjes për Prizrenin dhe Pejën, duke e lënë vlerën `1` vetëm për Prishtinën, për të kapur "Efektin e bllokimit të tymit" tipik të kryeqytetit.
+5. **`data_validation.py` (Vlerësimi dhe Sigurimi i Cilësisë)**
 
-5.  **`eda_analysis.py` (Analiza dhe Vizualizimi)**
+      * **Çfarë bën:** Skripta e testimit final (Quality Assurance) që gjeneron një raport të detajuar diagnostikues mbi integritetin e Datasetit Global, për të vërtetuar që është 100% i gatshëm për algoritmet e Machine Learning.
+      * **Logjika:** Bën një "skanim" përfundimtar të të dhënave para Fazës 2: konfirmon që nuk ka mbetur asnjë vlerë e zbrazët (`Nulls: 0`), vërteton që të gjitha kolonat janë konvertuar strikt në formate numerike, kontrollon saktësinë e logjikës së `sezoni_i_ngrohjes` për secilin qytet, dhe garanton që vlerat ekstreme (outliers) të smogut dimëror janë ruajtur me sukses duke shfaqur majat e tyre maksimale.
+ 
+6. **`eda_analysis.py` (Analiza dhe Vizualizimi)**
 
       * **Çfarë bën:** Skripta finale automatike që lexon datasetet dhe gjeneron një set grafikësh shkencorë për të analizuar sjelljen e të dhënave, duke i ruajtur ato në folderin `images/`.
 
