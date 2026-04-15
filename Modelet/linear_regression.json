@@ -1,0 +1,114 @@
+{
+  "model_name": "Linear Regression",
+  "model_type": "LinearRegression",
+  "metrics": {
+    "MAE": 6.736776201081251,
+    "RMSE": 10.213005245216342,
+    "R²": 0.37596627845167385
+  },
+  "feature_importance": [
+    {
+      "feature": "temperature_2m",
+      "coefficient": -0.8775919333077752,
+      "abs_coefficient": 0.8775919333077752
+    },
+    {
+      "feature": "relative_humidity_2m",
+      "coefficient": 1.0582487655342883,
+      "abs_coefficient": 1.0582487655342883
+    },
+    {
+      "feature": "surface_pressure",
+      "coefficient": 4.045135737887098,
+      "abs_coefficient": 4.045135737887098
+    },
+    {
+      "feature": "wind_speed_10m",
+      "coefficient": -3.6824467082368857,
+      "abs_coefficient": 3.6824467082368857
+    },
+    {
+      "feature": "hour",
+      "coefficient": 1.7660295744016437,
+      "abs_coefficient": 1.7660295744016437
+    },
+    {
+      "feature": "is_weekend",
+      "coefficient": -0.09873147153794093,
+      "abs_coefficient": 0.09873147153794093
+    },
+    {
+      "feature": "month_2",
+      "coefficient": -2.4022838671910627,
+      "abs_coefficient": 2.4022838671910627
+    },
+    {
+      "feature": "month_3",
+      "coefficient": -3.852650410198126,
+      "abs_coefficient": 3.852650410198126
+    },
+    {
+      "feature": "month_4",
+      "coefficient": -7.971504193053912,
+      "abs_coefficient": 7.971504193053912
+    },
+    {
+      "feature": "month_5",
+      "coefficient": -11.284656173047523,
+      "abs_coefficient": 11.284656173047523
+    },
+    {
+      "feature": "month_6",
+      "coefficient": -11.220920063135381,
+      "abs_coefficient": 11.220920063135381
+    },
+    {
+      "feature": "month_7",
+      "coefficient": -10.799022985798414,
+      "abs_coefficient": 10.799022985798414
+    },
+    {
+      "feature": "month_8",
+      "coefficient": -9.825132940726213,
+      "abs_coefficient": 9.825132940726213
+    },
+    {
+      "feature": "month_9",
+      "coefficient": -11.492788749663047,
+      "abs_coefficient": 11.492788749663047
+    },
+    {
+      "feature": "month_10",
+      "coefficient": -10.599998966503039,
+      "abs_coefficient": 10.599998966503039
+    },
+    {
+      "feature": "month_11",
+      "coefficient": -3.5261880476203107,
+      "abs_coefficient": 3.5261880476203107
+    },
+    {
+      "feature": "month_12",
+      "coefficient": 1.6058977037701636,
+      "abs_coefficient": 1.6058977037701636
+    },
+    {
+      "feature": "sezoni_i_ngrohjes_1",
+      "coefficient": 3.2755666742537937,
+      "abs_coefficient": 3.2755666742537937
+    },
+    {
+      "feature": "qyteti_2",
+      "coefficient": -9.044315580870606,
+      "abs_coefficient": 9.044315580870606
+    },
+    {
+      "feature": "qyteti_3",
+      "coefficient": -9.82751051679892,
+      "abs_coefficient": 9.82751051679892
+    }
+  ],
+  "intercept": 28.383636187131636,
+  "alpha": null,
+  "cv_rmse": 10.372854613288565
+}

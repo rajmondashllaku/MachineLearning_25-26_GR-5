@@ -1,0 +1,25 @@
+{
+  "model_name": "PCA_Unsupervised",
+  "unsupervised_method": "PCA",
+  "n_components": 4,
+  "explained_variance_ratio": [
+    0.3975272442455341,
+    0.340743789563978,
+    0.1717287445944161,
+    0.09000022159607171
+  ],
+  "cumulative_variance": [
+    0.3975272442455341,
+    0.7382710338095121,
+    0.9099997784039282,
+    0.9999999999999999
+  ],
+  "reconstruction_error": 2.8762464070710237e-31,
+  "features_used": [
+    "temperature_2m",
+    "relative_humidity_2m",
+    "surface_pressure",
+    "wind_speed_10m"
+  ],
+  "timestamp": "2026-04-15T16:05:36.821732"
+}
