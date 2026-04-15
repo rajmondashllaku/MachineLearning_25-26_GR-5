@@ -1,0 +1,72 @@
+{
+  "model_name": "Isolation Forest",
+  "model_type": "unsupervised",
+  "author": "Endrita",
+  "task": "anomaly_detection",
+  "features_used": [
+    "pm10",
+    "pm2_5",
+    "temperature_2m",
+    "relative_humidity_2m",
+    "surface_pressure",
+    "wind_speed_10m",
+    "temp_x_wind",
+    "humidity_x_heating",
+    "pm_ratio"
+  ],
+  "dataset_rows": 164448,
+  "total_anomalies_global": 8223,
+  "total_anomalies_percity": 8224,
+  "pct_anomalies": 5.0,
+  "city_stats": {
+    "Prishtine": {
+      "total_rows": 54816,
+      "contamination": 0.07,
+      "anomalies_global": 6623,
+      "anomalies_percity": 3838,
+      "pct_global": 12.1,
+      "pct_percity": 7.0
+    },
+    "Prizren": {
+      "total_rows": 54816,
+      "contamination": 0.05,
+      "anomalies_global": 1431,
+      "anomalies_percity": 2741,
+      "pct_global": 2.6,
+      "pct_percity": 5.0
+    },
+    "Peje": {
+      "total_rows": 54816,
+      "contamination": 0.03,
+      "anomalies_global": 169,
+      "anomalies_percity": 1645,
+      "pct_global": 0.3,
+      "pct_percity": 3.0
+    }
+  },
+  "severity": {
+    "Normal": {
+      "count": 156224,
+      "pct": 95.0,
+      "mean_pm25": 15.0,
+      "mean_pm10": 19.2
+    },
+    "Low": {
+      "count": 2796,
+      "pct": 1.7,
+      "mean_pm25": 27.1,
+      "mean_pm10": 35.6
+    },
+    "High": {
+      "count": 5428,
+      "pct": 3.3,
+      "mean_pm25": 40.0,
+      "mean_pm10": 51.4
+    }
+  },
+  "overlap": {
+    "only_global": 3104,
+    "only_percity": 3105,
+    "both": 5119
+  }
+}

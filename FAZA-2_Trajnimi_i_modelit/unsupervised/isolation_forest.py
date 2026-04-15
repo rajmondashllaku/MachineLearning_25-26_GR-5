@@ -9,18 +9,14 @@ from sklearn.preprocessing import StandardScaler
 import os
 import json
 
-# ============================================================
 # Isolation Forest - Zbulimi i Anomalive ne Cilesine e Ajrit
 # Per-city adaptive contamination, severity scoring,
 # krahasimi global vs per-city
-# ============================================================
 
 # Path resolution - works from any cwd
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-print("=" * 60)
 print("ISOLATION FOREST - ANOMALY DETECTION")
-print("=" * 60)
 
 # 1. Leximi i datasetit
 DATA_PATH = os.path.join(BASE_DIR, 'Datasetet', 'ml_ready_dataset', 'kosova_global_ml_data.csv')
@@ -41,12 +37,8 @@ FEATURES = ['pm10', 'pm2_5', 'temperature_2m', 'relative_humidity_2m',
 
 print(f"   Features: {FEATURES}")
 
-# ============================================================
 # MODEL A: Global (V1 baseline per krahasim)
-# ============================================================
-print("\n" + "=" * 60)
 print("MODEL A: Global Isolation Forest (baseline)")
-print("=" * 60)
 
 scaler_global = StandardScaler()
 X_global = scaler_global.fit_transform(df[FEATURES])
@@ -69,12 +61,8 @@ for kodi, emri in qytetet_emrat.items():
     t = mask.sum()
     print(f"   {emri:12s}: {n:5d} ({n/t*100:.1f}%)")
 
-# ============================================================
 # MODEL B: Per-City (contamination e adaptuar per cdo qytet)
-# ============================================================
-print("\n" + "=" * 60)
 print("MODEL B: Per-City Isolation Forest (adaptive)")
-print("=" * 60)
 
 # Adaptive contamination: based on IQR analysis per city
 CITY_CONTAMINATION = {
@@ -110,12 +98,8 @@ for kodi, emri in qytetet_emrat.items():
 n_anom_percity = (df['anomaly_percity'] == -1).sum()
 print(f"\n   Total anomali per-city: {n_anom_percity} ({n_anom_percity/len(df)*100:.1f}%)")
 
-# ============================================================
 # SEVERITY SCORING
-# ============================================================
-print("\n" + "=" * 60)
 print("SEVERITY SCORING (Niveli i rrezikshmërisë)")
-print("=" * 60)
 
 # Use per-city model scores for severity
 anomaly_mask = df['anomaly_percity'] == -1
@@ -143,12 +127,8 @@ for idx in ['Normal', 'Low', 'Medium', 'High']:
         print(f"   {idx:8s}: PM10={row['pm10']:6.1f}, PM2.5={row['pm2_5']:6.1f}, "
               f"Temp={row['temperature_2m']:5.1f}°C, Wind={row['wind_speed_10m']:4.1f} m/s")
 
-# ============================================================
 # KRAHASIMI: Global vs Per-City
-# ============================================================
-print("\n" + "=" * 60)
 print("KRAHASIMI: Global vs Per-City")
-print("=" * 60)
 
 # Unique anomalies found only by one method
 only_global = ((df['anomaly_global'] == -1) & (df['anomaly_percity'] == 1)).sum()
@@ -168,9 +148,7 @@ for kodi, emri in qytetet_emrat.items():
     np_ = (df.loc[mask, 'anomaly_percity'] == -1).sum()
     print(f"   {emri:12s}: Global={ng:5d}, Per-City={np_:5d}, Dif={np_-ng:+5d}")
 
-# ============================================================
 # GRAFIKUT
-# ============================================================
 OUTPUT_DIR = os.path.join(BASE_DIR, 'images')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -279,9 +257,7 @@ plt.close()
 
 print(f"\nGrafikut u ruajten te: {OUTPUT_DIR}")
 
-# ============================================================
 # EKSPORTI
-# ============================================================
 export_cols = FEATURES + ['month', 'hour', 'day_of_week', 'qyteti',
                           'score_percity', 'anomaly_percity', 'severity']
 export_path = os.path.join(BASE_DIR, 'Datasetet', 'ml_ready_dataset', 'anomalies_detected.csv')
@@ -296,7 +272,6 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 results_path = os.path.join(MODEL_DIR, 'rezultatet_isolation_forest.txt')
 with open(results_path, 'w', encoding='utf-8') as f:
     f.write('ISOLATION FOREST - REZULTATET\n')
-    f.write('=' * 50 + '\n\n')
     f.write(f'Dataseti: {len(df)} rreshta, {df.shape[1]} kolona\n\n')
     f.write('MODEL A (Global):\n')
     f.write(f'  Total anomali: {n_anom_global} ({n_anom_global/len(df)*100:.1f}%)\n')
@@ -380,6 +355,4 @@ with open(json_path, 'w', encoding='utf-8') as f:
     json.dump(if_eval, f, indent=2, ensure_ascii=False)
 print(f"JSON per evaluim: {json_path}")
 
-print("\n" + "=" * 60)
 print("PERFUNDOI ME SUKSES!")
-print("=" * 60)

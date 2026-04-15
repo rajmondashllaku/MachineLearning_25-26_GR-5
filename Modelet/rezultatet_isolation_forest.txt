@@ -1,0 +1,24 @@
+ISOLATION FOREST - REZULTATET
+Dataseti: 164448 rreshta, 20 kolona
+
+MODEL A (Global):
+  Total anomali: 8223 (5.0%)
+  Prishtine   :  6623 (12.1%)
+  Prizren     :  1431 (2.6%)
+  Peje        :   169 (0.3%)
+
+MODEL B (Per-City Adaptive):
+  Total anomali: 8224 (5.0%)
+  Prishtine   : contam=7%, anomali= 3838 (7.0%)
+  Prizren     : contam=5%, anomali= 2741 (5.0%)
+  Peje        : contam=3%, anomali= 1645 (3.0%)
+
+Severity Scoring:
+  Normal  : 156224 (95.0%)
+  Low     :   2796 (1.7%)
+  High    :   5428 (3.3%)
+
+Mesataret sipas severity:
+  Normal  : PM10=  19.2, PM2.5=  15.0, Temp= 12.2C, Wind= 5.5 m/s
+  Low     : PM10=  35.6, PM2.5=  27.1, Temp= 11.7C, Wind=10.0 m/s
+  High    : PM10=  51.4, PM2.5=  40.0, Temp= 13.4C, Wind=10.1 m/s

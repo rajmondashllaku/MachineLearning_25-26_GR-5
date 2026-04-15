@@ -1,0 +1,62 @@
+{
+  "model_name": "Random Forest Regressor",
+  "model_type": "supervised",
+  "author": "Endrita",
+  "target": "pm2_5",
+  "features_used": [
+    "temperature_2m",
+    "relative_humidity_2m",
+    "surface_pressure",
+    "wind_speed_10m",
+    "month",
+    "hour",
+    "day_of_week",
+    "sezoni_i_ngrohjes",
+    "is_weekend",
+    "qyteti",
+    "pm2_5_lag_1h",
+    "pm2_5_lag_24h",
+    "temp_x_wind",
+    "humidity_x_heating",
+    "temp_x_humidity"
+  ],
+  "n_features": 15,
+  "dataset_rows": 164376,
+  "train_size": 131500,
+  "test_size": 32876,
+  "split_method": "temporal (last 20%)",
+  "metrics": {
+    "MAE": 4.4296,
+    "RMSE": 6.4894,
+    "R2": 0.3317
+  },
+  "cv_method": "TimeSeriesSplit (5-fold)",
+  "cv_r2_mean": 0.3591,
+  "cv_r2_std": 0.0526,
+  "cv_r2_scores": [
+    0.4516,
+    0.3585,
+    0.3496,
+    0.288,
+    0.348
+  ],
+  "feature_importance": {
+    "pm2_5_lag_1h": 0.2633,
+    "surface_pressure": 0.0988,
+    "wind_speed_10m": 0.0949,
+    "temp_x_wind": 0.0902,
+    "temperature_2m": 0.0833,
+    "hour": 0.078,
+    "pm2_5_lag_24h": 0.0606,
+    "humidity_x_heating": 0.0534,
+    "month": 0.0522,
+    "relative_humidity_2m": 0.041,
+    "temp_x_humidity": 0.039,
+    "day_of_week": 0.0271,
+    "qyteti": 0.0108,
+    "sezoni_i_ngrohjes": 0.0043,
+    "is_weekend": 0.0031
+  },
+  "model_a_r2": 0.9285,
+  "note": "Model B (pa PM10) eshte modeli kryesor. Model A ka data leakage."
+}
