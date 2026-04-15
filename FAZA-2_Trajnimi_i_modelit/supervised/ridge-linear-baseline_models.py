@@ -466,7 +466,7 @@ class SupervisedAirQualityModel:
 def main():
     """Funksioni kryesor"""
     # Shtegu i dataset-it
-    data_path = 'C:/Users/Admin/Desktop/MachineLearning_25-26_GR-5-master/Datasetet/ml_ready_dataset/kosova_global_ml_data.csv'
+    data_path = 'Datasetet/ml_ready_dataset/kosova_global_ml_data.csv'
 
     # Krijo dhe ekzekuto modelin
     model = SupervisedAirQualityModel(data_path)
