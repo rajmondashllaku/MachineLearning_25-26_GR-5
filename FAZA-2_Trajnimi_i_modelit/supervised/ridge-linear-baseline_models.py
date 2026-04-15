@@ -15,8 +15,7 @@ warnings.filterwarnings('ignore')
 
 class SupervisedAirQualityModel:
     """
-    Klasa per trajnimin dhe vleresimin e modeleve te mbikeqyrur per parashikimin e ndotjes se ajrit (PM2.5)
-    Perdoret Linear Regression dhe Ridge Regression si modele baze
+    Perdorimi Linear Regression dhe Ridge Regression si modele baze
     """
 
     def __init__(self, data_path):
@@ -330,17 +329,17 @@ class SupervisedAirQualityModel:
                 feature_imp_df = feature_imp_df.groupby('Feature', as_index=False)['Importance'].sum()
                 feature_imp_df = feature_imp_df.sort_values('Importance', ascending=False)
 
-                # ==========================================
-                # PRINTIMI SI RANDOM FOREST VERSION
-                # ==========================================
+               
+                # PRINTIMI
+              
                 print(f"\n{model_name}:")
                 for _, row in feature_imp_df.iterrows():
                     bar = "█" * int(row['Importance'] * 10)
                     print(f"   {row['Feature']:25s} {row['Importance']:.4f}  {bar}")
 
-                # ==========================================
-                # GRAFIKU SI RANDOM FOREST VERSION
-                # ==========================================
+             
+                # GRAFIKU 
+               
                 fig, ax = plt.subplots(figsize=(12, 7))
 
                 colors = sns.color_palette("viridis", len(feature_imp_df.head(15)))
