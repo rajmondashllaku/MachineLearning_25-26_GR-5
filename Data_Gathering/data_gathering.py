@@ -46,7 +46,7 @@ for city, coords in CITIES.items():
         print(f"Critical air error for {city}: {e}")
 
     print("Fetching Weather data...")
-    weather_url = "https://archive-api.open-meteo.com/v1/archi.ve"
+    weather_url = "https://archive-api.open-meteo.com/v1/archive"
     weather_params = {
         "latitude": coords["lat"],
         "longitude": coords["lon"],
