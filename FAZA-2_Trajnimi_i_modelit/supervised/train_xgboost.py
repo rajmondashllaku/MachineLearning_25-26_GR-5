@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import shap
+import json  # <-- SHTUAR PËR TË RUAJTUR METRIKAT
+
 
 def trajner_xgboost(file_path):
     print("==================================================")
@@ -121,21 +123,20 @@ def trajner_xgboost(file_path):
     table = ax.table(cellText=tabela_data, colLabels=kolonat, loc='center', cellLoc='center')
     table.auto_set_font_size(False)
     table.set_fontsize(12)
-    table.scale(1.2, 2.2)  # Zmadhimi për lexueshmëri
+    table.scale(1.2, 2.2)
 
-    # Stilimi i tabelës
     for (row, col), cell in table.get_celld().items():
         cell.set_edgecolor('white')
         if row == 0:
             cell.set_text_props(weight='bold', color='white')
-            cell.set_facecolor('#0c4da2')  # Koka blu
+            cell.set_facecolor('#0c4da2')
         else:
             if col == 0:
                 cell.set_text_props(weight='bold', color='black')
-                cell.set_facecolor('#f2f2f2')  # Kolona e parë gri
+                cell.set_facecolor('#f2f2f2')
             else:
                 cell.set_text_props(weight='bold', color='#1a7f37')
-                cell.set_facecolor('#e6fcf5')  # Rezultatet jeshile
+                cell.set_facecolor('#e6fcf5')
 
     plt.title('Performanca e Modelit Përfundimtar', fontsize=14, fontweight='bold', color='#333333', y=1.05)
     plt.savefig(os.path.join(folderi_imazheve, 'xgboost_metrics_table.png'), dpi=300, bbox_inches='tight')
@@ -158,12 +159,10 @@ def trajner_xgboost(file_path):
     # Vizualizimi 6: SHAP Summary Plot (Explainable AI)
     print("\nDuke gjeneruar analizën e thellë SHAP (mund të marrë pak sekonda)...")
 
-    # SHAP TreeExplainer është krijuar posaçërisht për modele si XGBoost
     explainer = shap.TreeExplainer(xg_model)
     shap_values = explainer.shap_values(X_test)
 
     plt.figure(figsize=(10, 6))
-    # Gjenerojmë grafikun
     shap.summary_plot(shap_values, X_test, show=False)
 
     plt.title('Si ndikon secili faktor në Ndotjen PM2.5 (SHAP Values)', fontsize=14, fontweight='bold', y=1.05)
@@ -174,7 +173,7 @@ def trajner_xgboost(file_path):
 
     from sklearn.tree import DecisionTreeRegressor, plot_tree
 
-    # Vizualizimi 7: Struktura e një Peme Vendimi (Alternativa Scikit-Learn)
+    # Vizualizimi 7: Struktura e një Peme Vendimi
     print("\nDuke gjeneruar një pemë vendimi ilustruese (pa Graphviz)...")
     pema_ilustruese = DecisionTreeRegressor(max_depth=3, random_state=42)
     pema_ilustruese.fit(X_train, y_train)
@@ -192,14 +191,34 @@ def trajner_xgboost(file_path):
     plt.close()
     print(" -> Pema ilustruese u ruajt me sukses!")
 
-    # Ruajtja e Modelit (JSON)
-    print("\nDuke ruajtur modelin...")
-    folderi_modeleve = '../../modelet'
+    # ==========================================
+    # RUAJTJA E MODELIT DHE METRIKAVE
+    # ==========================================
+    print("\nDuke ruajtur modelin dhe metrikat...")
+    folderi_modeleve = '../../Modelet'  # <-- Korrigjuar rruga per tu siguruar qe eshte e sakte
     os.makedirs(folderi_modeleve, exist_ok=True)
 
+    # 1. Ruajtja e strukturës së modelit (për parashikime të ardhshme)
     shtegu_modelit = os.path.join(folderi_modeleve, 'xgboost_rajmonda.json')
     xg_model.save_model(shtegu_modelit)
     print(f" -> Modeli u ruajt me sukses në: {shtegu_modelit}")
+
+    # 2. Ruajtja e metrikave (për skriptën e evaluimit)
+    rezultatet_metrikat = {
+        "model_type": "supervised",
+        "model_name": "XGBoost Regressor",
+        "metrics": {
+            "R2": float(r2),
+            "MAE": float(mae),
+            "RMSE": float(rmse)
+        }
+    }
+
+    shtegu_metrikave = os.path.join(folderi_modeleve, 'xgboost_rajmonda_metrics.json')
+    with open(shtegu_metrikave, 'w', encoding='utf-8') as f:
+        json.dump(rezultatet_metrikat, f, indent=4)
+
+    print(f" -> Metrikat e evaluimit u ruajtën në: {shtegu_metrikave}")
 
     return xg_model, y_test, y_pred
 

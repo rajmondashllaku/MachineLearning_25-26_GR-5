@@ -1,0 +1,19 @@
+RAPORTI I MODELEVE UNSUPERVISED
+========================================
+
+MODELI: Isolation Forest
+--------------------
+Anomali totale te gjetura: 8224 rreshta (5.0% e datasetit)
+   * Normal Severity: 156224 raste (PM2.5 mesatar: 15.0 µg/m³)
+   * Low Severity: 2796 raste (PM2.5 mesatar: 27.1 µg/m³)
+   * High Severity: 5428 raste (PM2.5 mesatar: 40.0 µg/m³)
+
+MODELI: K-Means Clustering
+--------------------
+Numri optimal i klasterave të zbuluar: 4
+
+MODELI: PCA_Unsupervised
+--------------------
+Komponentët e mbajtur: 4
+Varianca totale e shpjeguar: 100.00%
+

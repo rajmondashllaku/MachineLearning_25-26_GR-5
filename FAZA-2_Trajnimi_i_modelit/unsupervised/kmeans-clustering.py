@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import joblib
 import os
+import json  # SHTUAR PËR JSON
 
 
 def trajner_kmeans(file_path):
@@ -22,14 +23,11 @@ def trajner_kmeans(file_path):
     print(f" -> Të dhënat u lexuan me sukses. Dimensioni: {df.shape}")
 
     # 2. Zgjedhja e veçorive për grupim
-    # Për K-Means duam të shohim lidhjen mes motit dhe ndotjes (PM2.5)
     kolonat_k_means = ['temperature_2m', 'relative_humidity_2m', 'wind_speed_10m', 'pm2_5']
-
-    # Sigurohemi që kolonat ekzistojnë
     kolonat_ekzistuese = [col for col in kolonat_k_means if col in df.columns]
     X = df[kolonat_ekzistuese].copy()
 
-    # 3. Shkallëzimi i të dhënave (Shumë e rëndësishme për K-Means)
+    # 3. Shkallëzimi i të dhënave
     print(" -> Duke shkallëzuar të dhënat (StandardScaler)...")
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -38,9 +36,9 @@ def trajner_kmeans(file_path):
     folderi_imazheve = '../../images'
     os.makedirs(folderi_imazheve, exist_ok=True)
 
-    # 4. Metoda e Bërrylit (Elbow Method) për të gjetur numrin optimal të grupeve (K)
+    # 4. Metoda e Bërrylit
     print("\nDuke llogaritur Metodën e Bërrylit (1 deri në 10 grupe)...")
-    wcss = []  # Within-Cluster Sum of Square
+    wcss = []
     K_range = range(1, 11)
 
     for k in K_range:
@@ -63,8 +61,7 @@ def trajner_kmeans(file_path):
     plt.close()
     print(f" -> Grafiku i Bërrylit u ruajt në: {shtegu_elbow}")
 
-    # 5. Trajnimi Përfundimtar me K=3 (Supozojmë 3 profile: Pastër, Mesatar, Ndotur)
-    # *Shënim: Mund ta ndryshosh këtë numër pasi të shohësh grafikun e bërrylit!
+    # 5. Trajnimi Përfundimtar
     k_optimal = 4
     print(f"\nDuke trajnuar K-Means përfundimtar me {k_optimal} grupe...")
     kmeans = KMeans(n_clusters=k_optimal, init='k-means++', random_state=42, n_init=10)
@@ -75,121 +72,105 @@ def trajner_kmeans(file_path):
     profili = df.groupby('Cluster')[kolonat_ekzistuese].mean().round(2)
     print(profili)
 
-    # Shto këtë import në fillim të skriptës nëse nuk e ke:
-    # from mpl_toolkits.mplot3d import Axes3D
-
+    # 8. Vizualizimet
     print("\nKrijimi i grafikut 3D...")
-
-    # 8. Vizualizimi 3D i Klasterave (Temperatura vs Era vs PM2.5)
     fig = plt.figure(figsize=(12, 8))
-    # Krijimi i një boshti 3D
     ax = fig.add_subplot(111, projection='3d')
-
-    # Vizatimi i pikave në 3D
     scatter = ax.scatter(
         df['temperature_2m'],
         df['wind_speed_10m'],
         df['pm2_5'],
-        c=df['Cluster'],  # Ngjyrosja sipas grupit
-        cmap='viridis',  # Paleta e ngjyrave
-        alpha=0.6,  # Transparenca për të parë pikat e mbivendosura
-        s=30  # Madhësia e pikave
+        c=df['Cluster'],
+        cmap='viridis',
+        alpha=0.6,
+        s=30
     )
-
-    # Krijimi i etiketave
     ax.set_title('Profilet e Ndotjes në 3D (Temp vs Erë vs PM2.5)', fontsize=14, fontweight='bold')
     ax.set_xlabel('Temperatura (°C)', fontsize=10)
     ax.set_ylabel('Shpejtësia e Erës (m/s)', fontsize=10)
     ax.set_zlabel('Ndotja PM2.5 (µg/m³)', fontsize=10)
-
-    # Krijimi i legjendës
     legend = ax.legend(*scatter.legend_elements(), title='Grupi (Cluster)')
     ax.add_artist(legend)
-
-    # Ruajtja e imazhit
     shtegu_3d = os.path.join(folderi_imazheve, 'kmeans_clusters_3d.png')
     plt.savefig(shtegu_3d, dpi=300, bbox_inches='tight')
     plt.close()
-
     print(f" -> Grafiku 3D u ruajt në: {shtegu_3d}")
-    print("\nKrijimi i vizualizimit të tabelës së profileve...")
 
-    # Krijimi i një figure me 4 nën-grafikë (2 rreshta x 2 kolona)
+    # --- KËTU FILLON PJESA E SHTUAR PËR TË RUAJTUR NË JSON ---
+
+    print("\nDuke ruajtur rezultatet e K-Means në JSON...")
+
+    # Sigurohemi që folderi Modelet ekziston
+    folderi_modeleve = '../../Modelet'
+    os.makedirs(folderi_modeleve, exist_ok=True)
+
+    # Konvertojmë profilin (DataFrame) në një fjalor për ta ruajtur në JSON
+    # Kthimi i indekseve në string është i rëndësishëm që JSON ta kuptojë
+    profili_dict = profili.to_dict(orient='index')
+    profili_json_safe = {str(k): v for k, v in profili_dict.items()}
+
+    rezultatet_kmeans = {
+        "model_type": "unsupervised",
+        "model_name": "K-Means Clustering",
+        "n_clusters": k_optimal,
+        "features_used": kolonat_ekzistuese,
+        "cluster_profiles": profili_json_safe
+    }
+
+    shtegu_json = os.path.join(folderi_modeleve, 'kmeans_clustering.json')
+    with open(shtegu_json, 'w', encoding='utf-8') as f:
+        json.dump(rezultatet_kmeans, f, indent=4)
+
+    print(f" -> Rezultatet u ruajtën në: {shtegu_json}")
+
+    # (Pjesën tjetër të vizualizimeve Barplot, Boxplot, Pairplot i lashë të paprekura, vazhdojnë këtu poshtë)
+    print("\nKrijimi i vizualizimit të tabelës së profileve...")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle('Karakteristikat e Profileve të Ndotjes (Mesataret e Grupeve)', fontsize=16, fontweight='bold', y=1.02)
-
-    # 1. Grafiku i Temperaturës
     profili['temperature_2m'].plot(kind='bar', ax=axes[0, 0], color='#ff9999', edgecolor='black')
     axes[0, 0].set_title('Temperatura (°C)', fontsize=12)
     axes[0, 0].set_ylabel('°C')
-
-    # 2. Grafiku i Lagështisë
     profili['relative_humidity_2m'].plot(kind='bar', ax=axes[0, 1], color='#66b3ff', edgecolor='black')
     axes[0, 1].set_title('Lagështia Relative (%)', fontsize=12)
     axes[0, 1].set_ylabel('%')
-
-    # 3. Grafiku i Erës
     profili['wind_speed_10m'].plot(kind='bar', ax=axes[1, 0], color='#99ff99', edgecolor='black')
     axes[1, 0].set_title('Shpejtësia e Erës (m/s)', fontsize=12)
     axes[1, 0].set_ylabel('m/s')
-
-    # 4. Grafiku i PM2.5
     profili['pm2_5'].plot(kind='bar', ax=axes[1, 1], color='#ffcc99', edgecolor='black')
     axes[1, 1].set_title('Ndotja PM2.5 (µg/m³)', fontsize=12)
     axes[1, 1].set_ylabel('µg/m³')
-
-    # Rregullime estetike për secilin grafik
     for ax in axes.flat:
         ax.set_xlabel('Grupi (Cluster)')
-        ax.tick_params(axis='x', rotation=0)  # Mban numrat e grupeve drejt (jo të anuar)
+        ax.tick_params(axis='x', rotation=0)
         ax.grid(axis='y', linestyle='--', alpha=0.7)
-
     plt.tight_layout()
-
-    # Ruajtja e imazhit
     shtegu_bar = os.path.join(folderi_imazheve, 'kmeans_cluster_profiles_bars.png')
     plt.savefig(shtegu_bar, dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f" -> Vizualizimi i tabelës u ruajt në: {shtegu_bar}")
-
     print("\nKrijimi i Boxplots për shpërndarjen e plotë të të dhënave...")
-
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle('Shpërndarja dhe Ekstremet e Variablave sipas Grupeve', fontsize=16, fontweight='bold', y=1.02)
-
     sns.boxplot(x='Cluster', y='temperature_2m', data=df, ax=axes[0, 0], palette='viridis')
     axes[0, 0].set_title('Temperatura (°C)')
-
     sns.boxplot(x='Cluster', y='relative_humidity_2m', data=df, ax=axes[0, 1], palette='viridis')
     axes[0, 1].set_title('Lagështia Relative (%)')
-
     sns.boxplot(x='Cluster', y='wind_speed_10m', data=df, ax=axes[1, 0], palette='viridis')
     axes[1, 0].set_title('Shpejtësia e Erës (m/s)')
-
     sns.boxplot(x='Cluster', y='pm2_5', data=df, ax=axes[1, 1], palette='viridis')
     axes[1, 1].set_title('Ndotja PM2.5 (µg/m³)')
-
     plt.tight_layout()
     shtegu_boxplot = os.path.join(folderi_imazheve, 'kmeans_cluster_boxplots.png')
     plt.savefig(shtegu_boxplot, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f" -> Grafiku Boxplot u ruajt në: {shtegu_boxplot}")
 
     print("\nKrijimi i Pairplot (Lidhjet e të gjitha variablave)...")
-
-    # Kthejmë Cluster në string për momentin, që Seaborn ta trajtojë si kategori ngjyrash
     df_plot = df[kolonat_ekzistuese + ['Cluster']].copy()
     df_plot['Cluster'] = df_plot['Cluster'].astype(str)
-
-    # corner=True heq grafikët e dyfishtë (pasqyrë) për të pasur një pamje më të pastër
     pair_plot = sns.pairplot(df_plot, hue='Cluster', palette='viridis', corner=True, plot_kws={'alpha': 0.5})
     pair_plot.fig.suptitle('Matrica e Lidhjeve mes Motit dhe Ndotjes', y=1.02, fontsize=16, fontweight='bold')
-
     shtegu_pairplot = os.path.join(folderi_imazheve, 'kmeans_cluster_pairplot.png')
     pair_plot.savefig(shtegu_pairplot, dpi=300)
-    print(f" -> Grafiku Pairplot u ruajt në: {shtegu_pairplot}")
-
 
 
 if __name__ == "__main__":
