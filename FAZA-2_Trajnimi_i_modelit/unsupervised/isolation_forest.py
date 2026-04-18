@@ -9,11 +9,7 @@ from sklearn.preprocessing import StandardScaler
 import os
 import json
 
-# Isolation Forest - Zbulimi i Anomalive ne Cilesine e Ajrit
-# Per-city adaptive contamination, severity scoring,
-# krahasimi global vs per-city
 
-# Path resolution - works from any cwd
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 print("ISOLATION FOREST - ANOMALY DETECTION")

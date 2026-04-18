@@ -3,7 +3,7 @@
 ![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Scikit--Learn%20%7C%20XGBoost-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Phase%201%20Done-success)
+![Status](https://img.shields.io/badge/Status-Phase%202%20Done-success)
 <table>
   <tr>
     <td width="150" align="center" valign="center">
@@ -55,41 +55,56 @@ Projekti demonstron një cikël të plotë jetësor (end-to-end) të shkencës s
 
 ---
 
-## Struktura e Repozitorit
+
+## Struktura e Projektit
 
 ```text
 MachineLearning_25-26_GR-5/
 │
+├── .idea/                           # Konfigurimet e ambientit të punës (PyCharm/VSCode)
 ├── Data_Gathering/                  
-│   └── data_gathering.py            # Skripta e automatizuar për marrjen e të dhënave
+│   └── data_gathering.py            # Skripta për marrjen e të dhënave nga API (Open-Meteo & WAQI)
 │
 ├── Datasetet/                       
-│   ├── unprocessed_datasets/        # Të dhënat e papërpunuara
-│   ├── processed_dataset/           # Rezultatet e integrimit fillestar
-│   ├── cleaned_dataset/             # Rezultatet pas fshirjes së nulls/outliers
-│   └── ml_ready_dataset/            # Datasetet finale numerike dhe ai GLOBAL
+│   ├── unprocessed_datasets/        # Të dhënat origjinale (CSV)
+│   ├── processed_dataset/           # Të dhënat e bashkuara (raw merge)
+│   ├── cleaned_dataset/             # Të dhënat pas trajtimit të vlerave null dhe outliers
+│   └── ml_ready_dataset/            # Datasetet finale numerike
 │       ├── prishtine_ml_data.csv
 │       ├── prizren_ml_data.csv
 │       ├── peje_ml_data.csv
-│       └── kosova_global_ml_data.csv # DATASETI PER TRAJNIM
+│       └── kosova_global_ml_data.csv # DATASETI KRYESOR (Gjithëpërfshirës)
 │
-├── FAZA-1_Pergatitja_e_modelit/     # Faza kryesore e Paraprocesimit
-│   ├── data_integration.py          
-│   ├── data_cleaning.py             
-│   ├── feature_engineering.py       
-│   ├── data_merging.py
-│   ├── data_assessment.py       
-│   └── eda_analysis.py              
+├── FAZA-1_Pergatitja_e_modelit/     
+│   ├── data_assessment.py           # Analiza fillestare e kualitetit të të dhënave
+│   ├── data_cleaning.py             # Pastrimi dhe trajtimi i anomalive
+│   ├── data_integration.py          # Integrimi i API-ve të ndryshme
+│   ├── data_merging.py              # Bashkimi i qyteteve në një dataset global
+│   ├── eda_analysis.py              # Analiza Eksplorative (Korreleacionet, Trendet)
+│   └── feature_engineering.py       # Krijimi i variablave të reja (Lag features, Sezoni)
 │
-├── FAZA-2_Trajnimi_i_modelit/       # [Në zhvillim] 
+├── FAZA-2_Trajnimi_i_modelit/       
+│   ├── supervised/                  # Mësimi i mbikëqyrur (Parashikimi i PM2.5)
+│   │   ├── train_xgboost.py         
+│   │   ├── random_forest_regressor.py
+│   │   └── ridge_linear_baseline.py 
+│   │
+│   ├── unsupervised/                # Mësimi i pambikëqyrur (Analiza e profileve)
+│   │   ├── kmeans_clustering.py     # Grupimi i profileve të ndotjes (me Scaler ne JSON)
+│   │   ├── isolation_forest.py      # Identifikimi i anomalive ekstreme
+│   │   └── pca_reduction.py         # Reduktimi i dimensioneve për vizualizim
+│   │
+│   └── model_evaluation.py          # Skripta për krahasimin e performancës së modeleve
 │
-├── FAZA-3_Analiza_dhe_Evaluimi/     # [Në zhvillim] 
+├── FAZA-3_Analiza_dhe_Evaluimi/     # Analiza përfundimtare dhe konkluzionet [Në Zhvillim]
 │
-├── images/                          # Imazhet e gjeneruara nga EDA (Kombinim Global & Lokal)
+├── Modelet/                         # Skedarët JSON dhe te modeleve të trajnuara
+│
+├── images/                          # Grafikët e gjeneruar (EDA, Clusters, SHAP plots)
 ├── .gitattributes
+├── .gitignore
 ├── LICENSE                          # MIT LICENSE
-├── README.md                        # Dokumentimi i projektit
-└── .gitignore                       
+└── README.md                        # Dokumentimi kryesor i projektit
 ````
 
 -----
@@ -241,9 +256,212 @@ Gjatë analizës vizuale, u vu re se trendi mesatar ditor (Line Chart) për Pris
 * **Efekti i Hollimit (Dilution Effect):** Dataseti përmban ~43,000 orë matje. Kulmet ekstreme të ndotjes në Prishtinë (deri në 250 µg/m³) ndodhin gjatë netëve të ftohta të dimrit, por ato "hollohen" matematikisht në mesatare nga mijëra orë me ajër të pastër gjatë pranverës/verës.
 * **Rezolucioni i API-t Satelitor:** Të dhënat historike bazohen në modele satelitore (CAMS) të cilat masin ndotjen në blloqe të mëdha regjionale (10x10 km), duke e pasur të vështirë të izolojnë "mikro-ndotjen" (smogun e bllokuar në luginën e Prishtinës) në krahasim me sensorët tokësorë. 
 *Kjo justifikon edhe më shumë përdorimin e algoritmeve Tree-Based në Fazën 2, pasi ato mësojnë nga rreshtat individualë dhe vlerat ekstreme (outliers), duke mos u mashtruar nga mesatarja.*
+---
+## FAZA 2 : Trajnimi i Modeleve (Machine Learning)
 
-## FAZA 2 : Trajnimi i Modelit [Në Zhvillim]
+Në këtë fazë, kalojmë nga analiza historike në modelimin parashikues dhe zbulimin e strukturave të fshehura. Kemi ndërtuar një arkitekturë gjithëpërfshirëse duke testuar algoritme të ndryshme (Supervised dhe Unsupervised) për të adresuar kompleksitetin e ndotjes së ajrit.
 
+### 1. Supervised Learning: Parashikimi i Ndotjes (PM2.5)
+Për të gjetur modelin më të saktë, kemi filluar me modele të thjeshta lineare dhe kemi kaluar në algoritme të avancuara të bazuara në pemë (Tree-Based).
+
+* **Modelet Bazë (Linear & Ridge Regression):** U përdorën si "Baseline" për të testuar hipotezën e lidhjeve lineare. Saktësia e tyre bazike vërtetoi nevojën për algoritme që mund të menaxhojnë marrëdhënie komplekse jo-lineare.
+* **Parandalimi i "Data Leakage" (Modeli A vs Model B):** Për të garantuar parashikime reale (p.sh. parashikimi i të nesërmes), ndërtuam qëllimisht dy versione: një me PM10 (që shkakton data leakage) dhe një pa PM10 (Modeli i Vërtetë), i trajnuar vetëm mbi motin dhe kohën.
+* **Modelet e Avancuara (Random Forest & XGBoost):** Këto modele kapën me sukses "Inversionin Termik" dhe vlerat ekstreme dimërore. Në *Random Forest*, u aplikua `TimeSeriesSplit` për vlerësim për të respektuar rendin kronologjik. Në *XGBoost*, u integrua Inteligjenca e Shpjegueshme (SHAP) për të zbërthyer saktësisht ndikimin e çdo parametri (p.sh. temperatura, era).
+
+### 2. Unsupervised Learning: Profilizimi, Anomalitë dhe Reduktimi i Dimensioneve
+Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të grupuar ditët me karakteristika të ngjashme, përdorëm tre algoritme të fuqishme pa mbikëqyrje:
+
+* **Reduktimi i Dimensioneve (PCA):** Analiza e Komponentëve Kryesorë u përdor për të menaxhuar korrelacionin e lartë mes variablave meteorologjike. Duke mbajtur 95% të variancës, transformuam të dhënat komplekse në komponentë kryesorë (PC1, PC2), duke thjeshtuar vizualizimin dhe duke llogaritur gabimin e rindërtimit (Reconstruction Error).
+* **Zbulimi i Anomalive (Isolation Forest):** U implementua për të izoluar ditët me ndotje jonormale. Për të shmangur gabimet e një qasjeje "një masë për të gjithë" (Global), ne zhvilluam një **Model Per-City** me pragje të adaptuara. Gjithashtu u krijua një sistem i shkallëzimit të ashpërsisë (*Severity Scoring*: Low, Medium, High) për t'i dhënë kuptim praktik anomalive.
+* **Zbulimi i Profileve (K-Means Clustering):** Modeli grupon vetvetiu ditët e vitit bazuar në ngjashmëritë e motit dhe ndotjes. Përmes Metodës së Bërrylit (Elbow Method), algoritmi arriti të izolojë vizualisht (në 3D) ditët e pastra me erë, nga ditët e rënda të bllokuara nga smogu dimëror.
+
+#### Pasqyra e Modeleve të Implementuara
+| Kategoria | Algoritmi | Roli në Projekt |
+| :--- | :--- | :--- |
+| **Supervised** | Linear / Ridge Regression | Gjetja e korrelacioneve bazë (Baseline) |
+| **Supervised** | Random Forest Regressor | Menaxhimi i lidhjeve jo-lineare dhe CV Kohor |
+| **Supervised** | XGBoost Regressor | Performanca maksimale parashikuese dhe SHAP |
+| **Unsupervised**| PCA | Reduktimi i variablave të motit në Komponentë Kryesorë |
+| **Unsupervised**| Isolation Forest | Gjetja e anomalive (Model gjeografik adaptiv) |
+| **Unsupervised**| K-Means Clustering | Krijimi i profileve 3D të klimës dhe smogut |
+
+---
+
+### Modulet e Implementuara (Faza 2)
+1.  **`ridge-linear-baseline-models.py`**: Pipeline për modelet lineare.
+2.  **`random_forest_regressor.py`**: Modelimi i avancuar me *Lag Features* dhe `TimeSeriesSplit`.
+3.  **`train_xgboost.py`**: Trajnimi përfundimtar me XGBoost dhe analizë SHAP.
+4.  **`pca_reduction.py`**: Kompresimi i veçorive meteorologjike përmes analizës së variancës.
+5.  **`isolation_forest.py`**: Detektimi i anomalive me qasje *Per-City* dhe *Severity Scoring*.
+6.  **`kmeans-clustering.py`**: Algoritmi i klasterizimit dhe gjenerimi i vizualizimeve 3D.
+7.  **`model_evaluation.py`**: Krahasimi i metrikave te performances se algoritmeve/modeleve.
+
+## Vizualizimet
+### 1. Supervised Learning: Parashikimi i Ndotjes (PM2.5)
+#### 1. Modelet Lineare (Linear & Ridge Regression - Baseline)
+Përpara se të përdornim Inteligjencë Artificiale komplekse, ne ngritëm një pyetje themelore: *A mund të parashikohet ndotja e ajrit thjesht duke tërhequr një vijë të drejtë mes variablave të motit?* Për t'iu përgjigjur kësaj, ne trajnuam modelet **Linear Regression** dhe **Ridge Regression** (duke optimizuar parametrin `alpha` me `GridSearchCV`). Këto modele shërbyen si "Baseline" (Pikënisje), duke pasur të kujdes të fshijmë variablin `pm10` për të parandaluar rrjedhjen e të dhënave (Data Leakage).
+
+**A. Performanca dhe Testimi i Hipotezës Lineare**
+
+| Krahasimi i Saktësisë (Scatter Plot) | Metrikat Vlerësuese (Bar Chart) |
+|:---:|:---:|
+| ![Linear Scatter](images/ridge-linear-model_comparison_scatter.png) | ![Linear Metrics](images/ridge-linear-model_metrics_comparison.png) |
+
+* **Gjetja:** Siç shihet qartë në grafikun *Scatter* (majtas), pikat e parashikuara nga modeli shtrihen në mënyrë horizontale dhe dështojnë plotësisht të ndjekin "Vijën Ideale" (të kuqe). Grafiku i metrikave (djathtas) tregon një saktësi (R²) jashtëzakonisht të ulët. Kjo provon matematikisht se **ndotja e ajrit dhe moti nuk kanë një marrëdhënie lineare**.
+
+**B. Pesha e Faktorëve (Feature Importance)**
+
+| Rëndësia e Veçorive (Ridge Regression) |
+|:---:|
+| ![Ridge Feature Importance](images/feature_importance_ridge_regression.png) |
+
+* **Gjetja:** Edhe pse performanca ishte e dobët, modeli linear arriti të kapë logjikën bazë: ai u dha peshën më të madhe absolute faktorëve si *Temperatura* dhe *Sezoni*. 
+
+#### 2. Random Forest Regressor (Menaxhimi i Data Leakage dhe Serive Kohore)
+Pasi vërtetuam se modelet lineare dështojnë, kaluam në algoritmet *Tree-Based*. Për ta bërë modelin më inteligjent, ne ndërtuam "Lag Features" (çfarë ndodhi me ndotjen 1 orë apo 24 orë më parë). Për të respektuar kronologjinë e ngjarjeve klimatike, përdorëm `TimeSeriesSplit` në vend të ndarjes rastësore.
+
+**A. Zgjidhja e problemit të "Data Leakage" (Modeli A vs Modeli B)**
+
+| Metrikat: Me PM10 vs Pa PM10 | Actual vs Predicted (Krahasimi) |
+|:---:|:---:|
+| ![RF Comparison](images/rf_model_comparison.png) | ![RF Actual vs Predicted](images/rf_actual_vs_predicted.png) |
+
+* **Gjetja:** Ne ndërtuam qëllimisht Dy Modele. **Modeli A** përfshin PM10 dhe jep një saktësi joreale (mashtrim/Data Leakage). **Modeli B** është *Modeli i Vërtetë*; ai bazohet vetëm te moti, koha dhe historiku.
+
+**B. Analiza e Faktorëve dhe Gabimeve (Modeli B i Vërtetë)**
+
+| Pesha e Veçorive (Feature Importance) | Shpërndarja e Gabimeve (Residuals) |
+|:---:|:---:|
+| ![RF Features](images/rf_feature_importance.png) | ![RF Residuals](images/rf_residuals.png) |
+
+* **Gjetja nga Pesha e Veçorive:** Variabli më i rëndësishëm doli të ishte `pm2_5_lag_24h` (niveli i ndotjes fiks para 24 orëve). Kjo vërteton vizualisht fenomenin e "Smogut të bllokuar". 
+* **Gjetja nga Mbetjet (Residuals):** Grafiku i gabimeve tregon një shpërndarje shumë të mirë rreth zeros (vija e kuqe).
+
+#### 3. XGBoost Regressor (Modeli Kampion dhe Explainable AI)
+XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai arriti të menaxhojë shkëlqyeshëm natyrën komplekse dhe sezonale të ndotjes në Kosovë.
+
+**A. Performanca dhe Saktësia e Parashikimit**
+
+| Tabela e Metrikave Përfundimtare | Vlerat Reale vs Parashikimet |
+|:---:|:---:|
+| ![XGBoost Metrics](images/xgboost_metrics_table.png) | ![XGB Actual](images/xgboost_actual_vs_predicted.png) |
+
+* **Gjetja:** Modeli tregon një saktësi të lartë (R²) dhe një ndjekje shumë të mirë të trendit.
+
+**B. Analiza e Gabimit dhe Procesi i të Mësuarit**
+
+| Kurba e të Mësuarit (Learning Curve) | Shpërndarja e Gabimeve (Residuals) |
+|:---:|:---:|
+| ![XGBoost Learning](images/xgboost_learning_curve.png) | ![XGBoost Residuals](images/xgboost_residuals_histogram.png) |
+
+* **Gjetja:** Kurba e të mësuarit tregon se gabimi (RMSE) bie në mënyrë të qëndrueshme. Grafiku i mbetjeve (Residuals) konfirmon se gabimet e modelit janë të shpërndara normalisht rreth vlerës zero.
+
+**C. Hapja e "Kutisë së Zezë" (Explainable AI)**
+
+| Si ndikojnë faktorët (SHAP Summary Plot) | Pesha e Veçorive (Feature Importance) |
+|:---:|:---:|
+| ![SHAP](images/xgboost_shap_summary.png) | ![XGB Feature Importance](images/xgboost_feature_importance.png) |
+
+* **Gjetja nga SHAP:** Çdo pikë në grafikun SHAP përfaqëson një ditë. Ngjyra blu (Vlera të ulëta) te Temperatura rrit masivisht parashikimin e ndotjes PM2.5. 
+
+**D. Logjika Baze (Ilustrim)**
+
+| Si "mendon" një Pemë Vendimi |
+|:---:|
+| ![Decision Tree Logic](images/decision_tree_logic_sklearn.png) |
+
+* **Gjetja:** Ky ilustrim tregon logjikën e thjeshtëzuar matematikore që qëndron në themel të modelit tonë. Algoritmi i ndan të dhënat duke i bërë pyetje vetvetes (p.sh., "A është Temperatura < 5°C?") për të izoluar ditët e ndotura nga ato të pastra. XGBoost kombinon qindra pemë të tilla për të arritur saktësinë maksimale.
+
+### 2. Unsupervised Learning: Zbulimi i Strukturave dhe Anomalive
+
+#### 1. PCA (Reduktimi i Dimensioneve)
+
+| Përqindja e Variancës së Shpjeguar | Diferencimi Gjeografik në 2D (Scatter Plot) |
+|:---:|:---:|
+| ![PCA Variance](images/pca_explained_variance.png) | ![PCA Scatter](images/pca_scatter_cities.png) |
+
+* **Gjetja nga Varianca (Grafiku Majtas):** Algoritmit iu kërkua të mbajë të paktën 95% të variancës (informacionit origjinal). Ne arritëm të rrudhim kompleksitetin thelbësor në më pak "Komponentë Kryesorë" (PC), duke pastruar "zhurmën" meteorologjike.
+* **Gjetja Gjeografike (Grafiku Djathtas - Scatter):** Kjo vërteton matematikisht se gjeografia e izoluar ("gropa") e Prishtinës e detyron motin e saj të sillet ndryshe. Prishtina ka një shpërndarje shumë më të theksuar në kushte të smogut ekstrem, duke u diferencuar drastikisht nga qytetet e tjera.
+
+#### 2. Isolation Forest (Zbulimi i Anomalive dhe Rreziqeve Ekstreme)
+
+**A. Zgjidhja e Paragjykimit Gjeografik (Modeli Global vs. Per-City)**
+
+| Anomalitë sipas Qyteteve | Shpërndarja e Rezultatit të Anomalisë |
+|:---:|:---:|
+| ![Per City Anomalies](images/if_anomalies_per_city.png) | ![Score Distribution](images/if_score_distribution_per_city.png) |
+
+* **Gjetja:** Modeli i ri arrin të gjejë me saktësi se cilat janë ditët *vërtet* ekstreme për secilin qytet në mënyrë të pavarur.
+
+**B. Shkallëzimi i Rrezikut (Severity Scoring)**
+
+| Nivelet e Rrezikshmërisë (PM2.5 vs PM10) | Harta Kohore e Rreziqeve të Larta |
+|:---:|:---:|
+| ![Severity Anomalies](images/if_anomalies_severity.png) | ![Severity Heatmap](images/if_severity_heatmap.png) |
+
+* **Gjetja nga Shkallëzimi (Grafiku Majtas):** Anomalitë e nivelit "High" (të kuqe të errët) grupohen ekskluzivisht në vlerat më ekstreme të PM2.5 dhe PM10. Këto janë ditët e "Smogut Toksik".
+* **Gjetja nga Harta Kohore (Heatmap Djathtas):** Anomalitë më të rrezikshme ndodhin pothuajse ekskluzivisht gjatë **Muajve të Dimrit (Nëntor - Janar)** dhe shtohen në mënyrë masive **gjatë orëve të mbrëmjes (pas orës 18:00)** kur ndizen sistemet e ngrohjes.
+
+#### 3. K-Means Clustering (Zbulimi i Profileve Klimatike të Ndotjes)
+
+**A. Optimizimi i Grupeve: Metoda e Bërrylit dhe Silhouette Score**
+
+| Metoda e Bërrylit (Elbow Method) | Silhouette Score (Vërtetimi) |
+|:---:|:---:|
+| ![Elbow Method](images/kmeans_elbow_method.png) | ![Silhouette Score](images/kmeans_silhouette_score.png) |
+
+* **Gjetja:** Metoda e Bërrylit dhe Silhouette Score konfirmojnë se $K=4$ është ndarja optimale.
+
+**B. Ndarja Hapësinore dhe Karakteristikat e Profileve**
+
+| Shpërndarja 3D e Profileve | Karakteristikat Mesatare (Bar Plots) |
+|:---:|:---:|
+| ![3D Clusters](images/kmeans_clusters_3d.png) | ![Cluster Profiles](images/kmeans_cluster_profiles_bars.png) |
+
+* **Gjetja:** Grupi i "Smogut" ngrihet dukshëm lart në boshtin e ndotjes, i izoluar nga ditët e tjera.
+
+**C. Shpërndarja dhe Ekstremet (Boxplots)**
+
+| Shpërndarja e Varianteve brenda Grupeve |
+|:---:|
+| ![Cluster Boxplots](images/kmeans_cluster_boxplots.png) |
+
+* **Konkluzioni:** Grupi i Smogut ka devijimin më të madh, që do të thotë se brenda këtij profili ndodhin edhe thyerjet më të mëdha të rekordeve të ndotjes në Kosovë.
+
+### 3. Krahasimi i Modeleve dhe Vlerësimi Përfundimtar
+
+| Krahasimi i Saktësisë ($R^2$ Score) | Krahasimi i Gabimeve (MAE & RMSE) |
+|:---:|:---:|
+| ![R2 Comparison](images/eval_r2_comparison.png) | ![Error Comparison](images/eval_error_comparison.png) |
+
+* **XGBoost (Fituesi):** Arriti performancën më të lartë me një $R^2$ mbi **0.90**. Ky model u tregua më i afti për të mësuar nga vlerat historike (`lag features`).
+* **Random Forest:** Rezultoi shumë i qëndrueshëm, por me një gabim (RMSE) pak më të lartë se XGBoost.
+* **Linear/Ridge Models:** Dështuan të kapin kompleksitetin e të dhënave.
+
+#### B. Sinergjia mes Parashikimit dhe Zbulimit (Supervised + Unsupervised)
+1.  **Validimi i Kryqëzuar:** Profilet e zbuluara nga **K-Means** përputhen saktësisht me zonat ku **XGBoost** parashikon nivelet më të larta të rrezikut.
+2.  **Filtrimi i Anomalive:** Përdorimi i **Isolation Forest** mundëson identifikimin e ditëve "atypical".
+3.  **Efiçienca me PCA:** Vërtetuam se përmes **PCA**, mund të mbajmë mbi **95% të variancës** meteorologjike duke përdorur më pak komponentë.
+
+#### C. Matrica Përfundimtare e Përzgjedhjes
+
+| Algoritmi | Roli Përfundimtar | Pse ky algoritëm? |
+| :--- | :--- | :--- |
+| **XGBoost** | **Modeli Kryesor (Production)** | Saktësia maksimale dhe shpjegueshmëria përmes SHAP. |
+| **Isolation Forest** | **Sistemi i Alarmit** | Identifikimi i anomalive *Per-City* dhe Severity Scoring. |
+| **K-Means** | **Profilizimi Klimatik** | Ndarja automatike e ditëve në profile të ajrit (Vera vs Smogu). |
+| **PCA** | **Optimizimi i të Dhënave** | Reduktimi i zhurmës meteorologjike dhe vizualizimi 2D. |
+
+### Strategjia e Trajnimit dhe Validimit
+* **Validimi Kohor (Time Series Split):** Kemi aplikuar `TimeSeriesSplit` për të siguruar që modeli trajnohet me të kaluarën dhe testohet me të ardhmen.
+* **Akordimi i Hiperparametrave:** Kemi përdorur `GridSearchCV` për optimizimin e parametrave kritikë.
+* **Parandalimi i Data Leakage:** Kemi ndërtuar qëllimisht dy versione të modeleve për të vërtetuar që parashikimi i PM2.5 bazohet vetëm në variabla që janë të disponueshme në kohë reale.
+
+### Ruajtja e Modeleve dhe Portabiliteti
+* **XGBoost & Random Forest:** Modelet finale janë ruajtur si skedarë `.json`.
+* **Metrikat e Performancës:** Rezultatet e vlerësimit (MSE, R2, MAE) për secilin model janë arkivuar gjithashtu në skedarë JSON.
+* **Gatishmëria për Inference:** Ky standard i ruajtjes lejon që në Fazën 3 të ngarkojmë modelet direkt për parashikime të të dhënave të reja.
+---
 ## FAZA 3 : Analiza dhe Vlerësimi [Në Zhvillim]
 
 -----
@@ -256,14 +474,13 @@ Gjatë analizës vizuale, u vu re se trendi mesatar ditor (Line Chart) për Pris
   - **requests** - Për marrjen e të dhënave përmes API
 
 -----
-
 ## Instalimi & Konfigurimi
 
 **1. Klononi repozitorin:**
 
 ```bash
- git clone [https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5.git](https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5.git)
- cd MachineLearning_25-26_GR-5
+git clone https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5.git
+cd MachineLearning_25-26_GR-5
 ```
 
 **2. Krijoni dhe aktivizoni një ambient virtual:**
@@ -279,10 +496,9 @@ source .venv/bin/activate
 **3. Instaloni libraritë e nevojshme:**
 
 ```bash
-pip install pandas numpy matplotlib seaborn requests
+pip install pandas numpy matplotlib seaborn requests xgboost shap scikit-learn
 ```
 
 ## Licenca
 
-Ky projekt është i licencuar nën kushtet e **MIT License**. Për më shumë detaje, shikoni skedarin [LICENSE](https://www.google.com/search?q=LICENSE) në këtë repozitor.
-
+Ky projekt është i licencuar nën kushtet e **MIT License**. Për më shumë detaje, shikoni skedarin [LICENSE](https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5/tree/master?tab=MIT-1-ov-file) në këtë repozitor.

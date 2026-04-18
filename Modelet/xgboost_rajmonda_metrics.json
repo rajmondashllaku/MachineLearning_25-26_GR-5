@@ -1,9 +1,0 @@
-{
-    "model_type": "supervised",
-    "model_name": "XGBoost Regressor",
-    "metrics": {
-        "R2": 0.6479308232056655,
-        "MAE": 4.932203002047777,
-        "RMSE": 7.68009045511556
-    }
-}

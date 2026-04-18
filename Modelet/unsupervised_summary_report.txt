@@ -1,19 +1,33 @@
 RAPORTI I MODELEVE UNSUPERVISED
-========================================
+==================================================
 
 MODELI: Isolation Forest
---------------------
-Anomali totale te gjetura: 8224 rreshta (5.0% e datasetit)
-   * Normal Severity: 156224 raste (PM2.5 mesatar: 15.0 µg/m³)
-   * Low Severity: 2796 raste (PM2.5 mesatar: 27.1 µg/m³)
-   * High Severity: 5428 raste (PM2.5 mesatar: 40.0 µg/m³)
+------------------------------
+ * Anomali totale të gjetura: 8224 raste (5.0% e datasetit)
+ * Nivelet e ashpërsisë së anomalive:
+    - Normal: 156224 raste (Ndotja mesatare PM2.5: 15.0 µg/m³)
+    - Low: 2796 raste (Ndotja mesatare PM2.5: 27.1 µg/m³)
+    - High: 5428 raste (Ndotja mesatare PM2.5: 40.0 µg/m³)
+
+==================================================
 
 MODELI: K-Means Clustering
---------------------
-Numri optimal i klasterave të zbuluar: 4
+------------------------------
+ * Numri optimal i klasterave të zbuluar: 4
+
+ * Karakteristikat e Profileve (Mesataret sipas grupit):
+    [Grupi 0]: temperature_2m: 8.6, relative_humidity_2m: 77.95, wind_speed_10m: 4.36, pm2_5: 13.98
+    [Grupi 1]: temperature_2m: 21.32, relative_humidity_2m: 48.21, wind_speed_10m: 5.27, pm2_5: 10.54
+    [Grupi 2]: temperature_2m: 11.25, relative_humidity_2m: 63.64, wind_speed_10m: 15.17, pm2_5: 10.58
+    [Grupi 3]: temperature_2m: 3.0, relative_humidity_2m: 74.35, wind_speed_10m: 3.8, pm2_5: 44.34
+
+==================================================
 
 MODELI: PCA_Unsupervised
---------------------
-Komponentët e mbajtur: 4
-Varianca totale e shpjeguar: 100.00%
+------------------------------
+ * Komponentët e mbajtur: 4
+ * Varianca totale e shpjeguar: 100.00%
+ * Shpjegimi: Modeli arriti të reduktojë dimensionet duke mbajtur shumicën e informacionit.
+
+==================================================
 
