@@ -48,11 +48,12 @@ Projekti demonstron një cikël të plotë jetësor (end-to-end) të shkencës s
 3. **Faza 3 (Analiza dhe Vlerësimi):** Testimi i saktësisë së modeleve, nxjerrja e metrikave dhe krijimi i raporteve vizuale për të kuptuar se cilët faktorë ndikojnë më shumë në smog-un sipas rajoneve.
 
 ### Qëllimet e Projektit
-- **Ndërtimi i një Modeli Parashikues Rajonal:** Krijimi i një algoritmi të aftë të parashikojë ndotjen bazuar në motin dhe lokacionin (qytetin) për 6 vitet e fundit.
-- **Paraprocesimi Inovativ:** Aplikimi i teknikave të avancuara të pastrimit për të menaxhuar dështimet e sensorëve, duke ruajtur vlerat reale të ndotjes ekstreme dimërore.
-- **Inxhinieria e Veçorive Globale:** Transformimi i të dhënave në inpute parashikuese numerike (kodimi i qyteteve, nxjerrja e orës/muajit) dhe krijimi i veçorive të domenit si `sezoni_i_ngrohjes` për të kapur "Efektin e Prishtinës".
-- **Krahasimi i Algoritmeve:** Trajnimi i modeleve për të gjetur performancën më të lartë dhe gabimin më të vogël.
 
+* **Ndërtimi i një Arkitekture Hibride (Supervised & Unsupervised):** Krijimi i një sistemi të aftë jo vetëm të parashikojë sasinë e ndotjes (PM2.5) bazuar në kushtet meteorologjike, por edhe të zbulojë automatikisht "profilet klimatike" të fshehura (si Inversioni Termik) për 6 vitet e fundit në Kosovë.
+* **Paraprocesimi dhe Detektimi Inteligjent i Anomalive:** Aplikimi i teknikave të avancuara për të pastruar dështimet e sensorëve, duke u mbështetur në algoritme të dedikuara për të dalluar gabimet teknike nga vlerat reale të ndotjes ekstreme dimërore.
+* **Inxhinieria e Veçorive (Feature Engineering):** Transformimi i të dhënave të papërpunuara në inpute inteligjente: nga kodimi i qyteteve dhe nxjerrja e cikleve kohore, tek krijimi i variablave specifike të domenit (si `sezoni_i_ngrohjes`) për të kapur "Efektin e Prishtinës".
+* **Krahasimi dhe Shpjegueshmëria e Algoritmeve (Explainable AI):** Trajnimi dhe krahasimi i një spektri të gjerë modelesh (nga Modelet Lineare te Random Forest dhe XGBoost) për të gjetur ekuilibrin perfekt mes saktësisë së lartë dhe aftësisë për të shpjeguar *pse* po ndodh ndotja.
+* **Gatishmëria për Prodhim (Inference):** Paketimi i modelit kampion dhe tubacionit të të dhënave (Scaler) në një format të transportueshëm, të gatshëm për t'u integruar në Fazën 3 për të bërë parashikime në kohë reale (Live).
 ---
 
 
