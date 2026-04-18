@@ -354,8 +354,9 @@ Pasi vërtetuam se modelet lineare dështojnë, kaluam në algoritmet *Tree-Base
 |:---:|:---:|
 | ![RF Features](images/rf_feature_importance.png) | ![RF Residuals](images/rf_residuals.png) |
 
-* **Gjetja nga Pesha e Veçorive:** Variabli më i rëndësishëm doli të ishte `pm2_5_lag_24h` (niveli i ndotjes fiks para 24 orëve). Kjo vërteton vizualisht fenomenin e "Smogut të bllokuar". 
-* **Gjetja nga Mbetjet (Residuals):** Grafiku i gabimeve tregon një shpërndarje shumë të mirë rreth zeros (vija e kuqe).
+* **Rregulli i Artë (Ndarja Kryesore):** Pema tregon se `Era` është faktori numër një. Nëse shpejtësia e erës është nën 5.85 km/h (krahu i majtë), rreziku i ndotjes rritet menjëherë.
+* **Zbulimi i Smogut Dimëror:** Nëse nuk ka erë dhe temperatura është shumë e ulët (nën 2.15°C), modeli parashikon nivelin më të lartë të ndotjes (PM2.5 = 58.21). Ky është modeli duke zbuluar vetë dukurinë e Inversionit Termik!
+* **Efekti i Sezonit të Ngrohjes:** Nëse ka erë (krahu i djathtë), ndotja shpërndahet. Megjithatë, modeli është mjaftueshëm inteligjent për të kontrolluar variablën `Sezoni_Ngrohjes`. Edhe në ditë me erë, të qenit brenda sezonit të ngrohjes shkakton më shumë ndotje (vlerën 22.15) sesa jashtë sezonit (vlerën 12.87).
 
 #### 3. XGBoost Regressor (Modeli Kampion dhe Explainable AI)
 
@@ -371,7 +372,7 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 |:----------------------------------------------------:|:---:|
 | ![XGBoost Metrics](images/xgboost_metrics_table3.png) | ![XGB Actual](images/xgboost_actual_vs_predicted3.png) |
 
-* **Gjetja:** Modeli tregon një saktësi të lartë (R²) dhe një ndjekje shumë të mirë të trendit.
+* **Gjetja:** Modeli tregon një saktësi qe konsiderohet e lartë (R²) per natyren e problemit dhe një ndjekje shumë të mirë të trendit.
 
 **B. Analiza e Gabimit dhe Procesi i të Mësuarit**
 
@@ -379,17 +380,20 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 |:---:|:---:|
 | ![XGBoost Learning](images/xgboost_learning_curve3.png) | ![XGBoost Residuals](images/xgboost_residuals_histogram3.png) |
 
-* **Gjetja:** Kurba e të mësuarit tregon se gabimi (RMSE) bie në mënyrë të qëndrueshme. Grafiku i mbetjeve (Residuals) konfirmon se gabimet e modelit janë të shpërndara normalisht rreth vlerës zero.
-
+* **Kurbat e Mësimit (Learning Curves):** Ky grafik konfirmon se modeli ynë po mëson në mënyrë të qëndrueshme dhe nuk vuan nga mbipërshtatja (Overfitting). Fakti që kurba e trajnimit (Train) dhe ajo e vlefshmërisë (Validation) stabilizohen dhe konvergjojnë afër njëra-tjetrës, tregon se XGBoost ka aftësi të shkëlqyera për të përgjithësuar dhe parashikuar saktë në të dhëna krejtësisht të panjohura.
+* **Analiza e Mbetjeve (Residuals):** Grafiku i mbetjeve tregon një shpërndarje simetrike dhe të rastësishme të gabimeve rreth boshtit zero (homoskedasticitet). Kjo është një provë e fortë matematikore që modeli ka arritur të "shtrydhë" me sukses pothuajse të gjithë informacionin e dobishëm dhe rregullat jo-lineare nga variablat e motit. Çdo devijim i mbetur në këtë grafik përfaqëson "zhurmën" e pashmangshme stohastike ose faktorë të jashtëm të pamatshëm (p.sh., luhatjet momentale të trafikut apo djegiet e paparashikuara atë ditë).
 **C. Hapja e "Kutisë së Zezë" (Explainable AI)**
 
 | Si ndikojnë faktorët (SHAP Summary Plot) | Pesha e Veçorive (Feature Importance) |
 |:---:|:---:|
 | ![SHAP](images/xgboost_shap_summary3.png) | ![XGB Feature Importance](images/xgboost_feature_importance3.png) |
 
-* **Gjetja nga SHAP:** Çdo pikë në grafikun SHAP përfaqëson një ditë. Ngjyra blu (Vlera të ulëta) te Temperatura rrit masivisht parashikimin e ndotjes PM2.5. 
+* **Hapja e "Kutisë së Zezë" me SHAP (Global vs. Lokal):** Ky vizualizim ofron një analizë të thellë të "Explainable AI", duke zbuluar se si ndryshojnë shkaktarët e ndotjes në nivel kombëtar (majtas) kundrejt specifikave të kryeqytetit (djathtas). Ngjyra e kuqe tregon vlera të larta të variablës (p.sh., erë e fortë), ndërsa bluja tregon vlera të ulëta (p.sh., mot i ftohtë).
+* **Dinamika Globale (Dominimi i Erës):** Në modelin që përfshin të gjitha qytetet, `Shpejtësia e Erës` është faktori numër një. Pikat e kuqe (erërat e forta) tërhiqen thellë në të majtë (vlera negative SHAP), duke vërtetuar matematikisht se era është pastruesi kryesor i ajrit në nivel vendi.
+* **Anatomia e Smogut në Prishtinë (Kriza e Temperaturës):** Kur izolohët vetëm Prishtina, ndodh një ndryshim paradigme: `Temperatura` bëhet faktori absolut dominues. Grumbullimi i dendur i pikave blu (i ftohti) në anën e djathtë (vlera pozitive SHAP) tregon se Prishtina është jashtëzakonisht e ndjeshme ndaj temperaturave të ulëta. Ky është vërtetimi vizual i "Inversionit Termik" në gropën e Prishtinës.
+* **Vërtetimi i Inxhinierisë së Veçorive:** Variabla e krijuar specifikisht për këtë domen, `sezoni_ngrohjes`, luan një rol kritik në të dy modelet. Prania e pikave të kuqe (brenda sezonit) e shtyn parashikimin ndjeshëm drejt rritjes së PM2.5, duke demonstruar se modeli ka mësuar me sukses kontekstin e ndotjes njerëzore (ngrohja me thëngjill/dru) përtej të dhënave thjesht meteorologjike.
 
-**D. Logjika Baze (Ilustrim)**
+* **D. Logjika Baze (Ilustrim)**
 
 | Si "mendon" një Pemë Vendimi |
 |:---:|
