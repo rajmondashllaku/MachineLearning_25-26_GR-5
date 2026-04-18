@@ -418,8 +418,12 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 |:---:|:---:|
 | ![3D Clusters](images/kmeans_clusters_3d.png) | ![Cluster Profiles](images/kmeans_cluster_profiles_bars.png) |
 
-* **Gjetja:** Grupi i "Smogut" ngrihet dukshëm lart në boshtin e ndotjes, i izoluar nga ditët e tjera.
-
+* **Gjetja nga Grafiku 3D:** Grupi i "Smogut" ngrihet dukshëm lart në boshtin e ndotjes, i izoluar nga ditët e tjera.
+* **Analiza e Profileve të Zbuluara:**
+    1.  **Ditët e Nxehta dhe të Pastra (Vera):** Temperatura të larta, lagështi e ulët, ajër tepër i pastër.
+    2.  **Ditët e Ftohta dhe me Erë (Dimër i Pastruar):** Ndonëse bën ftohtë, shpejtësia e lartë e erës e ka shpërndarë ndotjen.
+    3.  **Ditët e Ftohta, të Lagështa dhe të Qeta (Smogu Ekstrem):** Profili më kritik. Temperatura të ulëta, mungesë ere dhe lagështi e lartë. Ndotja bllokohet pranë sipërfaqes (Inversioni Termik).
+    4.  **Ditët Tranzitore (Pranverë/Vjeshtë):** Kushte mesatare klimatike me nivele mesatare-të ulëta të ndotjes.
 **C. Shpërndarja dhe Ekstremet (Boxplots)**
 
 | Shpërndarja e Varianteve brenda Grupeve |
