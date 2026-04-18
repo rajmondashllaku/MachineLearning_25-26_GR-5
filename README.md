@@ -299,6 +299,10 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 ## Vizualizimet
 ### 1. Supervised Learning: Parashikimi i Ndotjes (PM2.5)
 #### 1. Modelet Lineare (Linear & Ridge Regression - Baseline)
+
+**Çfarë bën algoritmi?** Përpiqet të tërheqë një "vijë të drejtë" nëpër të dhëna, duke supozuar se nëse një variabël rritet (p.sh. era), tjetra rritet ose bie në mënyrë proporcionale.
+
+**Si e përdorëm ne?** E përdorëm si "Test Dummy" (Baseline). Donim t'u vërtetonim të dhënave tona se ndotja nuk është kaq e thjeshtë dhe nuk ndjek rregulla lineare.
 Përpara se të përdornim Inteligjencë Artificiale komplekse, ne ngritëm një pyetje themelore: *A mund të parashikohet ndotja e ajrit thjesht duke tërhequr një vijë të drejtë mes variablave të motit?* Për t'iu përgjigjur kësaj, ne trajnuam modelet **Linear Regression** dhe **Ridge Regression** (duke optimizuar parametrin `alpha` me `GridSearchCV`). Këto modele shërbyen si "Baseline" (Pikënisje), duke pasur të kujdes të fshijmë variablin `pm10` për të parandaluar rrjedhjen e të dhënave (Data Leakage).
 
 **A. Performanca dhe Testimi i Hipotezës Lineare**
@@ -318,6 +322,11 @@ Përpara se të përdornim Inteligjencë Artificiale komplekse, ne ngritëm një
 * **Gjetja:** Edhe pse performanca ishte e dobët, modeli linear arriti të kapë logjikën bazë: ai u dha peshën më të madhe absolute faktorëve si *Temperatura* dhe *Sezoni*. 
 
 #### 2. Random Forest Regressor (Menaxhimi i Data Leakage dhe Serive Kohore)
+
+**Çfarë bën algoritmi?** Krijon qindra "Pemë Vendimi" (Decision Trees) të pavarura nga njëra-tjetra. Çdo pemë jep një parashikim dhe në fund merret mesatarja e të gjithave ("mençuria e turmës").
+
+**Si e përdorëm ne?** E përdorëm për të kapur lidhjet jo-lineare. Pasi këtij algoritmi nuk i interesojnë vijat e drejta, ai mundi të kuptojë rregulla komplekse si: *"Nëse është Ftohtë + S'ka Erë + Lagështia e lartë = Smog"*.
+
 Pasi vërtetuam se modelet lineare dështojnë, kaluam në algoritmet *Tree-Based*. Për ta bërë modelin më inteligjent, ne ndërtuam "Lag Features" (çfarë ndodhi me ndotjen 1 orë apo 24 orë më parë). Për të respektuar kronologjinë e ngjarjeve klimatike, përdorëm `TimeSeriesSplit` në vend të ndarjes rastësore.
 
 **A. Zgjidhja e problemit të "Data Leakage" (Modeli A vs Modeli B)**
@@ -338,6 +347,11 @@ Pasi vërtetuam se modelet lineare dështojnë, kaluam në algoritmet *Tree-Base
 * **Gjetja nga Mbetjet (Residuals):** Grafiku i gabimeve tregon një shpërndarje shumë të mirë rreth zeros (vija e kuqe).
 
 #### 3. XGBoost Regressor (Modeli Kampion dhe Explainable AI)
+
+**Çfarë bën algoritmi?** Ndryshe nga Random Forest ku pemët janë të pavarura, XGBoost i ndërton pemët njëra pas tjetrës. Çdo pemë e re ndërtohet posaçërisht për të korrigjuar gabimet që bëri pema e mëparshme (Gradient Boosting).
+
+**Si e përdorëm ne?** E përdorëm si modelin tonë Kampion për shkak të saktësisë së tij kirurgjikale në kapjen e vlerave ekstreme dimërore (outliers), aty ku modelet e tjera dështonin.
+
 XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai arriti të menaxhojë shkëlqyeshëm natyrën komplekse dhe sezonale të ndotjes në Kosovë.
 
 **A. Performanca dhe Saktësia e Parashikimit**
@@ -376,6 +390,10 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 
 #### 1. PCA (Reduktimi i Dimensioneve)
 
+**Çfarë bën algoritmi?** Është një algoritëm kompresimi. Merr të dhëna me shumë dimensione (kolona) dhe i shtrydh në më pak dimensione pa humbur informacionin (si të marrësh një objekt 3D dhe t'i shikosh hijen në 2D).
+
+**Si e përdorëm ne?** Moti ka shumë variabla të ndërlidhura. Ne i dhamë 4 variabla moti dhe e detyruam t'i kthejë në vetëm 2 (PC1 dhe PC2), duke pastruar "zhurmën" dhe duke mundësuar vizualizimin në 2D.
+
 | Përqindja e Variancës së Shpjeguar | Diferencimi Gjeografik në 2D (Scatter Plot) |
 |:---:|:---:|
 | ![PCA Variance](images/pca_explained_variance.png) | ![PCA Scatter](images/pca_scatter_cities.png) |
@@ -384,6 +402,10 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 * **Gjetja Gjeografike (Grafiku Djathtas - Scatter):** Kjo vërteton matematikisht se gjeografia e izoluar ("gropa") e Prishtinës e detyron motin e saj të sillet ndryshe. Prishtina ka një shpërndarje shumë më të theksuar në kushte të smogut ekstrem, duke u diferencuar drastikisht nga qytetet e tjera.
 
 #### 2. Isolation Forest (Zbulimi i Anomalive dhe Rreziqeve Ekstreme)
+
+**Çfarë bën algoritmi?** Në vend që të mësojë "normalen", ky algoritëm vizaton vija të rastësishme për të ndarë të dhënat. Pikat që izolohen më shpejt konsiderohen anomali, sepse janë shumë larg turmës.
+
+**Si e përdorëm ne?** E përdorëm si sistem alarmi. Për t'u siguruar që gjen me saktësi "Ditët e Smogut Toksik" pa u ngatërruar nga gjeografia, ia përshtatëm pragun secilit qytet veç e veç.
 
 **A. Zgjidhja e Paragjykimit Gjeografik (Modeli Global vs. Per-City)**
 
@@ -403,6 +425,10 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 * **Gjetja nga Harta Kohore (Heatmap Djathtas):** Anomalitë më të rrezikshme ndodhin pothuajse ekskluzivisht gjatë **Muajve të Dimrit (Nëntor - Janar)** dhe shtohen në mënyrë masive **gjatë orëve të mbrëmjes (pas orës 18:00)** kur ndizen sistemet e ngrohjes.
 
 #### 3. K-Means Clustering (Zbulimi i Profileve Klimatike të Ndotjes)
+
+**Çfarë bën algoritmi?** Grupon të dhënat në "K" profile bazuar në ngjashmëritë e tyre, pa e ditur paraprakisht se çfarë përfaqësojnë. Ai gjen qendrën e çdo grupi dhe grumbullon pikat rreth saj.
+
+**Si e përdorëm ne?** Ia dhamë të gjitha ditët e vitit "qorrazi" dhe i kërkuam t'i ndajë në 4 profile. Ai arriti të zbulojë vetë strukturën e "Inversionit Termik" duke e ndarë si një profil më vete.
 
 **A. Optimizimi i Grupeve: Metoda e Bërrylit dhe Silhouette Score**
 
