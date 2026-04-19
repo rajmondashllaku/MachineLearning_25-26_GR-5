@@ -383,6 +383,12 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 
 * **Gjetja:** `SHAP Summary Plot` i majtë tregon drejtimin dhe madhësinë e ndikimit të çdo veçorie në parashikimet e modelit global të testuar, ndërsa grafiku i djathtë rendit rëndësinë relative të veçorive sipas `XGBoost`. Në këtë implementim, veçoritë meteorologjike, `lag`-et e `PM2.5` dhe interaction features janë pjesë e input-it final.
 
+| Logjika Ilustruese e Pemës së Vendimit |
+|:---:|
+| ![Decision Tree Logic](images/decision_tree_logic_sklearn2.png) |
+
+* **Gjetja:** Kjo figurë ilustron logjikën bazë të një peme vendimi, duke ndihmuar në interpretimin intuitiv të mënyrës si funksionojnë modelet `tree-based` në këtë fazë.
+
 ### 2. Unsupervised Learning: Zbulimi i Strukturave dhe Anomalive
 
 #### 1. PCA (Reduktimi i Dimensioneve)
@@ -443,12 +449,24 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 
 **B. Ndarja hapësinore dhe karakteristikat e profileve**
 
-| Shpërndarja 3D e Profileve | Karakteristikat Mesatare (Bar Plots) |
+| Shpërndarja 3D e Profileve | Scatter: Temperatura vs PM2.5 |
 |:---:|:---:|
-| ![3D Clusters](images/kmeans_clusters_3d2.png) | ![Cluster Profiles](images/kmeans_cluster_profiles_bars2.png) |
+| ![3D Clusters](images/kmeans_clusters_3d2.png) | ![KMeans Scatter](images/kmeans_clusters_scatter2.png) |
 
-* **Gjetja:** Grafiku 3D tregon ndarjen e klasterave në hapësirën `temperature_2m - wind_speed_10m - pm2_5`, ndërsa bar chart-i përmbledh mesataret e secilit klaster. Në artefaktet aktuale, profili me ndotjen më të lartë është `Cluster 3`, me rreth `PM2.5 = 44.34`, `temperature_2m = 3.0°C`, `relative_humidity_2m = 74.35` dhe `wind_speed_10m = 3.8`, që përputhet me kushte më të ftohta dhe më të qeta.
+* **Gjetja:** Grafiku 3D jep pamjen hapësinore të klasterave, ndërsa scatter-i `temperature` kundrejt `PM2.5` tregon qartë profilin me ndotje më të lartë.
 
+| Karakteristikat Mesatare (Bar Plots) | Shpërndarja brenda Grupeve (Boxplots) |
+|:---:|:---:|
+| ![Cluster Profiles](images/kmeans_cluster_profiles_bars2.png) | ![Cluster Boxplots](images/kmeans_cluster_boxplots2.png) |
+
+* **Gjetja:** Bar plot-et përmbledhin mesataret për secilin klaster, ndërsa boxplot-et tregojnë variacionin dhe ekstremet brenda secilit grup për të katër veçoritë.
+
+* **Analiza e Profileve të Zbuluara:**
+    1.  **Ditët e Nxehta dhe të Pastra (Vera):** Temperatura të larta, lagështi e ulët, ajër tepër i pastër.
+    2.  **Ditët e Ftohta dhe me Erë (Dimër i Pastruar):** Ndonëse bën ftohtë, shpejtësia e lartë e erës e ka shpërndarë ndotjen.
+    3.  **Ditët e Ftohta, të Lagështa dhe të Qeta (Smogu Ekstrem):** Profili më kritik. Temperatura të ulëta, mungesë ere dhe lagështi e lartë. Ndotja bllokohet pranë sipërfaqes (Inversioni Termik).
+    4.  **Ditët Tranzitore (Pranverë/Vjeshtë):** Kushte mesatare klimatike me nivele mesatare-të ulëta të ndotjes.
+  
 ### 3. Krahasimi i Modeleve dhe Vlerësimi Përfundimtar
 ### A. Supervised Learning (Parashikimi)
 Për të parashikuar nivelet e `PM2.5`, skripta `model_evaluation.py` lexon artefaktet `JSON` në `Modelet/` dhe krijon dy grafiqe krahasuese për modelet supervised:
