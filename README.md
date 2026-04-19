@@ -32,11 +32,11 @@
 - [Pasqyra e Projektit](#pasqyra-e-projektit)
 - [Struktura e Repozitorit](#struktura-e-repozitorit)
 - [Përshkrimi i Datasetit](#përshkrimi-i-datasetit)
-- [Modulet dhe Skriptat e Implementuara](#modulet-dhe-skriptat-e-implementuara)
-- [Analiza Vizuale (EDA)](#analiza-vizuale-eda)
+- [FAZA 2 : Trajnimi i Modeleve (Machine Learning)](#faza-2--trajnimi-i-modeleve-machine-learning)
+- [FAZA 3 : Analiza dhe Vlerësimi [Në Zhvillim]](#faza-3--analiza-dhe-vlerësimi-në-zhvillim)
 - [Teknologjitë e Përdorura](#teknologjitë-e-përdorura)
 - [Instalimi & Konfigurimi](#instalimi--konfigurimi)
-
+- [Profilet e kontribuesve](#profilet-e-kontribuesve)
 ---
 ## Pasqyra e Projektit
 
@@ -116,17 +116,17 @@ Projekti përdor burime të të dhënave që mbulojnë periudhën nga **2020 der
 
 ### Atributet Kryesore (Dataseti Global)
 
-| Atributi                | Kolona | Tipi | Përshkrimi |
-|-------------------------|--------|------|-------------|
-| **Targeti (Ajri)** | `pm2_5` | Float | Përqendrimi i grimcave \< 2.5 µm (µg/m³) |
-| **Targeti (Ajri)** | `pm10` | Float | Përqendrimi i grimcave \< 10 µm (µg/m³) |
-| **Meteorologjike** | `temperature_2m` | Float | Temperatura e ajrit në 2 metra lartësi (°C) |
-| **Meteorologjike** | `relative_humidity_2m`| Float | Lagështia relative (%) |
-| **Meteorologjike** | `wind_speed_10m` | Float | Shpejtësia e erës në 10 metra lartësi (km/h) |
-| **Kohore (E derivuar)** | `month` | Integer | Muaji i vitit (1-12) për të kapur sezonalitetin |
-| **Kohore (E derivuar)** | `hour` | Integer | Ora e ditës (0-23) për të kapur ciklet e trafikut |
-| **Domeni (E derivuar)** | `sezoni_i_ngrohjes` | Integer | Indikator i smogut (1=Dimër në Prishtinë, 0=Tjera) |
-| **Gjeografike** | `qyteti` | Integer | Kodi i lokacionit (**1**=Prishtinë, **2**=Prizren, **3**=Pejë) |
+| Atributi                   | Kolona | Tipi | Përshkrimi |
+|----------------------------|--------|------|-------------|
+| **Targeti (Ajri)**         | `pm2_5` | Float | Përqendrimi i grimcave \< 2.5 µm (µg/m³) |
+| **Cilesia e Ajrit (Ajri)** | `pm10` | Float | Përqendrimi i grimcave \< 10 µm (µg/m³) |
+| **Meteorologjike**         | `temperature_2m` | Float | Temperatura e ajrit në 2 metra lartësi (°C) |
+| **Meteorologjike**         | `relative_humidity_2m`| Float | Lagështia relative (%) |
+| **Meteorologjike**         | `wind_speed_10m` | Float | Shpejtësia e erës në 10 metra lartësi (km/h) |
+| **Kohore (E derivuar)**    | `month` | Integer | Muaji i vitit (1-12) për të kapur sezonalitetin |
+| **Kohore (E derivuar)**    | `hour` | Integer | Ora e ditës (0-23) për të kapur ciklet e trafikut |
+| **Domeni (E derivuar)**    | `sezoni_i_ngrohjes` | Integer | Indikator i smogut (1=Dimër në Prishtinë, 0=Tjera) |
+| **Gjeografike**            | `qyteti` | Integer | Kodi i lokacionit (**1**=Prishtinë, **2**=Prizren, **3**=Pejë) |
 
 -----
 
@@ -136,7 +136,17 @@ Projekti përdor burime të të dhënave që mbulojnë periudhën nga **2020 der
 
 Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave përmes disa skriptave kryesore:
 
-1.  **`data_integration.py`**
+0. **`data_gathering.py`** (Mbledhja e te Dhenave)
+
+      * **Çfarë bën:** Ky skript automatizon mbledhjen e të dhënave historike të papërpunuara (raw) për cilësinë e ajrit dhe kushtet meteorologjike për qytetet kryesore të Kosovës (Prishtinë, Pejë, Prizren), duke filluar nga viti 2020 e deri në ditën aktuale të ekzekutimit.
+      * **Logjika:** * **Konfigurimi Gjeo-Hapësinor dhe Kohor**: Skripta përdor një strukturë fjalori (`CITIES`) për të ruajtur koordinatat e sakta (gjerësi/gjatësi gjeografike) të qyteteve të synuara. Periudha e tërheqjes së të dhënave është dinamike, duke u gjeneruar automatikisht deri në datën e sotme (`datetime.today()`), gjë që e bën modelin të lehtë për t'u përditësuar në të ardhmen. 
+         * **Integrimi me API (Open-Meteo)**: Kryen kërkesa të veçanta (HTTP GET requests) në dy endpoint-e të ndryshme: 
+            1. *Air Quality API* për marrjen e ndotësve ororë (PM10 dhe PM2.5). 
+            2. *Historical Weather Archive API* për të dhënat klimatike orore (temperatura, lagështia relative, presioni atmosferik dhe shpejtësia e erës).
+         * **Strukturimi dhe Eksportimi Fillestar**: Menaxhon automatikisht krijimin e direktorive nëse nuk ekzistojnë (`os.makedirs`). Të dhënat JSON të kthyera nga API kthehen menjëherë në `pandas DataFrame`. Më pas, bëhet një standardizim fillestar i emërtimit (ndryshimi i kolonës "time" në "date") dhe eksportimi i tyre në formatin `.csv` pa humbur asnjë rresht, duke i bërë gati për skriptën e integrimit.
+         * **Trajtimi i Gabimee (Error Handling)**: Përdor blloqe `try-except` për çdo thirrje API. Kjo garanton që nëse ka një ndërprerje rrjeti ose API kthen një përgjigje të papritur për njërin qytet, skripta nuk "thyhet" (crash), por printon gabimin dhe vazhdon me qytetin ose setin tjetër të të dhënave.
+      
+1.  **`data_integration.py`** (Integrimi i te Dhenave)
 
       * **Çfarë bën:** Lexon datasetet e papërpunuara të motit dhe cilësisë së ajrit për secilin qytet dhe i bashkon ato në një skedar analitik të vetëm.
       * **Logjika:**  
@@ -145,7 +155,7 @@ Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave 
          * Në fund, kryhet bashkimi inner në kolonën time, duke ruajtur vetëm rreshtat ku plotësohen të dyja kushtet (moti dhe ajri).
 
 
-2.  **`data_cleaning.py`**
+2.  **`data_cleaning.py`** (Pastrimi i te Dhenave)
 
       * **Çfarë bën:** Së pari, siguron që çdo vlerë tekstuale e gabuar (si 'None') të konvertohet në NaN dhe fshin plotësisht rreshtat që kanë vlera të munguara. Më pas, bën një skanim statistikor për të detektuar anomali (Outliers) në çdo qytet.
       * **Logjika "Hands Off" (Mos-ndërhyrje):** Për të zbuluar vlerat jashtë normales, skripta përdor metodën e rreptë statistikore IQR (Interquartile Range). Megjithatë, ajo vetëm i raporton (numëron) këto vlera dhe nuk i fshin. Kjo është një zgjedhje inxhinierike e qëllimshme: fshirja e rreshtave me PM2.5 ose PM10 shumë të lartë do të "fshinte" ditët me smog ekstrem gjatë dimrit në Kosovë, duke e lënë modelin të verbër ndaj kulmeve të vërteta të ndotjes.
@@ -160,13 +170,12 @@ Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave 
       * **Gati për ML:** Në fund, skripta fshin përfundimisht kolonën tekstuale/datetime time, duke lënë pas vetëm atribute numerike (int dhe float) që kërkohen nga algoritme si Random Forest dhe XGBoost.
 4.  **`data_merging.py` (Krijimi i Datasetit Global)**
 
-      * **Çfarë bën:** Merr datasetet e gatshme të të tria qyteteve dhe i shton njëra mbi tjetrën (bashkim vertikal) për të krijuar një *Master Dataset* (`kosova_global_ml_data.csv`).
-      * **Logjika:** Shton kolonën e re `qyteti` (Kodet 1, 2, 3) për t'i mundësuar modelit të dallojë lokacionin. Gjithashtu, i jep vlerën `0` sezonit të ngrohjes për Prizrenin dhe Pejën, duke e lënë vlerën `1` vetëm për Prishtinën, për të kapur "Efektin e bllokimit të tymit" tipik të kryeqytetit.
-5. **`data_validation.py` (Vlerësimi dhe Sigurimi i Cilësisë)**
+    * **Çfarë bën:** Merr datasetet e gatshme të të tria qyteteve dhe i shton njëra mbi tjetrën (bashkim vertikal) për të krijuar një *Master Dataset* (`kosova_global_ml_data.csv`).
+    * **Logjika:** Shton kolonën e re `qyteti` (Kodet 1, 2, 3) për t'i mundësuar modelit të dallojë lokacionin. Gjithashtu, i jep vlerën `0` sezonit të ngrohjes për Prizrenin dhe Pejën, duke e lënë vlerën `1` vetëm për Prishtinën, për të kapur "Efektin e bllokimit të tymit" tipik të kryeqytetit.
+5.  **`data_assesment.py` (Vlerësimi dhe Sigurimi i Cilësisë)**
 
-      * **Çfarë bën:** Skripta e testimit final (Quality Assurance) që gjeneron një raport të detajuar diagnostikues mbi integritetin e Datasetit Global, për të vërtetuar që është 100% i gatshëm për algoritmet e Machine Learning.
-      * **Logjika:** Bën një "skanim" përfundimtar të të dhënave para Fazës 2: konfirmon që nuk ka mbetur asnjë vlerë e zbrazët (`Nulls: 0`), vërteton që të gjitha kolonat janë konvertuar strikt në formate numerike, kontrollon saktësinë e logjikës së `sezoni_i_ngrohjes` për secilin qytet, dhe garanton që vlerat ekstreme (outliers) të smogut dimëror janë ruajtur me sukses duke shfaqur majat e tyre maksimale.
- 
+    * **Çfarë bën:** Kryen një "Sanity Check" (kontroll të cilësisë) mbi datasetin master `kosova_global_ml_data.csv` para se të fillojë procesi i trajnimit.
+    * **Logjika:** Verifikon nëse dimensionet janë të sakta, konfirmon eliminimin e vlerave `Null`, dhe garanton që të gjitha tiparet janë në format numerik (të gatshme për algoritmet). Gjeneron një raport përmbledhës për shpërndarjen e matjeve sipas qyteteve, balancimin e "sezonit të ngrohjes" dhe ruan formatin e vlerave ekstreme (outliers) për ndotësit kryesorë.
 6. **`eda_analysis.py` (Analiza dhe Vizualizimi)**
 
       * **Çfarë bën:** Skripta finale automatike që lexon datasetet dhe gjeneron një set grafikësh shkencorë për të analizuar sjelljen e të dhënave, duke i ruajtur ato në folderin `images/`.
@@ -177,7 +186,7 @@ Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave 
 
 Përmes skriptës `eda_analysis.py`, ne analizuam sjelljen e ndotësve si në nivel lokal (qytet) ashtu edhe atë rajonal.
 
-### 1\. Analiza Lokale
+### 1. Analiza Lokale
 
 Këtu vëzhgojmë korrelacionin (lidhjen mes motit dhe ndotjes) si dhe trendin mesatar të ndotjes gjatë një dite (00:00 - 23:00) për çdo qytet.
 
@@ -530,6 +539,98 @@ source .venv/bin/activate
 pip install pandas numpy matplotlib seaborn requests xgboost shap scikit-learn
 ```
 
+### Udhëzuesi i Ekzekutimit
+
+Pasi të keni përfunduar instalimin e librarive, ndiqni këtë radhë ekzekutimi për të riprodhuar tubacionin e plotë të të dhënave dhe modeleve. Sigurohuni që terminali juaj ndodhet në dosjen kryesore të projektit (`MachineLearning_25-26_GR-5`).
+
+#### Hapi 1: Mbledhja e të Dhënave (Data Gathering)
+Ky skript tërheq të dhënat e papërpunuara për motin dhe cilësinë e ajrit nga API-të dhe i ruan ato në dosjen `Datasetet`.
+```bash
+cd Data_Gathering
+python data_gathering.py
+cd ..
+```
+
+#### Hapi 2: Paraprocesimi dhe Integrimi (Faza 1)
+Në këtë fazë, të dhënat pastrohen, bashkohen dhe bëhen gati për modelim. Ekzekutoni skriptat sipas kësaj radhe logjike:
+```bash
+cd FAZA-1_Pergatitja_e_modelit
+
+# 1. Integrimi i API-ve të motit dhe ajrit
+python data_integration.py
+
+# 2. Pastrimi i vlerave null dhe anomalive
+python data_cleaning.py
+
+# 3. Krijimi i variablave të reja (Lag features, Sezoni)
+python feature_engineering.py
+
+# 4. Krijimi i Datasetit Global përfundimtar
+python data_merging.py
+
+# 5. Gjenerimi i grafikëve eksplorues (EDA)
+python eda_analysis.py
+
+cd ..
+```
+
+#### Hapi 3: Trajnimi i Modeleve (Faza 2)
+Me datasetin e pastruar, mund të trajnoni modelet. Modelet finale dhe metrikat e tyre do të ruhen automatikisht në format `.json`.
+
+**Për modelet parashikuese (Supervised):**
+```bash
+cd FAZA-2_Trajnimi_i_modelit/supervised
+python ridge-linear-baseline-models.py
+python random_forest_regressor.py
+python train_xgboost.py
+cd ../..
+```
+
+**Për analizën e grupeve dhe anomalive (Unsupervised):**
+```bash
+cd FAZA-2_Trajnimi_i_modelit/unsupervised
+python pca_reduction.py
+python isolation_forest.py
+python kmeans-clustering.py
+cd ../..
+```
+
+**Vlerësimi dhe krahasimi i modeleve:**
+```bash
+cd FAZA-2_Trajnimi_i_modelit
+python model_evaluation.py
+cd ..
+```
+
+*Shënim: Faza 3 është aktualisht në zhvillim dhe do të bazohet në modelet e ruajtura gjatë këtij procesi.*
+
 ## Licenca
 
 Ky projekt është i licencuar nën kushtet e **MIT License**. Për më shumë detaje, shikoni skedarin [LICENSE](https://github.com/rajmondashllaku/MachineLearning_25-26_GR-5/tree/master?tab=MIT-1-ov-file) në këtë repozitor.
+
+## Profilet e kontribuesve
+
+Ky projekt është zhvilluar bashkërisht nga ekipi i mëposhtëm:
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/rajmondashllaku">
+        <img src="https://github.com/rajmondashllaku.png" width="100px;" alt="Rajmonda Shllaku"/><br />
+        <sub><b>Rajmondë Shllaku</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/endritavllasaliu16">
+        <img src="https://github.com/endritavllasaliu16.png" width="100px;" alt="Endrit Vllasaliu"/><br />
+        <sub><b>Endrita Vllasaliu</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/fletamujaj">
+        <img src="https://github.com/fletamujaj.png" width="100px;" alt="Fleta Mujaj"/><br />
+        <sub><b>Fleta Mujaj</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
