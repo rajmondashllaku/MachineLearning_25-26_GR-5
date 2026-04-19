@@ -465,7 +465,13 @@ class SupervisedAirQualityModel:
 
 def main():
     """Funksioni kryesor"""
-    # Shtegu i dataset-it
+    # 1. Gjej në mënyrë dinamike rrënjën e projektit (3 nivele sipër këtij skripti)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    # 2. Ndrysho "Working Directory" që çdo shteg relativ të nisë nga rrënja e projektit
+    os.chdir(BASE_DIR)
+
+    # 3. Tani shtegu origjinal do të funksionojë në mënyrë perfekte!
     data_path = 'Datasetet/ml_ready_dataset/kosova_global_ml_data.csv'
 
     # Krijo dhe ekzekuto modelin

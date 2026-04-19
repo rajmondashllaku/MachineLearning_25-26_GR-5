@@ -65,7 +65,7 @@ def evaluate_supervised(models):
         name = m.get('model_name', m.get('model', 'Model i Panjohur'))
         metrics = m.get('metrics', m)
 
-        r2 = metrics.get('R2', metrics.get('r2_score', metrics.get('r2', 0)))
+        r2 = metrics.get('R²', metrics.get('R2', metrics.get('r2_score', metrics.get('r2', 0))))
         mae = metrics.get('MAE', metrics.get('mae', 0))
         rmse = metrics.get('RMSE', metrics.get('rmse', 0))
 
@@ -97,7 +97,7 @@ def evaluate_supervised(models):
                  f'{width:.4f}', va='center', fontsize=11, fontweight='bold', color='#333333')
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'eval_r2_comparison4.png', dpi=300)
+    plt.savefig(OUTPUT_DIR / 'eval_r2_comparison5.png', dpi=300)
     plt.close()
 
     df_errors = df_metrics.melt(id_vars=['Modeli'], value_vars=['MAE', 'RMSE'],
@@ -117,7 +117,7 @@ def evaluate_supervised(models):
                      f'{width:.2f}', va='center', fontsize=10, fontweight='bold', color='black')
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'eval_error_comparison4.png', dpi=300)
+    plt.savefig(OUTPUT_DIR / 'eval_error_comparison5.png', dpi=300)
     plt.close()
 
     print(f"\n   -> Grafiqet e Modeleve Supervised u ruajtën në '{OUTPUT_DIR.name}'")

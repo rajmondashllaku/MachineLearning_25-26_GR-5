@@ -474,9 +474,9 @@ Per te parashikuar nivelet e `PM2.5`, skripta `model_evaluation.py` lexon artefa
 
 | Krahasimi i Saktesise ($R^2$ Score) | Krahasimi i Gabimeve (MAE & RMSE) |
 |:---:|:---:|
-| ![R2 Comparison](images/eval_r2_comparison4.png) | ![Error Comparison](images/eval_error_comparison4.png) |
+| ![R2 Comparison](images/eval_r2_comparison5.png) | ![Error Comparison](images/eval_error_comparison5.png) |
 
-* **Gjetja:** Sipas output-it aktual te `model_evaluation.py`, `XGBoost Regressor` mbetet modeli me i mire supervised me `R² = 0.8413`, `MAE = 2.08` dhe `RMSE = 3.20`. `Random Forest Regressor` tashme eshte shume afer me `R² = 0.8283`, `MAE = 2.17` dhe `RMSE = 3.33`, ndersa `Linear Regression` dhe `Ridge Regression` paraqiten ne grafikun final me `R² = 0.0000` dhe me gabime dukshem me te larta. Pra, fotot e reja tregojne nje gare shume me te ngushte mes `XGBoost` dhe `Random Forest` sesa me pare.
+* **Gjetja:** Sipas output-it aktual te `model_evaluation.py`, `XGBoost Regressor` mbetet modeli me i mire supervised me `R² = 0.8413`, `MAE = 2.08` dhe `RMSE = 3.20`. `Random Forest Regressor` tashme eshte shume afer me `R² = 0.8283`, `MAE = 2.17` dhe `RMSE = 3.33`, ndersa `Linear Regression` dhe `Ridge Regression` paraqiten ne grafikun final me `R² = 0.3800` dhe me gabime dukshem me te larta. Pra, fotot e reja tregojne nje gare shume me te ngushte mes `XGBoost` dhe `Random Forest` sesa me pare.
 
 #### B. Sinergjia mes Parashikimit dhe Zbulimit (Supervised + Unsupervised)
 1.  **Parashikimi:** `XGBoost` dhe `Random Forest` perdoren per parashikimin e `PM2.5`.
