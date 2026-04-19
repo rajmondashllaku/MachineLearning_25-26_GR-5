@@ -97,7 +97,7 @@ def trajner_xgboost(file_path):
     plt.xlabel('Pesha (Importance Score)')
     plt.ylabel('Veçoria (Feature)')
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_feature_importance.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_feature_importance2.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 2: Actual vs Predicted
@@ -111,7 +111,7 @@ def trajner_xgboost(file_path):
     plt.legend()
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_actual_vs_predicted.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_actual_vs_predicted2.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 3: Learning Curve
@@ -128,7 +128,7 @@ def trajner_xgboost(file_path):
     plt.legend()
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_learning_curve.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_learning_curve2.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 4: Residuals (Shpërndarja e Gabimeve)
@@ -142,7 +142,7 @@ def trajner_xgboost(file_path):
     plt.legend()
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_residuals_histogram.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_residuals_histogram2.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 5: SHAP Summary

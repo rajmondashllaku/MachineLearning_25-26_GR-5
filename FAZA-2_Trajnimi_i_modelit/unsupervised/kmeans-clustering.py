@@ -55,7 +55,7 @@ def trajner_kmeans(file_path):
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
 
-    shtegu_elbow = os.path.join(folderi_imazheve, 'kmeans_elbow_method.png')
+    shtegu_elbow = os.path.join(folderi_imazheve, 'kmeans_elbow_method2.png')
     plt.savefig(shtegu_elbow, dpi=300)
     plt.close()
     print(f" -> Grafiku i Berrylit u ruajt ne: {shtegu_elbow}")
@@ -130,7 +130,7 @@ def trajner_kmeans(file_path):
     ax.set_zlabel('Ndotja PM2.5 (µg/m³)')
     legend = ax.legend(*scatter.legend_elements(), title='Grupi (Cluster)')
     ax.add_artist(legend)
-    plt.savefig(os.path.join(folderi_imazheve, 'kmeans_clusters_3d.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(folderi_imazheve, 'kmeans_clusters_3d2.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Bar charts per profilet
@@ -141,7 +141,7 @@ def trajner_kmeans(file_path):
     profili['wind_speed_10m'].plot(kind='bar', ax=axes[1, 0], color='#99ff99', edgecolor='black')
     profili['pm2_5'].plot(kind='bar', ax=axes[1, 1], color='#ffcc99', edgecolor='black')
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'kmeans_cluster_profiles_bars.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'kmeans_cluster_profiles_bars2.png'), dpi=300)
     plt.close()
 
     print("\n" + "=" * 50)

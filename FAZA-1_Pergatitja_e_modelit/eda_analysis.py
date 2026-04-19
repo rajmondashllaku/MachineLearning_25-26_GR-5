@@ -53,9 +53,9 @@ def vizualizo_korrelacionin_global(file_path, output_dir):
     plt.xticks(rotation=45, ha='right', fontsize=10)
     plt.yticks(fontsize=10)
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'korrelacioni_global.png'), dpi=300)
+    plt.savefig(os.path.join(output_dir, 'korrelacioni_global2.png'), dpi=300)
     plt.close()
-    print(f"   -> U ruajt: korrelacioni_global.png")
+    print(f"   -> U ruajt: korrelacioni_global2.png")
 
 
 def vizualizo_global(file_path, output_dir):
