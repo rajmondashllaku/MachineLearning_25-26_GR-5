@@ -1,34 +1,9 @@
 RANDOM FOREST REGRESSOR - REZULTATET
 ==================================================
 
-Dataseti: 164376 rreshta, 18 kolona
+MODEL A (me Leakage):
+  MAE: 0.7665 | RMSE: 1.2123 | R²: 0.9772
 
-MODEL A (me PM10 - baseline):
-  MAE:  1.4285
-  RMSE: 2.1224
-  R²:   0.9285
+MODEL B (Modeli Kryesor):
+  MAE: 2.1695 | RMSE: 3.3254 | R²: 0.8283
 
-MODEL B (pa PM10 - modeli kryesor):
-  MAE:  4.4296
-  RMSE: 6.4894
-  R²:   0.3317
-
-Cross-Validation (5-Fold):
-  Mean R²: 0.3591 ± 0.0526
-
-Feature Importance (Model B):
-  pm2_5_lag_1h              0.2633
-  surface_pressure          0.0988
-  wind_speed_10m            0.0949
-  temp_x_wind               0.0902
-  temperature_2m            0.0833
-  hour                      0.0780
-  pm2_5_lag_24h             0.0606
-  humidity_x_heating        0.0534
-  month                     0.0522
-  relative_humidity_2m      0.0410
-  temp_x_humidity           0.0390
-  day_of_week               0.0271
-  qyteti                    0.0108
-  sezoni_i_ngrohjes         0.0043
-  is_weekend                0.0031

@@ -307,123 +307,124 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 6.  **`kmeans-clustering.py`**: Klasterizimi i profileve te ajrit me `K=4`, gjenerimi i grafikut `Elbow` dhe i profileve 3D/mesatare.
 7.  **`model_evaluation.py`**: Lexon artefaktet `JSON` nga `Modelet/` dhe krijon krahasimin final te modeleve supervised dhe raportin permbledhes per unsupervised.
 
+
 ## Vizualizimet
 ### 1. Supervised Learning: Parashikimi i Ndotjes (PM2.5)
 #### 1. Modelet Lineare (Linear & Ridge Regression - Baseline)
 
-**Çfarë bën algoritmi?** Modelon lidhje lineare mes veçorive hyrëse dhe `PM2.5`, pa kapur drejtpërdrejt ndërveprime komplekse jo-lineare.
+**Cfare ben algoritmi?** Modelon lidhje lineare mes vecorive hyrese dhe `PM2.5`, pa kapur drejtperdrejt nderveprime komplekse jo-lineare.
 
-**Si e përdorëm ne?** E përdorëm si baseline për të krahasuar më pas modelet `tree-based`. Në implementimin aktual, `pm10` hiqet nga input-et, `month` trajtohet si veçori kategorike dhe `Ridge Regression` optimizohet me `GridSearchCV`.
+**Si e perdorem ne?** E perdorem si baseline per ta krahasuar me pas me modelet `tree-based`. Ne implementimin aktual, `pm10` hiqet nga input-et, `month` trajtohet si vecori kategorike dhe `Ridge Regression` optimizohet me `GridSearchCV`.
 
 **A. Performanca dhe krahasimi i baseline-it**
 
-| Krahasimi i Saktësisë (Scatter Plot) | Metrikat Vlerësuese (Bar Chart) |
+| Krahasimi i Saktesise (Scatter Plot) | Metrikat Vleresuese (Bar Chart) |
 |:---:|:---:|
 | ![Linear Scatter](images/ridge-linear-model_comparison_scatter.png) | ![Linear Metrics](images/ridge-linear-model_metrics_comparison.png) |
 
-* **Gjetja:** Dy grafiqet tregojnë se `Linear Regression` dhe `Ridge Regression` kanë sjellje pothuajse identike në artefaktet aktuale. Sipas rezultateve të ruajtura në `Modelet/`, të dy modelet japin rreth `MAE ≈ 6.74`, `RMSE ≈ 10.21` dhe `R² ≈ 0.376`, prandaj shërbejnë si pikë reference dhe jo si modele finale.
+* **Gjetja:** Dy grafiqet tregojne se `Linear Regression` dhe `Ridge Regression` kane sjellje pothuajse identike ne baseline. Sipas artefakteve te tyre individuale, te dy modelet japin rreth `MAE ≈ 6.74`, `RMSE ≈ 10.21` dhe `R² ≈ 0.376`, prandaj sherbejne si pike reference dhe jo si modele finale.
 
-**B. Pesha e faktorëve (Feature Importance)**
+**B. Pesha e faktoreve (Feature Importance)**
 
-| Rëndësia e Veçorive (Ridge Regression) |
+| Rendesia e Vecorive (Ridge Regression) |
 |:---:|
 | ![Ridge Feature Importance](images/feature_importance_ridge_regression2.png) |
 
-* **Gjetja:** Ky grafik paraqet madhësinë absolute të koeficientëve të `Ridge Regression` pas preprocessing-ut. Në output-in aktual, peshë më të lartë marrin grupet sezonale/kohore dhe faktorë si `surface_pressure`, `wind_speed_10m`, `qyteti` dhe `sezoni_i_ngrohjes`.
+* **Gjetja:** Ky grafik paraqet madhesine absolute te koeficienteve te `Ridge Regression` pas preprocessing-ut. Ne output-in aktual, peshe me te larte marrin grupet sezonale dhe kohore, bashke me faktore si `surface_pressure`, `wind_speed_10m`, `qyteti` dhe `sezoni_i_ngrohjes`.
 
 #### 2. Random Forest Regressor (Menaxhimi i Data Leakage dhe Serive Kohore)
 
-**Çfarë bën algoritmi?** Ndërton shumë pemë vendimi dhe kombinon parashikimet e tyre për të kapur marrëdhënie jo-lineare dhe ndërveprime mes veçorive.
+**Cfare ben algoritmi?** Nderton shume peme vendimi dhe kombinon parashikimet e tyre per te kapur marredhenie jo-lineare dhe nderveprime mes vecorive.
 
-**Si e përdorëm ne?** Në skriptën aktuale ndërtohen dy versione: `Model A` me `PM10` dhe `Model B` pa `PM10`. Për të dyja përdoret ndarje kohore `80/20`, ndërsa për `Model B` shtohet edhe `TimeSeriesSplit` për validim.
+**Si e perdorem ne?** Ne skripten aktuale ndertohen dy versione: `Model A` me `PM10` dhe `pm2_5_lag_1h`, dhe `Model B` pa `PM10`, pa `pm2_5_lag_1h`, por me `pm2_5_rolling_6h` dhe `pm2_5_lag_24h`. Per te dyja perdoret ndarje kohore `80/20`, ndersa per `Model B` shtohet edhe `TimeSeriesSplit` per validim.
 
 **A. Krahasimi i Modelit A vs Modelit B**
 
 | Metrikat: Me PM10 vs Pa PM10 | Actual vs Predicted (Krahasimi) |
 |:---:|:---:|
-| ![RF Comparison](images/rf_model_comparison.png) | ![RF Actual vs Predicted](images/rf_actual_vs_predicted.png) |
+| ![RF Comparison](images/rf_model_comparison1.png) | ![RF Actual vs Predicted](images/rf_actual_vs_predicted1.png) |
 
-* **Gjetja:** Grafiku i majtë krahason `MAE`, `RMSE` dhe `R²` për dy versionet e modelit. Në artefaktet aktuale, `Model A` arrin `R² = 0.9285`, por kjo konsiderohet `data leakage` sepse përdor `PM10`; `Model B`, që është varianti real i parashikimit, jep `R² = 0.3317`, `MAE = 4.4296` dhe `RMSE = 6.4894`.
+* **Gjetja:** Grafiku i majte krahason `MAE`, `RMSE` dhe `R²` per dy versionet e modelit. Ne artefaktet aktuale, `Model A` arrin `MAE = 0.767`, `RMSE = 1.212` dhe `R² = 0.9772`, por kjo konsiderohet `data leakage` sepse perdor informacion shume afer target-it. `Model B`, qe eshte varianti real i parashikimit, jep `R² = 0.8283`, `MAE = 2.1695` dhe `RMSE = 3.3254`, pra nje permiresim shume i madh ndaj versionit te meparshem te Random Forest.
 
-**B. Analiza e faktorëve dhe gabimeve (Modeli B)**
+**B. Analiza e faktoreve dhe gabimeve (Modeli B)**
 
-| Pesha e Veçorive (Feature Importance) | Shpërndarja e Gabimeve (Residuals) |
+| Pesha e Vecorive (Feature Importance) | Shperndarja e Gabimeve (Residuals) |
 |:---:|:---:|
-| ![RF Features](images/rf_feature_importance.png) | ![RF Residuals](images/rf_residuals.png) |
+| ![RF Features](images/rf_feature_importance1.png) | ![RF Residuals](images/rf_residuals1.png) |
 
-* **Gjetja:** Grafiku i rëndësisë tregon se në modelin aktual ndikimi më i madh vjen nga `pm2_5_lag_1h`, pasuar nga `surface_pressure`, `wind_speed_10m`, `temp_x_wind` dhe `temperature_2m`. Histograma e residualeve tregon shpërndarjen e gabimeve të `Model B` rreth zeros dhe shërben për të parë sa simetrike janë devijimet e parashikimit.
+* **Gjetja:** Grafiku i rendesise tregon se ne modelin aktual ndikimi me i madh vjen qarte nga `pm2_5_rolling_6h`, pasuar nga `hour` dhe `pm2_5_lag_24h`; pas tyre vijne `wind_speed_10m`, `surface_pressure` dhe `temp_x_wind`. Histograma e residualeve tregon se gabimet e `Model B` jane te perqendruara rreth zeros, me `Mean = -0.53` dhe `Std = 3.28`, por me bisht me te gjate ne anen negative, qe tregon disa nenvleresime ne rastet me te renda.
 
-#### 3. XGBoost Regressor (Modeli Kampion dhe Explainable AI)
+#### 3. XGBoost Regressor (Modeli Kryesor dhe Explainable AI)
 
-**Çfarë bën algoritmi?** Ndërton pemë në mënyrë sekuenciale për të korrigjuar gabimet e iteracioneve të mëparshme, duke synuar performancë më të lartë në të dhëna komplekse.
+**Cfare ben algoritmi?** Nderton peme vendimi ne menyre sekuenciale, ku cdo iteracion korrigjon gabimet e atij paraprak, prandaj arrin te kap marredhenie shume me komplekse se modelet lineare.
 
-**Si e përdorëm ne?** Skripta aktuale krijon `lag features`, `interaction features`, aplikon `StandardScaler`, përdor `temporal split` dhe ruan si modelin final, ashtu edhe metrikat dhe vizualizimet analitike.
+**Si e perdorem ne?** Skripta e perditesuar fillimisht e kthen kolonen `time` ne `datetime`, i rendit te dhenat sipas `qyteti` dhe `time`, krijon `pm2_5_rolling_6h_avg`, `pm2_5_lag_24h` dhe `interaction features`, mban ne input edhe `sezoni_i_ngrohjes`, aplikon `StandardScaler` dhe trajnon modelin me `temporal split` (`80%` e kaluara per trajnim, `20%` e ardhmja per testim).
 
-**A. Performanca dhe saktësia e parashikimit**
+**A. Performanca dhe saktesia e parashikimit**
 
-| Tabela e Metrikave Përfundimtare | Vlerat Reale vs Parashikimet |
+| Tabela e Metrikave Perfundimtare | Vlerat Reale vs Parashikimet |
 |:---:|:---:|
-| ![XGBoost Metrics](images/xgboost_metrics_table3.png) | ![XGB Actual](images/xgboost_actual_vs_predicted3.png) |
+| ![XGBoost Metrics](images/xgboost_metrics_table4.png) | ![XGB Actual](images/xgboost_actual_vs_predicted4.png) |
 
-* **Gjetja:** Sipas artefakteve aktuale, `XGBoost Regressor` arrin `R² = 0.3607`, `MAE = 4.3586` dhe `RMSE = 6.3469`. Scatter-i i djathtë tregon se parashikimet ndjekin më mirë vijën ideale se baseline-i linear.
+* **Gjetja:** Sipas figurave dhe metrikave te reja, `XGBoost Regressor` arrin `R² = 0.8413`, `MAE = 2.0813 µg/m³` dhe `RMSE = 3.1967 µg/m³`. Scatter-i ne te djathte tregon se modeli vazhdon ta ndjeke mire trendin e vlerave reale, por me nje shperndarje me te madhe te pikave sesa versioni paraprak, sidomos te vlerat me te larta te `PM2.5`.
 
-**B. Analiza e gabimit dhe procesi i të mësuarit**
+**B. Analiza e gabimit dhe procesi i te mesuarit**
 
-| Kurba e të Mësuarit (Learning Curve) | Shpërndarja e Gabimeve (Residuals) |
+| Kurba e te Mesuarit (Learning Curve) | Shperndarja e Gabimeve (Residuals) |
 |:---:|:---:|
-| ![XGBoost Learning](images/xgboost_learning_curve3.png) | ![XGBoost Residuals](images/xgboost_residuals_histogram3.png) |
+| ![XGBoost Learning](images/xgboost_learning_curve4.png) | ![XGBoost Residuals](images/xgboost_residuals_histogram4.png) |
 
-* **Gjetja:** Grafiku i `Learning Curve` paraqet `RMSE` në trajnim dhe testim përgjatë numrit të pemëve, ndërsa histograma e residualeve tregon shpërndarjen e diferencës `reale - e parashikuar` në setin e testit.
+* **Gjetja:** `Learning Curve` tregon se gabimi bie shpejt ne iteracionet e para dhe me pas stabilizohet, ku kurba e testimit afrohet rreth `RMSE ≈ 3.2`. Histograma e residualeve mbetet e perqendruar rreth zeros, por eshte me e gjere se me pare dhe ka bishta me te dukshem ne te dy anet, qe tregon se modeli ende ben disa devijime me te medha ne rastet me te veshtira.
 
-**C. Hapja e "Kutisë së Zezë" (Explainable AI)**
+**C. Hapja e "Kutise se Zeze" (Explainable AI)**
 
-| Si ndikojnë faktorët (SHAP Summary Plot) | Pesha e Veçorive (Feature Importance) |
+| Si ndikojne faktoret (SHAP Summary Plot) | Pesha e Vecorive (Feature Importance) |
 |:---:|:---:|
-| ![SHAP](images/xgboost_shap_summary3.png) | ![XGB Feature Importance](images/xgboost_feature_importance3.png) |
+| ![SHAP](images/xgboost_shap_summary4.png) | ![XGB Feature Importance](images/xgboost_feature_importance4.png) |
 
-* **Gjetja:** `SHAP Summary Plot` i majtë tregon drejtimin dhe madhësinë e ndikimit të çdo veçorie në parashikimet e modelit global të testuar, ndërsa grafiku i djathtë rendit rëndësinë relative të veçorive sipas `XGBoost`. Në këtë implementim, veçoritë meteorologjike, `lag`-et e `PM2.5` dhe interaction features janë pjesë e input-it final.
+* **Gjetja:** Te dy figurat tregojne qarte se `pm2_5_rolling_6h_avg` eshte faktori dominues ne modelin e ri. Ne `Feature Importance`, kjo vecori ka peshen me te larte, larg mbi te tjerat; pas saj vijne `hour`, `pm2_5_lag_24h`, `sezoni_i_ngrohjes` dhe `temp_x_wind`. Ne `SHAP Summary Plot`, vlerat e larta te `pm2_5_rolling_6h_avg` shtyjne fort parashikimin drejt vlerave me te larta te `PM2.5`, ndersa `hour` dhe `pm2_5_lag_24h` japin ndikim dytësor por te dukshem ne nje pjese te observimeve.
 
-| Logjika Ilustruese e Pemës së Vendimit |
+| Logjika Ilustruese e Pemes se Vendimit |
 |:---:|
 | ![Decision Tree Logic](images/decision_tree_logic_sklearn2.png) |
 
-* **Gjetja:** Kjo figurë ilustron logjikën bazë të një peme vendimi, duke ndihmuar në interpretimin intuitiv të mënyrës si funksionojnë modelet `tree-based` në këtë fazë.
+* **Gjetja:** Kjo figure ilustron logjiken baze te nje peme vendimi, duke ndihmuar ne interpretimin intuitiv te menyres si funksionojne modelet `tree-based` ne kete faze.
 
 ### 2. Unsupervised Learning: Zbulimi i Strukturave dhe Anomalive
 
 #### 1. PCA (Reduktimi i Dimensioneve)
 
-**Çfarë bën algoritmi?** Kompreson një grup veçorish numerike në komponentë kryesorë që ruajnë sa më shumë variancë nga të dhënat origjinale.
+**Cfare ben algoritmi?** Kompreson nje grup vecorish numerike ne komponente kryesore qe ruajne sa me shume variance nga te dhenat origjinale.
 
-**Si e përdorëm ne?** Në skriptën aktuale, PCA aplikohet vetëm mbi `temperature_2m`, `relative_humidity_2m`, `surface_pressure` dhe `wind_speed_10m`, pas standardizimit me `StandardScaler`.
+**Si e perdorem ne?** Ne skripten aktuale, PCA aplikohet vetem mbi `temperature_2m`, `relative_humidity_2m`, `surface_pressure` dhe `wind_speed_10m`, pas standardizimit me `StandardScaler`.
 
-| Përqindja e Variancës së Shpjeguar | Diferencimi Gjeografik në 2D (Scatter Plot) |
+| Perqindja e Variances se Shpjeguar | Diferencimi Gjeografik ne 2D (Scatter Plot) |
 |:---:|:---:|
 | ![PCA Variance](images/pca_explained_variance.png) | ![PCA Scatter](images/pca_scatter_cities.png) |
 
-* **Gjetja:** Grafiku i majtë tregon sa variancë shpjegon secili komponent dhe variancën kumulative. Në artefaktet aktuale ruhen `4` komponentë, sepse me 3 komponentë varianca kumulative arrin rreth `91%`, ndërsa me 4 arrin praktikisht `100%`. Scatter-i i djathtë paraqet `PC1` kundrejt `PC2`, të ngjyrosura sipas kolonës `qyteti`.
+* **Gjetja:** Grafiku i majte tregon sa variance shpjegon secili komponent dhe variancen kumulative. Ne artefaktet aktuale ruhen `4` komponente, sepse me 3 komponente varianca kumulative arrin rreth `91%`, ndersa me 4 arrin praktikisht `100%`. Scatter-i i djathte paraqet `PC1` kundrejt `PC2`, te ngjyrosura sipas kolones `qyteti`.
 
 #### 2. Isolation Forest (Zbulimi i Anomalive dhe Rreziqeve Ekstreme)
 
-**Çfarë bën algoritmi?** Izolon pikat që dallojnë nga shpërndarja normale e të dhënave dhe u atribuon një `anomaly score`.
+**Cfare ben algoritmi?** Izolon pikat qe dallojne nga shperndarja normale e te dhenave dhe u atribuon nje `anomaly score`.
 
-**Si e përdorëm ne?** Skripta aktuale trajnon një model `Global` dhe një model `Per-City`, me contamination të përshtatur për secilin qytet (`7%` për Prishtinë, `5%` për Prizren dhe `3%` për Pejë), pastaj eksporton anomalitë në `Datasetet/ml_ready_dataset/anomalies_detected.csv`.
+**Si e perdorem ne?** Skripta aktuale trajnon nje model `Global` dhe nje model `Per-City`, me contamination te pershtatur per secilin qytet (`7%` per Prishtinen, `5%` per Prizren dhe `3%` per Pejen), pastaj eksporton anomalite ne `Datasetet/ml_ready_dataset/anomalies_detected.csv`.
 
-**A. Krahasimi sipas qytetit dhe shpërndarja e score-ve**
+**A. Krahasimi sipas qytetit dhe shperndarja e score-ve**
 
-| Anomalitë sipas Qyteteve | Shpërndarja e Rezultatit të Anomalisë |
+| Anomalite sipas Qyteteve | Shperndarja e Rezultatit te Anomalise |
 |:---:|:---:|
 | ![Per City Anomalies](images/if_anomalies_per_city.png) | ![Score Distribution](images/if_score_distribution_per_city.png) |
 
-* **Gjetja:** Grafiku i majtë tregon ndarjen `normal/anomali` për secilin qytet me pragun e tij `Per-City`, ndërsa histogramat e djathta tregojnë shpërndarjen e `score_percity`. Në rezultatet aktuale, modeli `Per-City` gjen gjithsej `8224` anomali, rreth `5.0%` të dataset-it.
+* **Gjetja:** Grafiku i majte tregon ndarjen `normal/anomali` per secilin qytet me pragun e tij `Per-City`, ndersa histogramat e djathta tregojne shperndarjen e `score_percity`. Ne rezultatet aktuale, modeli `Per-City` gjen gjithsej `8224` anomali, rreth `5.0%` te dataset-it.
 
-**B. Severity scoring dhe shpërndarja kohore**
+**B. Severity scoring dhe shperndarja kohore**
 
-| Nivelet e Rrezikshmërisë (PM2.5 vs PM10) | Harta Kohore e Rreziqeve të Larta |
+| Nivelet e Rrezikshmerise (PM2.5 vs PM10) | Harta Kohore e Rreziqeve te Larta |
 |:---:|:---:|
 | ![Severity Anomalies](images/if_anomalies_severity.png) | ![Severity Heatmap](images/if_severity_heatmap.png) |
 
-* **Gjetja:** Scatter-i i majtë ngjyros anomalitë sipas kategorive të `severity` që përdor implementimi aktual. Heatmap-i i djathtë grumbullon anomalitë më të rënda sipas muajit dhe orës, duke treguar kur përqendrohen rastet me rrezik më të lartë.
+* **Gjetja:** Scatter-i i majte ngjyros anomalite sipas kategorive te `severity` qe perdor implementimi aktual. Heatmap-i i djathte grumbullon anomalite me te renda sipas muajit dhe ores, duke treguar kur perqendrohen rastet me rrezik me te larte.
 
 **C. Krahasimi mujor i dy qasjeve**
 
@@ -431,80 +432,80 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 |:---:|
 | ![Monthly Comparison](images/if_anomalies_monthly_comparison.png) | 
 
-* **Gjetja:** Ky grafik krahason numrin e anomalive mujore që gjenden nga modeli `Global` kundrejt modelit `Per-City`, duke e bërë më të dukshme se ku ndryshojnë dy strategjitë e detektimit.
+* **Gjetja:** Ky grafik krahason numrin e anomalive mujore qe gjenden nga modeli `Global` kundrejt modelit `Per-City`, duke e bere me te dukshme se ku ndryshojne dy strategjite e detektimit.
 
-#### 3. K-Means Clustering (Zbulimi i Profileve Klimatike të Ndotjes)
+#### 3. K-Means Clustering (Zbulimi i Profileve Klimatike te Ndotjes)
 
-**Çfarë bën algoritmi?** Ndan të dhënat në klastera sipas ngjashmërisë së tyre në hapësirën e veçorive.
+**Cfare ben algoritmi?** Ndan te dhenat ne klastera sipas ngjashmerise se tyre ne hapesiren e vecorive.
 
-**Si e përdorëm ne?** Skripta aktuale përdor `temperature_2m`, `relative_humidity_2m`, `wind_speed_10m` dhe `pm2_5`, i standardizon me `StandardScaler`, llogarit `Elbow Method`, teston `Silhouette Score` në konsolë dhe trajnon modelin final me `K=4`.
+**Si e perdorem ne?** Skripta aktuale perdor `temperature_2m`, `relative_humidity_2m`, `wind_speed_10m` dhe `pm2_5`, i standardizon me `StandardScaler`, llogarit `Elbow Method`, teston `Silhouette Score` ne console dhe trajnon modelin final me `K=4`.
 
-**A. Optimizimi i numrit të grupeve**
+**A. Optimizimi i numrit te grupeve**
 
-| Metoda e Bërrylit (Elbow Method) | Silhouette Score |
+| Metoda e Berrylit (Elbow Method) | Silhouette Score |
 |:---:|:---:|
 | ![Elbow Method](images/kmeans_elbow_method2.png)  | ![Monthly Comparison](images/kmeans_silhouette_score2.png) |
 
-* **Gjetja:** Skripta aktuale ruan si figurë vetëm grafikun `Elbow Method`, ndërsa `Silhouette Score` llogaritet gjatë ekzekutimit dhe printohet në terminal. Vlera finale e përdorur nga implementimi është `K=4`.
+* **Gjetja:** Figura e majte tregon piken ku permiresimi fillon te ngadalesohet me rritjen e `K`, ndersa figura e djathte ilustron cilesine e ndarjes se klasterave sipas `Silhouette Score`. Ne implementimin aktual vlera finale e perdorur per trajnim mbetet `K=4`.
 
-**B. Ndarja hapësinore dhe karakteristikat e profileve**
+**B. Ndarja hapesinore dhe karakteristikat e profileve**
 
-| Shpërndarja 3D e Profileve | Scatter: Temperatura vs PM2.5 |
+| Shperndarja 3D e Profileve | Scatter: Temperatura vs PM2.5 |
 |:---:|:---:|
 | ![3D Clusters](images/kmeans_clusters_3d2.png) | ![KMeans Scatter](images/kmeans_clusters_scatter2.png) |
 
-* **Gjetja:** Grafiku 3D jep pamjen hapësinore të klasterave, ndërsa scatter-i `temperature` kundrejt `PM2.5` tregon qartë profilin me ndotje më të lartë.
+* **Gjetja:** Grafiku 3D jep pamjen hapesinore te klasterave, ndersa scatter-i `temperature` kundrejt `PM2.5` tregon qarte profilin me ndotje me te larte.
 
-| Karakteristikat Mesatare (Bar Plots) | Shpërndarja brenda Grupeve (Boxplots) |
+| Karakteristikat Mesatare (Bar Plots) | Shperndarja brenda Grupeve (Boxplots) |
 |:---:|:---:|
 | ![Cluster Profiles](images/kmeans_cluster_profiles_bars2.png) | ![Cluster Boxplots](images/kmeans_cluster_boxplots2.png) |
 
-* **Gjetja:** Bar plot-et përmbledhin mesataret për secilin klaster, ndërsa boxplot-et tregojnë variacionin dhe ekstremet brenda secilit grup për të katër veçoritë.
+* **Gjetja:** Bar plot-et permbledhin mesataret per secilin klaster, ndersa boxplot-et tregojne variacionin dhe ekstremet brenda secilit grup per te kater vecorite.
 
-* **Analiza e Profileve të Zbuluara:**
-    1.  **Ditët e Nxehta dhe të Pastra (Vera):** Temperatura të larta, lagështi e ulët, ajër tepër i pastër.
-    2.  **Ditët e Ftohta dhe me Erë (Dimër i Pastruar):** Ndonëse bën ftohtë, shpejtësia e lartë e erës e ka shpërndarë ndotjen.
-    3.  **Ditët e Ftohta, të Lagështa dhe të Qeta (Smogu Ekstrem):** Profili më kritik. Temperatura të ulëta, mungesë ere dhe lagështi e lartë. Ndotja bllokohet pranë sipërfaqes (Inversioni Termik).
-    4.  **Ditët Tranzitore (Pranverë/Vjeshtë):** Kushte mesatare klimatike me nivele mesatare-të ulëta të ndotjes.
+* **Analiza e Profileve te Zbuluara:**
+1.  **Ditet e Nxehta dhe te Pastra (Vera):** Temperatura te larta, lageshti e ulet, ajer me i paster.
+2.  **Ditet e Ftohta dhe me Ere (Dimer i Pastruar):** Ndonese ben ftohte, shpejtesia e larte e eres e ka shperndare ndotjen.
+3.  **Ditet e Ftohta, te Lageshta dhe te Qeta (Smogu Ekstrem):** Profili me kritik, ku ndotja bllokohet prane siperfaqes.
+4.  **Ditet Tranzitore (Pranvere/Vjeshte):** Kushte mesatare klimatike me nivele mesatare ose me te ulta te ndotjes.
   
-### 3. Krahasimi i Modeleve dhe Vlerësimi Përfundimtar
+### 3. Krahasimi i Modeleve dhe Vleresimi Perfundimtar
 ### A. Supervised Learning (Parashikimi)
-Për të parashikuar nivelet e `PM2.5`, skripta `model_evaluation.py` lexon artefaktet `JSON` në `Modelet/` dhe krijon dy grafiqe krahasuese për modelet supervised:
+Per te parashikuar nivelet e `PM2.5`, skripta `model_evaluation.py` lexon artefaktet `JSON` ne `Modelet/` dhe krijon dy grafiqe krahasuese per modelet supervised:
 
-| Krahasimi i Saktësisë ($R^2$ Score) | Krahasimi i Gabimeve (MAE & RMSE) |
+| Krahasimi i Saktesise ($R^2$ Score) | Krahasimi i Gabimeve (MAE & RMSE) |
 |:---:|:---:|
-| ![R2 Comparison](images/eval_r2_comparison3.png) | ![Error Comparison](images/eval_error_comparison3.png) |
+| ![R2 Comparison](images/eval_r2_comparison4.png) | ![Error Comparison](images/eval_error_comparison4.png) |
 
-* **Gjetja:** Në artefaktet aktuale të ruajtura, `XGBoost Regressor` del modeli më i mirë supervised me `R² = 0.3607`, `MAE = 4.3586` dhe `RMSE = 6.3469`, ndërsa `Random Forest Regressor` ndjek afër me `MAE = 4.4296` dhe `RMSE = 6.4894`. Modelet lineare mbeten baseline për krahasim.
+* **Gjetja:** Sipas output-it aktual te `model_evaluation.py`, `XGBoost Regressor` mbetet modeli me i mire supervised me `R² = 0.8413`, `MAE = 2.08` dhe `RMSE = 3.20`. `Random Forest Regressor` tashme eshte shume afer me `R² = 0.8283`, `MAE = 2.17` dhe `RMSE = 3.33`, ndersa `Linear Regression` dhe `Ridge Regression` paraqiten ne grafikun final me `R² = 0.0000` dhe me gabime dukshem me te larta. Pra, fotot e reja tregojne nje gare shume me te ngushte mes `XGBoost` dhe `Random Forest` sesa me pare.
 
 #### B. Sinergjia mes Parashikimit dhe Zbulimit (Supervised + Unsupervised)
-1.  **Parashikimi:** `XGBoost` dhe `Random Forest` përdoren për parashikimin e `PM2.5`.
-2.  **Anomalitë:** `Isolation Forest` identifikon rastet jo-tipike dhe i eksporton për analizë të mëtejshme.
-3.  **Profilizimi:** `K-Means` ndan observimet në profile të ndryshme klimatike/ndotjeje.
-4.  **Kompresimi i veçorive:** `PCA` përdoret për të përmbledhur sjelljen e kolonave meteorologjike në komponentë kryesorë.
+1.  **Parashikimi:** `XGBoost` dhe `Random Forest` perdoren per parashikimin e `PM2.5`.
+2.  **Anomalite:** `Isolation Forest` identifikon rastet jo-tipike dhe i eksporton per analize te metejshme.
+3.  **Profilizimi:** `K-Means` ndan observimet ne profile te ndryshme klimatike ose te ndotjes.
+4.  **Kompresimi i vecorive:** `PCA` perdoret per te permbledhur sjelljen e kolonave meteorologjike ne komponente kryesore.
 
-#### C. Matrica Përfundimtare e Përzgjedhjes
+#### C. Matrica Perfundimtare e Perzgjedhjes
 
-| Algoritmi | Roli Përfundimtar | Pse ky algoritëm? |
+| Algoritmi | Roli Perfundimtar | Pse ky algoritëm? |
 | :--- | :--- | :--- |
-| **XGBoost** | **Modeli Kryesor (Production)** | Performanca më e lartë supervised në artefaktet aktuale dhe shpjegueshmëri përmes `SHAP`. |
-| **Random Forest** | **Modeli Krahasues Kryesor** | Shpjegon mirë rëndësinë e veçorive dhe demonstron qartë efektin e `data leakage`. |
+| **XGBoost** | **Modeli Kryesor (Production)** | Performanca me e larte supervised ne output-in e ri dhe shpjegueshmeri permes `SHAP`. |
+| **Random Forest** | **Modeli Krahasues Kryesor / Alternative e Forte** | Tani ka performance pothuajse ne nivelin e `XGBoost`, dhe njekohesisht demonstron qarte efektin e `data leakage`. |
 | **Isolation Forest** | **Sistemi i Alarmit** | Zbulon anomali me qasje `Per-City` dhe gjeneron `severity scoring`. |
-| **K-Means** | **Profilizimi Klimatik** | Ndan të dhënat në `4` profile të ndryshme të ajrit dhe motit. |
-| **PCA** | **Optimizimi i të Dhënave** | Redukton dimensionet meteorologjike dhe lehtëson vizualizimin në `PC1/PC2`. |
+| **K-Means** | **Profilizimi Klimatik** | Ndan te dhenat ne `4` profile te ndryshme te ajrit dhe motit. |
+| **PCA** | **Optimizimi i te Dhenave** | Redukton dimensionet meteorologjike dhe lehteson vizualizimin ne `PC1/PC2`. |
 
 ### Strategjia e Trajnimit dhe Validimit
-* **Baseline Linear/Ridge:** Përdor `train_test_split`, `ColumnTransformer` dhe `GridSearchCV` për `Ridge`.
-* **Random Forest:** Përdor `temporal split` për testim dhe `TimeSeriesSplit` për validim të modelit kryesor.
-* **XGBoost:** Përdor `temporal split` dhe ruan metrikat, `scaler`-in dhe modelin final.
-* **Parandalimi i Data Leakage:** Krahasimi `me PM10` kundrejt `pa PM10` është i ndërtuar qëllimisht në `random_forest_regressor.py`.
+* **Baseline Linear/Ridge:** Perdor `train_test_split`, `ColumnTransformer` dhe `GridSearchCV` per `Ridge`.
+* **Random Forest:** Perdor `temporal split` per testim dhe `TimeSeriesSplit` per validim te modelit kryesor.
+* **XGBoost:** Perdor renditje kronologjike sipas `time`, `temporal split`, `StandardScaler` dhe ruan metrikat, `scaler`-in dhe modelin final.
+* **Parandalimi i Data Leakage:** Krahasimi `me PM10` kundrejt `pa PM10` eshte i ndertuar qellimisht ne `random_forest_regressor.py`.
 
 ### Ruajtja e Modeleve dhe Portabiliteti
-* **Linear & Ridge Regression:** Metrikat dhe koeficientët ruhen si skedarë `JSON` në `Modelet/`.
-* **Random Forest:** Modeli final ruhet si `random_forest_pm25.joblib`, ndërsa metrikat dhe rëndësia e veçorive ruhen në `random_forest_regressor.json`.
-* **XGBoost:** Modeli ruhet në `xgboost_global_model.json`, ndërsa metrikat dhe parametrat e `scaler`-it në `xgboost_global_metrics.json`.
-* **PCA / K-Means / Isolation Forest:** Rezultatet përmbledhëse ruhen në `JSON`, ndërsa `Isolation Forest` eksporton edhe `anomalies_detected.csv`.
-* **Gatishmëria për Fazën 3:** Këto artefakte janë baza për inferencë, krahasim dhe raportim në fazat pasuese.
+* **Linear & Ridge Regression:** Metrikat dhe koeficientet ruhen si skedare `JSON` ne `Modelet/`.
+* **Random Forest:** Modeli final ruhet si `random_forest_pm25.joblib`, ndersa metrikat dhe rendesia e vecorive ruhen ne `random_forest_regressor.json`.
+* **XGBoost:** Modeli ruhet ne `xgboost_global_model.json`, ndersa metrikat dhe parametrat e `scaler`-it ne `xgboost_global_metrics.json`.
+* **PCA / K-Means / Isolation Forest:** Rezultatet permbledhese ruhen ne `JSON`, ndersa `Isolation Forest` eksporton edhe `anomalies_detected.csv`.
+* **Gatishmeria per Fazen 3:** Keto artefakte jane baza per inference, krahasim dhe raportim ne fazat pasuese.
 ---
 ## FAZA 3 : Analiza dhe Vlerësimi [Në Zhvillim]
 

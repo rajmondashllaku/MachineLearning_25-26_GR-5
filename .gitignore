@@ -15,4 +15,4 @@ Datasetet/ml_ready_dataset/prizren_ml_data.csv
 # Injoro file-t sistemike dhe cache të Python
 .DS_Store
 __pycache__/
-*.pyc
+*.pyc*.joblib
