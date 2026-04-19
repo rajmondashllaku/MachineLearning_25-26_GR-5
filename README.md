@@ -32,6 +32,7 @@
 - [Pasqyra e Projektit](#pasqyra-e-projektit)
 - [Struktura e Repozitorit](#struktura-e-repozitorit)
 - [Përshkrimi i Datasetit](#përshkrimi-i-datasetit)
+- [FAZA 1 : Përgatitja e modelit](#faza-1--përgatitja-e-modelit)
 - [FAZA 2 : Trajnimi i Modeleve (Machine Learning)](#faza-2--trajnimi-i-modeleve-machine-learning)
 - [FAZA 3 : Analiza dhe Vlerësimi [Në Zhvillim]](#faza-3--analiza-dhe-vlerësimi-në-zhvillim)
 - [Teknologjitë e Përdorura](#teknologjitë-e-përdorura)
