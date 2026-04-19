@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import xgboost as xgb
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split  # E mbajmë për çdo rast, por s'do ta përdorim
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
@@ -9,6 +9,7 @@ import seaborn as sns
 import os
 import shap
 import json
+
 
 def trajner_xgboost(file_path):
     print("==================================================")
@@ -23,23 +24,44 @@ def trajner_xgboost(file_path):
     df = pd.read_csv(file_path)
     print(f" -> Dimensioni origjinal i datasetit: {df.shape}")
 
-    # (Është hequr One-Hot Encoding për të detyruar modelin të mësojë vetëm nga moti)
+    print("\n -> Duke aplikuar Feature Engineering (Lags & Interactions)...")
 
-    # 2. Ndarja e veçorive (Features) dhe Target-it
-    # SHTUAR: 'qyteti' në listën e fshirjes
-    kolonat_per_fshirje = ['pm2_5', 'pm10', 'time', 'sezoni_i_ngrohjes', 'qyteti']
+    # Renditja kronologjike për secilin qytet për të krijuar "Lag" saktë
+    if all(col in df.columns for col in ['qyteti', 'month', 'day_of_week', 'hour']):
+        df = df.sort_values(['qyteti', 'month', 'day_of_week', 'hour']).reset_index(drop=True)
+
+    if 'qyteti' in df.columns:
+        df['pm2_5_lag_1h'] = df.groupby('qyteti')['pm2_5'].shift(1)
+        df['pm2_5_lag_24h'] = df.groupby('qyteti')['pm2_5'].shift(24)
+
+    if 'temperature_2m' in df.columns and 'wind_speed_10m' in df.columns:
+        df['temp_x_wind'] = df['temperature_2m'] * df['wind_speed_10m']
+    if 'relative_humidity_2m' in df.columns and 'sezoni_i_ngrohjes' in df.columns:
+        df['humidity_x_heating'] = df['relative_humidity_2m'] * df['sezoni_i_ngrohjes']
+    if 'temperature_2m' in df.columns and 'relative_humidity_2m' in df.columns:
+        df['temp_x_humidity'] = df['temperature_2m'] * df['relative_humidity_2m']
+
+    rreshtat_para = len(df)
+    df = df.dropna().reset_index(drop=True)
+    print(f" -> U fshinë {rreshtat_para - len(df)} rreshta për shkak të Lag Features.")
+
+    kolonat_per_fshirje = ['pm2_5', 'pm10', 'pm10_lag_1h', 'time', 'sezoni_i_ngrohjes', 'qyteti']
     X = df.drop(columns=[col for col in kolonat_per_fshirje if col in df.columns])
     y = df['pm2_5']
 
-    kolonat_finale = list(X.columns)  # Ruajmë emrat e kolonave për JSON
+    kolonat_finale = list(X.columns)
     print(f" -> Numri i veçorive finale për trajnim: {len(kolonat_finale)}")
 
-    # 3. Ndarja në Trajnim dhe Testim
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    print(f" -> Rreshta për Trajnim: {X_train.shape[0]}")
-    print(f" -> Rreshta për Testim:  {X_test.shape[0]}\n")
+    # ==========================================
+    # 4. NDARJA KRONOLOGJIKE (Temporal Split)
+    # ==========================================
+    split_idx = int(len(X) * 0.8)
+    X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
+    y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
 
-    # 4. Shkallëzimi i të dhënave (StandardScaler)
+    print(f" -> Rreshta për Trajnim (E kaluara): {X_train.shape[0]}")
+    print(f" -> Rreshta për Testim  (E ardhmja): {X_test.shape[0]}\n")
+
     print(" -> Duke shkallëzuar të dhënat...")
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
@@ -49,7 +71,7 @@ def trajner_xgboost(file_path):
     X_train_scaled = pd.DataFrame(X_train_scaled, columns=kolonat_finale)
     X_test_scaled = pd.DataFrame(X_test_scaled, columns=kolonat_finale)
 
-    # 5. Trajnimi i Modelit XGBoost
+    # 6. Trajnimi i Modelit XGBoost
     print("Duke trajnuar modelin XGBoost...")
     xg_model = xgb.XGBRegressor(
         objective='reg:squarederror',
@@ -65,14 +87,14 @@ def trajner_xgboost(file_path):
     eval_set = [(X_train_scaled, y_train), (X_test_scaled, y_test)]
     xg_model.fit(X_train_scaled, y_train, eval_set=eval_set, verbose=False)
 
-    # 6. Parashikimi dhe Evaluimi
+    # 7. Parashikimi dhe Evaluimi
     y_pred = xg_model.predict(X_test_scaled)
 
     mae = mean_absolute_error(y_test, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     r2 = r2_score(y_test, y_pred)
 
-    print("\nREZULTATET E MODELIT GLOBAL:")
+    print("\nREZULTATET E MODELIT GLOBAL (TEMPORAL SPLIT):")
     print(f" * MAE (Gabimi Mesatar Absolut): {mae:.2f} µg/m³")
     print(f" * RMSE (Gabimi Mesatar Katror): {rmse:.2f} µg/m³")
     print(f" * R² (Saktësia):                {r2:.4f}")
@@ -97,7 +119,7 @@ def trajner_xgboost(file_path):
     plt.xlabel('Pesha (Importance Score)')
     plt.ylabel('Veçoria (Feature)')
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_feature_importance2.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_feature_importance3.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 2: Actual vs Predicted
@@ -111,7 +133,7 @@ def trajner_xgboost(file_path):
     plt.legend()
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_actual_vs_predicted2.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_actual_vs_predicted3.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 3: Learning Curve
@@ -128,7 +150,7 @@ def trajner_xgboost(file_path):
     plt.legend()
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_learning_curve2.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_learning_curve3.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 4: Residuals (Shpërndarja e Gabimeve)
@@ -142,7 +164,7 @@ def trajner_xgboost(file_path):
     plt.legend()
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_residuals_histogram2.png'), dpi=300)
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_residuals_histogram3.png'), dpi=300)
     plt.close()
 
     # Vizualizimi 5: SHAP Summary
@@ -154,7 +176,39 @@ def trajner_xgboost(file_path):
     shap.summary_plot(shap_values, X_test_scaled, show=False)
     plt.title('Ndikimi i faktorëve globalë në Ndotjen PM2.5 (SHAP Values)', fontsize=14, fontweight='bold', y=1.05)
     plt.tight_layout()
-    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_shap_summary.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_shap_summary3.png'), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    print(" -> Duke gjeneruar tabelën e metrikave si foto...")
+    fig, ax = plt.subplots(figsize=(6, 3))
+    ax.axis('tight')
+    ax.axis('off')
+
+    table_data = [
+        ["Metrika", "Vlera"],
+        ["R² Score (Saktësia)", f"{r2:.4f}"],
+        ["MAE (Gabimi Mesatar Absolut)", f"{mae:.4f} µg/m³"],
+        ["RMSE (Gabimi Mesatar Katror)", f"{rmse:.4f} µg/m³"]
+    ]
+
+    table = ax.table(cellText=table_data, loc='center', cellLoc='center', colWidths=[0.6, 0.4])
+    table.auto_set_font_size(False)
+    table.set_fontsize(12)
+    table.scale(1, 2)
+
+    # Stilizimi i tabelës
+    for (row, col), cell in table.get_celld().items():
+        if row == 0:
+            cell.set_text_props(weight='bold', color='white', fontsize=13)
+            cell.set_facecolor('#2c7bb6')  # Ngjyra blu për header
+        else:
+            cell.set_facecolor('#f9f9f9')
+            if col == 0:
+                cell.set_text_props(weight='bold')
+
+    plt.title('Performanca e XGBoost (Temporal Split)', fontsize=14, fontweight='bold', pad=20)
+    plt.tight_layout()
+    plt.savefig(os.path.join(folderi_imazheve, 'xgboost_metrics_table3.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # ==========================================
@@ -171,7 +225,7 @@ def trajner_xgboost(file_path):
     # 2. Ruajtja e Scaler-it dhe Metrikave në JSON
     rezultatet_metrikat = {
         "model_type": "supervised",
-        "model_name": "XGBoost Regressor",  # <--- Emri tani del vetëm si XGBoost Regressor
+        "model_name": "XGBoost Regressor",
         "features_used": kolonat_finale,
         "scaler_values": {
             "mean": scaler.mean_.tolist(),

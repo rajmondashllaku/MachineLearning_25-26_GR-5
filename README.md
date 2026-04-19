@@ -366,9 +366,9 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 
 **A. Performanca dhe Saktësia e Parashikimit**
 
-| Tabela e Metrikave Përfundimtare | Vlerat Reale vs Parashikimet |
-|:---:|:---:|
-| ![XGBoost Metrics](images/xgboost_metrics_table2.png) | ![XGB Actual](images/xgboost_actual_vs_predicted2.png) |
+|           Tabela e Metrikave Përfundimtare           | Vlerat Reale vs Parashikimet |
+|:----------------------------------------------------:|:---:|
+| ![XGBoost Metrics](images/xgboost_metrics_table3.png) | ![XGB Actual](images/xgboost_actual_vs_predicted3.png) |
 
 * **Gjetja:** Modeli tregon një saktësi të lartë (R²) dhe një ndjekje shumë të mirë të trendit.
 
@@ -376,7 +376,7 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 
 | Kurba e të Mësuarit (Learning Curve) | Shpërndarja e Gabimeve (Residuals) |
 |:---:|:---:|
-| ![XGBoost Learning](images/xgboost_learning_curve2.png) | ![XGBoost Residuals](images/xgboost_residuals_histogram2.png) |
+| ![XGBoost Learning](images/xgboost_learning_curve3.png) | ![XGBoost Residuals](images/xgboost_residuals_histogram3.png) |
 
 * **Gjetja:** Kurba e të mësuarit tregon se gabimi (RMSE) bie në mënyrë të qëndrueshme. Grafiku i mbetjeve (Residuals) konfirmon se gabimet e modelit janë të shpërndara normalisht rreth vlerës zero.
 
@@ -384,7 +384,7 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 
 | Si ndikojnë faktorët (SHAP Summary Plot) | Pesha e Veçorive (Feature Importance) |
 |:---:|:---:|
-| ![SHAP](images/xgboost_shap_summary.png) | ![XGB Feature Importance](images/xgboost_feature_importance2.png) |
+| ![SHAP](images/xgboost_shap_summary3.png) | ![XGB Feature Importance](images/xgboost_feature_importance3.png) |
 
 * **Gjetja nga SHAP:** Çdo pikë në grafikun SHAP përfaqëson një ditë. Ngjyra blu (Vlera të ulëta) te Temperatura rrit masivisht parashikimin e ndotjes PM2.5. 
 
@@ -469,18 +469,17 @@ XGBoost rezultoi modeli më i fuqishëm dhe më i saktë i këtij projekti. Ai a
 * **Konkluzioni:** Grupi i Smogut ka devijimin më të madh, që do të thotë se brenda këtij profili ndodhin edhe thyerjet më të mëdha të rekordeve të ndotjes në Kosovë.
 
 ### 3. Krahasimi i Modeleve dhe Vlerësimi Përfundimtar
+### A. Supervised Learning (Parashikimi)
+Për të parashikuar nivelet e PM2.5, ne testuam dhe krahasuam disa algoritme për të gjetur më të përshtatshmin për natyrën e të dhënave tona:
 
 | Krahasimi i Saktësisë ($R^2$ Score) | Krahasimi i Gabimeve (MAE & RMSE) |
 |:---:|:---:|
-| ![R2 Comparison](images/eval_r2_comparison2.png) | ![Error Comparison](images/eval_error_comparison2.png) |
+| ![R2 Comparison](images/eval_r2_comparison3.png) | ![Error Comparison](images/eval_error_comparison3.png) |
 
-1. **Zvogëlimi Drastik i Gabimeve (Figura 1):** XGBoost arrin të minimizojë ndjeshëm të tria metrikat e gabimit (MAE, MSE, RMSE). Rënia masive e **MSE (Mean Squared Error)** tek XGBoost në krahasim me modelin Linear është veçanërisht e rëndësishme. Kjo tregon se modeli Linear bën gabime shumë të mëdha kur përpiqet të parashikojë vlerat ekstreme të ndotjes (outliers/smog i lartë), ndërsa XGBoost arrin t'i menaxhojë ato me shumë saktësi.
-2. **Shpjegueshmëria e Variancës - $R^2$ Score (Figura 2):** Modeli bazë linear arrin një saktësi ($R^2$) mjaft të ulët, gjë që vërteton se marrëdhënia mes faktorëve meteorologjikë (temperatura, era, presioni) dhe ndotjes së ajrit **nuk është lineare**. Nga ana tjetër, XGBoost arrin të dyfishojë performancën duke kapur saktë varësitë komplekse dhe jo-lineare të të dhënave tona.
+* **XGBoost Regressor (Modeli Fitues):** Arriti performancën më të lartë në shpjegueshmërinë e variancës me një saktësi ($R^2$) prej **0.3607**. Ky model u tregua më i afti për të kapur marrëdhëniet komplekse dhe jo-lineare nga të dhënat historike, duke minimizuar në mënyrë drastike gabimet (MAE prej **4.36** dhe RMSE prej **6.35**).
+* **Random Forest Regressor:** Rezultoi shumë i fuqishëm dhe i qëndrueshëm, duke ofruar një performancë të lartë (MAE **4.43** dhe RMSE **6.49**) dhe duke na ndihmuar të vlerësojmë saktë rëndësinë e tipareve (Feature Importance).
+* **Ridge / Linear Regression:** U përdorën si modele bazë (baselines) për krahasim. Ashtu siç tregojnë edhe analizat tona, këto modele dështuan plotësisht të kapin kompleksitetin e të dhënave, duke dhënë një saktësi prej **0.0000** dhe gabimet më të larta (RMSE mbi 10.2). Kjo vërteton matematikisht se qasjet e thjeshta lineare janë të pamjaftueshme për këtë problem.
 
-Pra mund te themi se:
-* **XGBoost Regressor (Modeli Kryesor):** Tregoi performancën më të mirë në minimizimin e gabimeve (MSE, MAE, RMSE) në krahasim me modelet e tjera. U tregua jashtëzakonisht i aftë për të menaxhuar vlerat ekstreme të smogut dhe për të kapur lidhjet jo-lineare mes motit dhe ndotjes.
-* **Random Forest:** Shërbeu si një model i fuqishëm dhe i qëndrueshëm nga familja *tree-based*, duke ofruar një performancë të lartë dhe duke na ndihmuar të vlerësojmë saktë rëndësinë e tipareve (Feature Importance).
-* **Ridge / Linear Regression:** U përdorën si modele bazë (baselines) për krahasim. Metrikat e tyre të performancës vërtetuan se qasjet e thjeshta lineare janë të pamjaftueshme për këtë problem, duke justifikuar kështu përdorimin e algoritmeve më komplekse.
 #### B. Sinergjia mes Parashikimit dhe Zbulimit (Supervised + Unsupervised)
 1.  **Validimi i Kryqëzuar:** Profilet e zbuluara nga **K-Means** përputhen saktësisht me zonat ku **XGBoost** parashikon nivelet më të larta të rrezikut.
 2.  **Filtrimi i Anomalive:** Përdorimi i **Isolation Forest** mundëson identifikimin e ditëve "atypical".
