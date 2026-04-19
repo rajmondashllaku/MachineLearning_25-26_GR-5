@@ -423,7 +423,7 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 
 | Global vs Per-City sipas Muajit |
 |:---:|
-| ![Monthly Comparison](images/if_anomalies_monthly_comparison.png) |
+| ![Monthly Comparison](images/if_anomalies_monthly_comparison.png) | 
 
 * **Gjetja:** Ky grafik krahason numrin e anomalive mujore që gjenden nga modeli `Global` kundrejt modelit `Per-City`, duke e bërë më të dukshme se ku ndryshojnë dy strategjitë e detektimit.
 
@@ -435,9 +435,9 @@ Për të kuptuar ngjarjet ekstreme, për të thjeshtuar të dhënat dhe për të
 
 **A. Optimizimi i numrit të grupeve**
 
-| Metoda e Bërrylit (Elbow Method) |
-|:---:|
-| ![Elbow Method](images/kmeans_elbow_method2.png) |
+| Metoda e Bërrylit (Elbow Method) | Silhouette Score |
+|:---:|:---:|
+| ![Elbow Method](images/kmeans_elbow_method2.png)  | ![Monthly Comparison](images/kmeans_silhouette_score2.png) |
 
 * **Gjetja:** Skripta aktuale ruan si figurë vetëm grafikun `Elbow Method`, ndërsa `Silhouette Score` llogaritet gjatë ekzekutimit dhe printohet në terminal. Vlera finale e përdorur nga implementimi është `K=4`.
 
