@@ -1,5 +1,5 @@
 {
-  "model_name": "Random Forest Regressor",
+  "model_name": "Random Forest Regressor - Model B",
   "model_type": "supervised",
   "author": "Endrita",
   "target": "pm2_5",
@@ -14,7 +14,7 @@
     "sezoni_i_ngrohjes",
     "is_weekend",
     "qyteti",
-    "pm2_5_lag_24h",
+    "pm2_5_rolling_6h",
     "temp_x_wind",
     "humidity_x_heating",
     "temp_x_humidity"
@@ -25,36 +25,35 @@
   "test_size": 32877,
   "split_method": "temporal per city (last 20%)",
   "metrics": {
-    "MAE": 6.5014,
-    "RMSE": 11.5239,
-    "R2": 0.5834
+    "MAE": 4.1398,
+    "RMSE": 7.151,
+    "R2": 0.8396
   },
   "cv_method": "TimeSeriesSplit (5-fold)",
-  "cv_r2_mean": 0.5236,
-  "cv_r2_std": 0.0552,
+  "cv_r2_mean": 0.7897,
+  "cv_r2_std": 0.0266,
   "cv_r2_scores": [
-    0.506,
-    0.528,
-    0.6264,
-    0.4909,
-    0.4666
+    0.7673,
+    0.7941,
+    0.8396,
+    0.7709,
+    0.7764
   ],
   "feature_importance": {
-    "pm2_5_lag_24h": 0.9453,
-    "temp_x_wind": 0.0313,
-    "wind_speed_10m": 0.0234,
-    "temperature_2m": 0.0,
-    "relative_humidity_2m": 0.0,
-    "surface_pressure": 0.0,
-    "month": 0.0,
-    "hour": 0.0,
+    "pm2_5_rolling_6h": 0.8893,
+    "hour": 0.101,
+    "temperature_2m": 0.0034,
+    "qyteti": 0.002,
+    "temp_x_wind": 0.002,
+    "wind_speed_10m": 0.0016,
+    "surface_pressure": 0.0003,
+    "temp_x_humidity": 0.0002,
+    "humidity_x_heating": 0.0001,
+    "month": 0.0001,
     "day_of_week": 0.0,
+    "relative_humidity_2m": 0.0,
     "sezoni_i_ngrohjes": 0.0,
-    "is_weekend": 0.0,
-    "qyteti": 0.0,
-    "humidity_x_heating": 0.0,
-    "temp_x_humidity": 0.0
+    "is_weekend": 0.0
   },
-  "model_a_r2": 0.9901,
-  "note": "Model B (pa PM10) eshte modeli kryesor. Model A ka data leakage."
+  "note": "Vetem Model B: pa PM10, pa pm2_5_lag_1h; perdor pm2_5_rolling_6h."
 }

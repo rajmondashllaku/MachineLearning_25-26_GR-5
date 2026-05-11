@@ -1,9 +1,0 @@
-RANDOM FOREST REGRESSOR - REZULTATET
-==================================================
-
-MODEL A (me Leakage):
-  MAE: 0.7665 | RMSE: 1.2122 | R²: 0.9772
-
-MODEL B (Modeli Kryesor):
-  MAE: 2.1695 | RMSE: 3.3260 | R²: 0.8282
-
