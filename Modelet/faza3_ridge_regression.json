@@ -1,0 +1,12 @@
+{
+  "model_name": "Ridge_Regression",
+  "phase": "3",
+  "best_params": {
+    "alpha": 0.1
+  },
+  "test_metrics": {
+    "MAE": 5.702427386311897,
+    "RMSE": 9.460100695110956,
+    "R²": 0.4764726866756255
+  }
+}
