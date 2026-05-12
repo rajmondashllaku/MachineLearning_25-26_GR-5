@@ -1,0 +1,40 @@
+{
+  "model_name": "XGBoost Regressor",
+  "model_type": "supervised",
+  "author": "Rajmonda",
+  "target": "pm2_5",
+  "features_used": [
+    "temperature_2m",
+    "relative_humidity_2m",
+    "surface_pressure",
+    "wind_speed_10m",
+    "month",
+    "hour",
+    "day_of_week",
+    "sezoni_i_ngrohjes",
+    "is_weekend",
+    "qyteti"
+  ],
+  "n_features": 10,
+  "dataset_rows": 164448,
+  "train_size": 131558,
+  "test_size": 32890,
+  "split_method": "random_split (80/20)",
+  "metrics": {
+    "MAE": 4.9353,
+    "RMSE": 7.6816,
+    "R2": 0.6478
+  },
+  "feature_importance": {
+    "sezoni_i_ngrohjes": 0.2096,
+    "qyteti": 0.1677,
+    "temperature_2m": 0.1507,
+    "hour": 0.147,
+    "month": 0.1085,
+    "wind_speed_10m": 0.0925,
+    "surface_pressure": 0.0529,
+    "relative_humidity_2m": 0.028,
+    "day_of_week": 0.0237,
+    "is_weekend": 0.0194
+  }
+}

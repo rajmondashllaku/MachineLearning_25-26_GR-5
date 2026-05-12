@@ -1,5 +1,5 @@
 {
-  "model_name": "Random Forest Regressor - Model B",
+  "model_name": "Random Forest Regressor",
   "model_type": "supervised",
   "author": "Endrita",
   "target": "pm2_5",

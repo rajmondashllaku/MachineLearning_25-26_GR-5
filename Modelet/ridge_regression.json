@@ -2,113 +2,113 @@
   "model_name": "Ridge Regression",
   "model_type": "Ridge",
   "metrics": {
-    "MAE": 6.7367782465930555,
-    "RMSE": 10.213002970323519,
-    "R²": 0.37596655645205534
+    "MAE": 6.7161187938454745,
+    "RMSE": 10.19035699502251,
+    "R²": 0.3801678026117684
   },
   "feature_importance": [
     {
       "feature": "temperature_2m",
-      "coefficient": -0.8781022737450669,
-      "abs_coefficient": 0.8781022737450669
+      "coefficient": -0.9106035937048641,
+      "abs_coefficient": 0.9106035937048641
     },
     {
       "feature": "relative_humidity_2m",
-      "coefficient": 1.0581140441874493,
-      "abs_coefficient": 1.0581140441874493
+      "coefficient": 1.0442136263764572,
+      "abs_coefficient": 1.0442136263764572
     },
     {
       "feature": "surface_pressure",
-      "coefficient": 4.04498685899693,
-      "abs_coefficient": 4.04498685899693
+      "coefficient": 4.02867773515976,
+      "abs_coefficient": 4.02867773515976
     },
     {
       "feature": "wind_speed_10m",
-      "coefficient": -3.6824196881342384,
-      "abs_coefficient": 3.6824196881342384
+      "coefficient": -3.669703498735526,
+      "abs_coefficient": 3.669703498735526
     },
     {
       "feature": "hour",
-      "coefficient": 1.7660800057858834,
-      "abs_coefficient": 1.7660800057858834
+      "coefficient": 1.737629156742679,
+      "abs_coefficient": 1.737629156742679
     },
     {
       "feature": "is_weekend",
-      "coefficient": -0.09872949520402166,
-      "abs_coefficient": 0.09872949520402166
+      "coefficient": -0.07997436860819654,
+      "abs_coefficient": 0.07997436860819654
     },
     {
       "feature": "month_2",
-      "coefficient": -2.401518758062728,
-      "abs_coefficient": 2.401518758062728
+      "coefficient": -2.2309906153964563,
+      "abs_coefficient": 2.2309906153964563
     },
     {
       "feature": "month_3",
-      "coefficient": -3.8518019980773746,
-      "abs_coefficient": 3.8518019980773746
+      "coefficient": -3.7515755623028264,
+      "abs_coefficient": 3.7515755623028264
     },
     {
       "feature": "month_4",
-      "coefficient": -7.970306775536776,
-      "abs_coefficient": 7.970306775536776
+      "coefficient": -8.128236500555534,
+      "abs_coefficient": 8.128236500555534
     },
     {
       "feature": "month_5",
-      "coefficient": -11.283111361213372,
-      "abs_coefficient": 11.283111361213372
+      "coefficient": -11.2358186671617,
+      "abs_coefficient": 11.2358186671617
     },
     {
       "feature": "month_6",
-      "coefficient": -11.219079701751031,
-      "abs_coefficient": 11.219079701751031
+      "coefficient": -11.145514400987665,
+      "abs_coefficient": 11.145514400987665
     },
     {
       "feature": "month_7",
-      "coefficient": -10.797086742772395,
-      "abs_coefficient": 10.797086742772395
+      "coefficient": -10.748243177996699,
+      "abs_coefficient": 10.748243177996699
     },
     {
       "feature": "month_8",
-      "coefficient": -9.823236979613734,
-      "abs_coefficient": 9.823236979613734
+      "coefficient": -9.761442528262288,
+      "abs_coefficient": 9.761442528262288
     },
     {
       "feature": "month_9",
-      "coefficient": -11.491062810279482,
-      "abs_coefficient": 11.491062810279482
+      "coefficient": -11.413238077607176,
+      "abs_coefficient": 11.413238077607176
     },
     {
       "feature": "month_10",
-      "coefficient": -10.598651879174698,
-      "abs_coefficient": 10.598651879174698
+      "coefficient": -10.498501353955497,
+      "abs_coefficient": 10.498501353955497
     },
     {
       "feature": "month_11",
-      "coefficient": -3.525180342074132,
-      "abs_coefficient": 3.525180342074132
+      "coefficient": -3.440114284115601,
+      "abs_coefficient": 3.440114284115601
     },
     {
       "feature": "month_12",
-      "coefficient": 1.6066569896889387,
-      "abs_coefficient": 1.6066569896889387
+      "coefficient": 1.6261552949122837,
+      "abs_coefficient": 1.6261552949122837
     },
     {
       "feature": "sezoni_i_ngrohjes_1",
-      "coefficient": 3.275928382361603,
-      "abs_coefficient": 3.275928382361603
+      "coefficient": 3.1950992555417086,
+      "abs_coefficient": 3.1950992555417086
     },
     {
       "feature": "qyteti_2",
-      "coefficient": -9.043703644553624,
-      "abs_coefficient": 9.043703644553624
+      "coefficient": -8.977615114959898,
+      "abs_coefficient": 8.977615114959898
     },
     {
       "feature": "qyteti_3",
-      "coefficient": -9.82702692481754,
-      "abs_coefficient": 9.82702692481754
+      "coefficient": -9.797743021726601,
+      "abs_coefficient": 9.797743021726601
     }
   ],
-  "intercept": 28.381997675420244,
+  "intercept": 28.322215773062656,
   "alpha": 0.1,
-  "cv_rmse": 10.37285454701961
+  "cv_rmse": 10.401358908722285
 }

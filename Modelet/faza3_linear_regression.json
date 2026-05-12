@@ -1,10 +1,9 @@
 {
-  "model_name": "Linear_Regression",
-  "phase": "3",
-  "best_params": {},
-  "test_metrics": {
-    "MAE": 5.702423199867592,
-    "RMSE": 9.46007047481739,
-    "R²": 0.4764760314864974
+  "model_name": "Linear Regression",
+  "model_type": "supervised",
+  "metrics": {
+    "MAE": 5.702423,
+    "RMSE": 9.460070,
+    "R2": 0.476476
   }
 }
