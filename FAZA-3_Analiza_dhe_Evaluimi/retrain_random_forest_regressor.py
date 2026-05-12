@@ -1,228 +1,293 @@
-import os
 import json
-
 import pandas as pd
 import numpy as np
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault('MPLCONFIGDIR', os.path.join(BASE_DIR, '.matplotlib'))
-
+import os
+import warnings
+from pathlib import Path
+warnings.filterwarnings('ignore')
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import cross_val_score, TimeSeriesSplit
 
 
-print("==================================================")
-print("RANDOM FOREST REGRESSOR - MODEL B")
-print("==================================================")
+class AirQualityLinearPhase3:
+    """
+    Phase 3 - Linear & Ridge Regression
+    """
+    def __init__(self):
+        self.data = None
+        self.X = None
+        self.y = None
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
+        self.models = {}
+        self.results = {}
+        self.preprocessor = None
+        self.data_path = None
 
-# 1. Leximi i datasetit
-DATA_PATH = os.path.join(BASE_DIR, 'Datasetet', 'ml_ready_dataset', 'kosova_global_ml_data.csv')
-df = pd.read_csv(DATA_PATH)
-print(f"\n1. Dataseti origjinal: {df.shape[0]} rreshta, {df.shape[1]} kolona")
+    def find_data_path(self):
+        possible_paths = [
+            'Datasetet/ml_ready_dataset/kosova_global_ml_data.csv',
+            '../Datasetet/ml_ready_dataset/kosova_global_ml_data.csv',
+            '../../Datasetet/ml_ready_dataset/kosova_global_ml_data.csv',
+            '../../../Datasetet/ml_ready_dataset/kosova_global_ml_data.csv',
+        ]
+        for path in possible_paths:
+            if os.path.exists(path):
+                self.data_path = path
+                print(f"Dataset found: {path}")
+                return True
+        try:
+            script_dir = Path(__file__).resolve().parent
+            project_root = script_dir.parent.parent
+            candidate = project_root / 'Datasetet' / 'ml_ready_dataset' / 'kosova_global_ml_data.csv'
+            if candidate.exists():
+                self.data_path = str(candidate)
+                print(f"Dataset found: {self.data_path}")
+                return True
+        except:
+            pass
+        raise FileNotFoundError("Dataset not found!")
 
-# 2. Feature Engineering
-print("\n2. Feature Engineering...")
+    def load_data(self):
+        print("=== PHASE 3: LOADING DATA ===")
+        self.find_data_path()
+        self.data = pd.read_csv(self.data_path)
+        print(f"Dataset loaded: {self.data.shape[0]:,} rows, {self.data.shape[1]} columns")
+        return self
 
-# Ruaj renditjen origjinale per cdo qytet.
-if 'time' in df.columns:
-    df['time'] = pd.to_datetime(df['time'])
-    df = df.sort_values(['qyteti', 'time']).reset_index(drop=True)
-else:
-    df['_row_order'] = df.groupby('qyteti').cumcount()
-    df = df.sort_values(['qyteti', '_row_order']).reset_index(drop=True)
+    def advanced_preprocessing(self, target_column='pm2_5'):
+        print("\n=== ADVANCED PREPROCESSING & FEATURE ENGINEERING ===")
+        self.data = self.data.dropna().copy()
+        self.y_original = self.data[target_column]
+        self.y = np.log1p(self.y_original)
+        numeric_features = ['temperature_2m', 'relative_humidity_2m', 'surface_pressure',
+                           'wind_speed_10m', 'hour']
+        categorical_features = ['month', 'sezoni_i_ngrohjes', 'qyteti']
+        self.data['temp_humidity'] = self.data['temperature_2m'] * self.data['relative_humidity_2m']
+        self.data['wind_temp'] = self.data['wind_speed_10m'] * self.data['temperature_2m']
+        numeric_features += ['temp_humidity', 'wind_temp']
+        poly_features = ['temperature_2m', 'relative_humidity_2m', 'wind_speed_10m', 'hour']
+        numeric_transformer = Pipeline([
+            ('scaler', StandardScaler()),
+            ('poly', PolynomialFeatures(degree=2, include_bias=False))
+        ])
+        self.preprocessor = ColumnTransformer([
+            ('num_poly', numeric_transformer, poly_features),
+            ('cat', OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore'), categorical_features),
+            ('num', StandardScaler(), [col for col in numeric_features if col not in poly_features])
+        ])
+        feature_cols = poly_features + categorical_features + [col for col in numeric_features if col not in poly_features]
+        self.X = self.data[feature_cols]
+        print(f"Final feature shape: {self.X.shape}")
+        return self
 
-df['pm2_5_lag_1h'] = df.groupby('qyteti')['pm2_5'].shift(1)
-df['pm2_5_lag_24h'] = df.groupby('qyteti')['pm2_5'].shift(24)
-df['pm2_5_rolling_6h'] = df.groupby('qyteti')['pm2_5'].transform(
-    lambda x: x.shift(1).rolling(window=6, min_periods=1).mean()
-)
-df['pm10_lag_1h'] = df.groupby('qyteti')['pm10'].shift(1)
+    def split_data(self, test_size=0.2, random_state=42):
+        print("\n=== SPLITTING DATA ===")
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.X, self.y, test_size=test_size, random_state=random_state
+        )
+        print(f"Train: {self.X_train.shape[0]:,} | Test: {self.X_test.shape[0]:,}")
+        return self
 
-df['temp_x_wind'] = df['temperature_2m'] * df['wind_speed_10m']
-df['humidity_x_heating'] = df['relative_humidity_2m'] * df['sezoni_i_ngrohjes']
-df['temp_x_humidity'] = df['temperature_2m'] * df['relative_humidity_2m']
+    def train_models(self):
+        print("\n=== RETRAINING MODELS ===")
+        # Linear Regression
+        print("Linear Regression...")
+        lr_pipe = Pipeline([('preprocessor', self.preprocessor), ('regressor', LinearRegression())])
+        lr_pipe.fit(self.X_train, self.y_train)
+        self.models['Linear_Regression'] = lr_pipe
 
-before_drop = len(df)
-df = df.dropna().reset_index(drop=True)
-print(f"   U fshine {before_drop - len(df)} rreshta nga fillimi i serive.")
-print(f"   Rreshta finalet: {len(df)}")
+        # Ridge Regression
+        ridge_pipe = Pipeline([('preprocessor', self.preprocessor), ('regressor', Ridge())])
+        param_grid = {'regressor__alpha': [0.1, 1.0, 5.0, 10.0, 50.0, 100.0, 500.0, 1000.0, 5000.0, 10000.0]}
+        print("Tuning Ridge Regression...")
+        grid = GridSearchCV(ridge_pipe, param_grid, cv=5, scoring='neg_root_mean_squared_error', n_jobs=-1)
+        grid.fit(self.X_train, self.y_train)
+        self.models['Ridge_Regression'] = grid.best_estimator_
+        best_alpha = grid.best_params_['regressor__alpha']
+        print(f"Best alpha for Ridge: {best_alpha}")
+        if best_alpha < 0.01:
+            print("WARNING: Alpha is very small -> Ridge is almost identical to Linear")
+        return self
 
-# Split kronologjik per secilin qytet: 80% train, 20% test.
-row_position = df.groupby('qyteti').cumcount()
-group_size = df.groupby('qyteti')['qyteti'].transform('size')
-train_mask = row_position < (group_size * 0.8).astype(int)
+    def evaluate_models(self):
+        print("\n=== MODEL EVALUATION (Original Scale) ===")
+        for name, model in self.models.items():
+            y_pred_log = model.predict(self.X_test)
+            y_pred = np.expm1(y_pred_log)
+            y_true = np.expm1(self.y_test)
+            mae = mean_absolute_error(y_true, y_pred)
+            rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+            r2 = r2_score(y_true, y_pred)
+            print(f"\n{name}:")
+            print(f" MAE : {mae:.4f}")
+            print(f" RMSE : {rmse:.4f}")
+            print(f" R² : {r2:.4f}")
+            self.results[name] = {'y_true': y_true, 'y_pred': y_pred, 'metrics': {'MAE': mae, 'RMSE': rmse, 'R²': r2}}
+        return self
 
-TARGET = 'pm2_5'
-IGNORE_COLS = ['time', '_row_order']
+    def create_consistent_plots(self, output_dir='images'):
+        os.makedirs(output_dir, exist_ok=True)
+        fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+        for i, (name, res) in enumerate(self.results.items()):
+            ax = axes[i]
+            ax.scatter(res['y_true'], res['y_pred'], alpha=0.3, s=8, color='steelblue' if i==0 else 'darkorange')
+            ax.plot([0, res['y_true'].max()], [0, res['y_true'].max()], 'r--', lw=2)
+            ax.set_xlabel('Vlera Reale (PM2.5)')
+            ax.set_ylabel('Vlera Parashikuar (PM2.5)')
+            ax.set_title(f'{name}\nR² = {res["metrics"]["R²"]:.4f}', fontweight='bold')
+        plt.suptitle('FAZA 3 Linear & Ridge: Actual vs Predicted', fontsize=15, fontweight='bold')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'faza3_actual_vs_predicted_linear_ridge.png'), dpi=150)
+        plt.close()
 
-# Model B: pa PM10 dhe pa PM2.5 lag 1h.
-# Per FAZA-3 perdorim trendin 6-orësh, por jo lag 24h, qe rezultati te jete rreth 0.84.
-FEATURES_B = [
-    col for col in df.columns
-    if col not in [
-        TARGET,
-        'pm10',
-        'pm10_lag_1h',
-        'pm2_5_lag_1h',
-        'pm2_5_lag_24h',
-    ] + IGNORE_COLS
-]
+        fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+        for i, (name, res) in enumerate(self.results.items()):
+            residuals = res['y_true'] - res['y_pred']
+            ax = axes[i]
+            ax.hist(residuals, bins=80, color='steelblue' if i==0 else 'darkorange', edgecolor='black', alpha=0.7)
+            ax.axvline(x=0, color='red', linestyle='--', linewidth=2)
+            ax.set_xlabel('Residuals (Actual - Predicted)')
+            ax.set_ylabel('Frekuenca')
+            ax.set_title(f'FAZA 3 Residuals - {name}\n(Mean={residuals.mean():.3f}, Std={residuals.std():.3f})',
+                         fontweight='bold')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'faza3_linear_ridge_residuals.png'), dpi=150)
+        plt.close()
 
-X = df[FEATURES_B]
-y = df[TARGET]
+        metrics = ['MAE', 'RMSE', 'R²']
+        vals_lr = [self.results['Linear_Regression']['metrics'][m] for m in metrics]
+        vals_ridge = [self.results['Ridge_Regression']['metrics'][m] for m in metrics]
+        fig, ax = plt.subplots(figsize=(9, 6))
+        x = np.arange(len(metrics))
+        w = 0.35
+        ax.bar(x - w/2, vals_lr, w, label='Linear Regression', color='steelblue', alpha=0.9)
+        ax.bar(x + w/2, vals_ridge, w, label='Ridge Regression', color='darkorange', alpha=0.9)
+        ax.set_xticks(x)
+        ax.set_xticklabels(metrics)
+        ax.set_title('FAZA 3 Krahasimi i Modeleve: Linear vs Ridge', fontweight='bold')
+        ax.legend()
+        for i, (v1, v2) in enumerate(zip(vals_lr, vals_ridge)):
+            ax.text(i - w/2, v1 + 0.01, f'{v1:.3f}', ha='center')
+            ax.text(i + w/2, v2 + 0.01, f'{v2:.3f}', ha='center')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'faza3_model_comparison_linear_ridge.png'), dpi=150)
+        plt.close()
+        return self
 
-X_train, X_test = X.loc[train_mask], X.loc[~train_mask]
-y_train, y_test = y.loc[train_mask], y.loc[~train_mask]
+    def _get_feature_names(self):
+        feature_names = []
+        poly_input = ['temperature_2m', 'relative_humidity_2m', 'wind_speed_10m', 'hour']
+        try:
+            poly_names = self.preprocessor.named_transformers_['num_poly'].named_steps['poly'].get_feature_names_out(poly_input)
+            feature_names.extend(poly_names)
+        except: pass
+        try:
+            cat_names = self.preprocessor.named_transformers_['cat'].get_feature_names_out()
+            feature_names.extend(cat_names)
+        except: pass
+        try:
+            other = self.preprocessor.named_transformers_['num'].get_feature_names_out()
+            feature_names.extend(other)
+        except: pass
+        return feature_names
 
-print("\n3. Model B - PA PM10")
-print(f"   Features ({len(FEATURES_B)}): {FEATURES_B}")
-print(f"   Train: {len(X_train)}, Test: {len(X_test)} (temporal split per qytet)")
+    def get_feature_importance(self):
+        print("\n" + "="*70)
+        print("FEATURE IMPORTANCE - Phase 3")
+        print("="*70)
+       
+        OUTPUT_DIR = "images"
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-rf_model = RandomForestRegressor(
-    n_estimators=160,
-    max_depth=6,
-    min_samples_split=10,
-    min_samples_leaf=5,
-    random_state=42,
-    n_jobs=-1
-)
+        for model_name, model in self.models.items():
+            feature_names = self._get_feature_names()
+            imp = np.abs(model.named_steps['regressor'].coef_)
+            imp_df = pd.DataFrame({'Feature': feature_names, 'Importance': imp})
+           
+            def clean(name):
+                if '_' in name and any(x in name for x in ['month','qyteti','sezoni']):
+                    return name.split('_',1)[0]
+                return name
+           
+            imp_df['Feature'] = imp_df['Feature'].apply(clean)
+            imp_df = imp_df.groupby('Feature', as_index=False)['Importance'].sum()
+            imp_df = imp_df.sort_values('Importance', ascending=False)
+            
+            # Print top features
+            print(f"\n{model_name} (Top 12):")
+            for _, row in imp_df.head(12).iterrows():
+                bar = "█" * int(min(row['Importance'] * 15, 60))
+                print(f" {row['Feature']:30s} {row['Importance']:8.4f} {bar}")
 
-rf_model.fit(X_train, y_train)
-y_pred = rf_model.predict(X_test)
+            # === Generate separate plot for each model ===
+            fig, ax = plt.subplots(figsize=(12, 8))
+            top15 = imp_df.head(15)
+            colors = sns.color_palette("viridis", len(top15))
+            
+            bars = ax.barh(top15['Feature'], top15['Importance'], color=colors)
+            
+            ax.set_xlabel('Importance (Absolute Coefficient)', fontsize=12)
+            ax.set_title(f'Feature Importance - {model_name.replace("_", " ")}\n(Phase 3)', 
+                        fontsize=14, fontweight='bold')
+            ax.invert_yaxis()
+            
+            # Add value labels
+            for bar, val in zip(bars, top15['Importance']):
+                ax.text(bar.get_width() + 0.003, 
+                       bar.get_y() + bar.get_height()/2,
+                       f'{val:.4f}', 
+                       va='center', fontsize=9)
 
-mae = mean_absolute_error(y_test, y_pred)
-rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-r2 = r2_score(y_test, y_pred)
+            plt.tight_layout()
+            save_name = os.path.join(OUTPUT_DIR, f'faza3_feature_importance_{model_name.lower()}.png')
+            plt.savefig(save_name, dpi=150, bbox_inches='tight')
+            plt.close()
+        
+        
 
-print("\n4. Rezultatet e Model B:")
-print(f"   MAE:  {mae:.4f}")
-print(f"   RMSE: {rmse:.4f}")
-print(f"   R²:   {r2:.4f}")
+        return self
 
-print("\n5. Cross-Validation (5-Fold, TimeSeriesSplit):")
-tscv = TimeSeriesSplit(n_splits=5)
-cv_scores = cross_val_score(rf_model, X, y, cv=tscv, scoring='r2', n_jobs=1)
-print(f"   R² scores: {[f'{s:.4f}' for s in cv_scores]}")
-print(f"   Mean R²:   {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
+    def save_models(self, output_dir='Modelet'):
+        os.makedirs(output_dir, exist_ok=True)
+        for model_name, model in self.models.items():
+            model_data = {
+                'model_name': model_name,
+                'phase': '3',
+                'best_params': {'alpha': float(model.named_steps['regressor'].alpha)} if 'Ridge' in model_name else {},
+                'test_metrics': self.results[model_name]['metrics']
+            }
+            filename = f"faza3_{model_name.lower().replace(' ', '_')}.json"
+            with open(os.path.join(output_dir, filename), 'w', encoding='utf-8') as f:
+                json.dump(model_data, f, indent=2, ensure_ascii=False)
 
-# Feature importance
-importances = rf_model.feature_importances_
-feature_imp_df = pd.DataFrame({
-    'Feature': FEATURES_B,
-    'Importance': importances
-}).sort_values('Importance', ascending=False)
+    def run(self):
+        try:
+            self.load_data()
+            self.advanced_preprocessing()
+            self.split_data()
+            self.train_models()
+            self.evaluate_models()
+            self.create_consistent_plots()
+            self.get_feature_importance()
+            self.save_models()
+            print("\n" + "="*80)
+            print("PHASE 3 COMPLETED SUCCESSFULLY!")
+            print("="*80)
+        except Exception as e:
+            print(f"Error: {e}")
 
-print("\n6. Feature Importance - Model B:")
-for _, row in feature_imp_df.iterrows():
-    bar = "█" * int(row['Importance'] * 100)
-    print(f"   {row['Feature']:25s} {row['Importance']:.4f}  {bar}")
 
-# Vizualizimet
-OUTPUT_DIR = os.path.join(BASE_DIR, 'images')
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-fig, ax = plt.subplots(figsize=(12, 7))
-sns.barplot(
-    x='Importance',
-    y='Feature',
-    data=feature_imp_df,
-    hue='Feature',
-    palette='viridis',
-    legend=False,
-    ax=ax
-)
-ax.set_title('Feature Importance - FAZA 3 Random Forest Model B', fontsize=14, fontweight='bold')
-ax.set_xlabel('Importance')
-ax.set_ylabel('Feature')
-plt.tight_layout()
-plt.savefig(os.path.join(OUTPUT_DIR, 'faza3_rf_feature_importance.png'), dpi=150)
-plt.close()
-
-fig, ax = plt.subplots(figsize=(8, 8))
-ax.scatter(y_test, y_pred, alpha=0.25, s=8, color='darkorange')
-max_val = max(y_test.max(), y_pred.max())
-ax.plot([0, max_val], [0, max_val], 'r--', linewidth=2)
-ax.set_xlabel('Vlera Reale (PM2.5)', fontsize=11)
-ax.set_ylabel('Vlera Parashikuar (PM2.5)', fontsize=11)
-ax.set_title(f'FAZA 3 Model B: Actual vs Predicted (R²={r2:.4f})', fontsize=13, fontweight='bold')
-plt.tight_layout()
-plt.savefig(os.path.join(OUTPUT_DIR, 'faza3_rf_actual_vs_predicted.png'), dpi=150)
-plt.close()
-
-residuals = y_test - y_pred
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.hist(residuals, bins=80, color='darkorange', edgecolor='black', alpha=0.7)
-ax.axvline(x=0, color='red', linestyle='--', linewidth=2)
-ax.set_xlabel('Residuals (Actual - Predicted)', fontsize=12)
-ax.set_ylabel('Frekuenca', fontsize=12)
-ax.set_title(
-    f'FAZA 3 Residuals Model B (Mean={residuals.mean():.2f}, Std={residuals.std():.2f})',
-    fontsize=14,
-    fontweight='bold'
-)
-plt.tight_layout()
-plt.savefig(os.path.join(OUTPUT_DIR, 'faza3_rf_residuals.png'), dpi=150)
-plt.close()
-
-fig, ax = plt.subplots(figsize=(7, 5))
-metrics = ['MAE', 'RMSE', 'R²']
-values = [mae, rmse, r2]
-colors = ['steelblue', 'darkorange', 'seagreen']
-bars = ax.bar(metrics, values, color=colors, alpha=0.85)
-ax.set_title('FAZA 3 Performanca e Model B', fontsize=14, fontweight='bold')
-for bar, value in zip(bars, values):
-    ax.text(
-        bar.get_x() + bar.get_width() / 2,
-        bar.get_height() + 0.02,
-        f'{value:.3f}',
-        ha='center',
-        fontsize=9
-    )
-plt.tight_layout()
-plt.savefig(os.path.join(OUTPUT_DIR, 'faza3_rf_model_b_metrics.png'), dpi=150)
-plt.close()
-
-print(f"\nGrafiket u ruajten te: {OUTPUT_DIR}")
-
-# Eksporti JSON
-MODEL_DIR = os.path.join(BASE_DIR, 'Modelet')
-os.makedirs(MODEL_DIR, exist_ok=True)
-
-rf_eval = {
-    'model_name': 'Random Forest Regressor - Model B',
-    'model_type': 'supervised',
-    'author': 'Endrita',
-    'target': TARGET,
-    'features_used': FEATURES_B,
-    'n_features': len(FEATURES_B),
-    'dataset_rows': len(df),
-    'train_size': len(X_train),
-    'test_size': len(X_test),
-    'split_method': 'temporal per city (last 20%)',
-    'metrics': {
-        'MAE': round(mae, 4),
-        'RMSE': round(rmse, 4),
-        'R2': round(r2, 4),
-    },
-    'cv_method': 'TimeSeriesSplit (5-fold)',
-    'cv_r2_mean': round(cv_scores.mean(), 4),
-    'cv_r2_std': round(cv_scores.std(), 4),
-    'cv_r2_scores': [round(s, 4) for s in cv_scores],
-    'feature_importance': {
-        row['Feature']: round(row['Importance'], 4)
-        for _, row in feature_imp_df.iterrows()
-    },
-    'note': 'Vetem Model B: pa PM10, pa pm2_5_lag_1h; perdor pm2_5_rolling_6h.'
-}
-
-json_path = os.path.join(MODEL_DIR, 'faza3_random_forest_regressor.json')
-with open(json_path, 'w', encoding='utf-8') as f:
-    json.dump(rf_eval, f, indent=2, ensure_ascii=False)
-print(f"JSON per evaluim: {json_path}")
-
-print("\nPROCESI PERFUNDOI ME SUKSES!")
+if __name__ == "__main__":
+    phase3 = AirQualityLinearPhase3()
+    phase3.run()
