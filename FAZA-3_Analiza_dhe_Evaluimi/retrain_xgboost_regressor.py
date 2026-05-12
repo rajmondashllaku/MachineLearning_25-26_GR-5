@@ -85,7 +85,7 @@ def trajner_xgboost(file_path):
     print("Duke trajnuar modelin XGBoost...")
     xg_model = xgb.XGBRegressor(
         objective='reg:squarederror',
-        n_estimators=200,
+        n_estimators=400,
         learning_rate=0.05,
         max_depth=7,
         subsample=0.8,

@@ -117,7 +117,7 @@ def evaluate_supervised(models):
                      f'{width:.2f}', va='center', fontsize=10, fontweight='bold', color='black')
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'eval_error_comparison5.png', dpi=300)
+    plt.savefig(OUTPUT_DIR / 'faza3_eval_error_comparison5.png', dpi=300)
     plt.close()
 
     print(f"\n   -> Grafiqet e Modeleve Supervised u ruajtën në '{OUTPUT_DIR.name}'")
