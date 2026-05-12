@@ -235,7 +235,6 @@ def trajner_xgboost(file_path):
 
     return xg_model, y_test, y_pred
 
-
 if __name__ == "__main__":
     skedari = '../../Datasetet/ml_ready_dataset/kosova_global_ml_data.csv'
     trajner_xgboost(skedari)
