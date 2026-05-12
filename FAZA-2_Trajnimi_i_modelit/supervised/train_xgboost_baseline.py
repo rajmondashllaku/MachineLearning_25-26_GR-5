@@ -15,7 +15,6 @@ def trajner_xgboost(file_path):
     print("TRAJNIMI I MODELIT: XGBOOST REGRESSOR")
     print("==================================================")
 
-    # 1. Leximi i të dhënave
     if not os.path.exists(file_path):
         print(f"[!] Gabim: Skedari nuk u gjet te {file_path}")
         return
@@ -23,7 +22,6 @@ def trajner_xgboost(file_path):
     df = pd.read_csv(file_path)
     print(f" -> Të dhënat u lexuan me sukses. Dimensioni: {df.shape}")
 
-    # 2. Përgatitja e veçorive (X) dhe targetit (y)
     kolonat_per_fshirje = ['pm2_5', 'pm10', 'time']
 
     X = df.drop(
@@ -32,7 +30,6 @@ def trajner_xgboost(file_path):
 
     y = df['pm2_5']
 
-    # 3. Ndarja në Trajnim dhe Testim
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -75,14 +72,8 @@ def trajner_xgboost(file_path):
     print(f" * RMSE : {rmse:.2f} µg/m³")
     print(f" * R²   : {r2:.4f}")
 
-    # ==========================================
-    # KRIJIMI I FOLDERIT
-    # ==========================================
     os.makedirs('rezultatet_rajmonda', exist_ok=True)
 
-    # ==========================================
-    # VIZUALIZIMI 1: Feature Importance
-    # ==========================================
     print("\n -> Duke gjeneruar Feature Importance...")
 
     feature_importances = xg_model.feature_importances_
@@ -121,9 +112,6 @@ def trajner_xgboost(file_path):
 
     plt.close()
 
-    # ==========================================
-    # VIZUALIZIMI 2: Actual vs Predicted
-    # ==========================================
     print(" -> Duke gjeneruar Actual vs Predicted...")
 
     plt.figure(figsize=(8, 8))
@@ -180,9 +168,6 @@ def trajner_xgboost(file_path):
 
     plt.close()
 
-    # ==========================================
-    # VIZUALIZIMI 3: Residuals Histogram
-    # ==========================================
     print(" -> Duke gjeneruar Residuals Histogram...")
 
     residuals = y_test - y_pred
@@ -237,9 +222,6 @@ def trajner_xgboost(file_path):
 
     plt.close()
 
-    # ==========================================
-    # VIZUALIZIMI 4: SHAP Summary Plot
-    # ==========================================
     print(" -> Duke gjeneruar SHAP Summary Plot...")
 
     explainer = shap.TreeExplainer(xg_model)
@@ -271,9 +253,6 @@ def trajner_xgboost(file_path):
 
     plt.close()
 
-    # ==========================================
-    # VIZUALIZIMI 5: Metrics Table
-    # ==========================================
     print(" -> Duke gjeneruar Metrics Table...")
 
     fig, ax = plt.subplots(figsize=(6, 3))

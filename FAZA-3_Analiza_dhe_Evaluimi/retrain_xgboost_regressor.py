@@ -12,9 +12,7 @@ import json
 
 
 def trajner_xgboost(file_path):
-    print("==================================================")
     print("TRAJNIMI I MODELIT GLOBAL: XGBOOST REGRESSOR")
-    print("==================================================")
 
     if not os.path.exists(file_path):
         print(f"[!] Gabim: Skedari nuk u gjet te {file_path}")
@@ -25,11 +23,8 @@ def trajner_xgboost(file_path):
     print(f" -> Dimensioni origjinal i datasetit: {df.shape}")
 
     print("\n -> Duke aplikuar Feature Engineering (Lags & Interactions)...")
-
-    # KTHENI 'time' NË DATETIME QË TË KUPTOHET KRONOLOGJIA SAKTË
     if 'time' in df.columns:
         df['time'] = pd.to_datetime(df['time'])
-        # Renditja SAKTE kronologjike (Qyteti pastaj Koha reale)
         df = df.sort_values(['qyteti', 'time']).reset_index(drop=True)
     else:
         print("[!] Kujdes: Kolona 'time' nuk ekziston. Renditja mund të jetë e pasaktë!")
@@ -51,20 +46,16 @@ def trajner_xgboost(file_path):
     df = df.dropna().reset_index(drop=True)
     print(f" -> U fshinë {rreshtat_para - len(df)} rreshta për shkak të Lag Features.")
 
-    # KODIMI I QYTETIT (Nëse 'qyteti' është string, modeli nuk e lexon dot pa e koduar)
     if 'qyteti' in df.columns and df['qyteti'].dtype == 'object':
         df['qyteti_koduar'] = df['qyteti'].astype('category').cat.codes
 
-    # FSHIRJA E SAKTË (Kemi hequr 'sezoni_i_ngrohjes' nga fshirja!)
     kolonat_per_fshirje = ['pm2_5', 'pm10', 'pm10_lag_1h', 'time', 'qyteti']
     X = df.drop(columns=[col for col in kolonat_per_fshirje if col in df.columns])
     y = df['pm2_5']
     kolonat_finale = list(X.columns)
     print(f" -> Numri i veçorive finale për trajnim: {len(kolonat_finale)}")
 
-    # ==========================================
-    # 4. NDARJA KRONOLOGJIKE (Temporal Split)
-    # ==========================================
+
     split_idx = int(len(X) * 0.8)
     X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
     y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
@@ -77,11 +68,9 @@ def trajner_xgboost(file_path):
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # Rikthimi në DataFrame për të ruajtur emrat e kolonave për SHAP dhe grafikët
     X_train_scaled = pd.DataFrame(X_train_scaled, columns=kolonat_finale)
     X_test_scaled = pd.DataFrame(X_test_scaled, columns=kolonat_finale)
 
-    # 6. Trajnimi i Modelit XGBoost
     print("Duke trajnuar modelin XGBoost...")
     xg_model = xgb.XGBRegressor(
         objective='reg:squarederror',
@@ -97,7 +86,6 @@ def trajner_xgboost(file_path):
     eval_set = [(X_train_scaled, y_train), (X_test_scaled, y_test)]
     xg_model.fit(X_train_scaled, y_train, eval_set=eval_set, verbose=False)
 
-    # 7. Parashikimi dhe Evaluimi
     y_pred = xg_model.predict(X_test_scaled)
 
     mae = mean_absolute_error(y_test, y_pred)
@@ -109,14 +97,10 @@ def trajner_xgboost(file_path):
     print(f" * RMSE (Gabimi Mesatar Katror): {rmse:.2f} µg/m³")
     print(f" * R² (Saktësia):                {r2:.4f}")
 
-    # ==========================================
-    # VIZUALIZIMET
-    # ==========================================
     folderi_imazheve = '../../images'
     os.makedirs(folderi_imazheve, exist_ok=True)
     print("\nDuke gjeneruar vizualizimet analitike...")
 
-    # Vizualizimi 1: Feature Importance
     feature_importances = xg_model.feature_importances_
     fi_df = pd.DataFrame({
         'Veçoria': kolonat_finale,
@@ -132,7 +116,6 @@ def trajner_xgboost(file_path):
     plt.savefig(os.path.join(folderi_imazheve, 'xgboost_feature_importance4.png'), dpi=300)
     plt.close()
 
-    # Vizualizimi 2: Actual vs Predicted
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test, y_pred, alpha=0.3, color='#2c7bb6', label='Parashikimet')
     max_val = max(max(y_test), max(y_pred))
@@ -146,7 +129,6 @@ def trajner_xgboost(file_path):
     plt.savefig(os.path.join(folderi_imazheve, 'xgboost_actual_vs_predicted4.png'), dpi=300)
     plt.close()
 
-    # Vizualizimi 3: Learning Curve
     rezultatet_eval = xg_model.evals_result()
     numri_pemeve = len(rezultatet_eval['validation_0']['rmse'])
     x_axis = range(0, numri_pemeve)
@@ -163,7 +145,6 @@ def trajner_xgboost(file_path):
     plt.savefig(os.path.join(folderi_imazheve, 'xgboost_learning_curve4.png'), dpi=300)
     plt.close()
 
-    # Vizualizimi 4: Residuals (Shpërndarja e Gabimeve)
     mbetjet = y_test - y_pred
     plt.figure(figsize=(10, 6))
     sns.histplot(mbetjet, kde=True, color='#9b59b6', bins=40)
@@ -177,7 +158,6 @@ def trajner_xgboost(file_path):
     plt.savefig(os.path.join(folderi_imazheve, 'xgboost_residuals_histogram4.png'), dpi=300)
     plt.close()
 
-    # Vizualizimi 5: SHAP Summary
     print(" -> Duke gjeneruar analizën SHAP...")
     explainer = shap.TreeExplainer(xg_model)
     shap_values = explainer.shap_values(X_test_scaled)
@@ -206,7 +186,6 @@ def trajner_xgboost(file_path):
     table.set_fontsize(12)
     table.scale(1, 2)
 
-    # Stilizimi i tabelës
     for (row, col), cell in table.get_celld().items():
         if row == 0:
             cell.set_text_props(weight='bold', color='white', fontsize=13)
@@ -221,18 +200,13 @@ def trajner_xgboost(file_path):
     plt.savefig(os.path.join(folderi_imazheve, 'xgboost_metrics_table4.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-    # ==========================================
-    # RUAJTJA E MODELIT DHE METRIKAVE NË JSON
-    # ==========================================
     print("\nDuke ruajtur modelin global dhe të dhënat e shkallëzimit...")
     folderi_modeleve = '../../Modelet'
     os.makedirs(folderi_modeleve, exist_ok=True)
 
-    # 1. Ruajtja e vetë modelit
     shtegu_modelit = os.path.join(folderi_modeleve, 'xgboost_global_model.json')
     xg_model.save_model(shtegu_modelit)
 
-    # 2. Ruajtja e Scaler-it dhe Metrikave në JSON
     rezultatet_metrikat = {
         "model_type": "supervised",
         "model_name": "XGBoost Regressor",
