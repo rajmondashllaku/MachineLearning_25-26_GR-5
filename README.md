@@ -1,9 +1,9 @@
 
 # Zhvillimi i një Modeli parashikues të smogut në Kosovë (Prishtinë, Prizren, Pejë)
 ![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
-![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Scikit--Learn%20%7C%20XGBoost-orange)
+![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Scikit--Learn%20%7C%20XGBoost%20%7C%20RandomForest%20%7C%20KMeans%20%7C%20IsolationForest-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Phase%203%20Done-success)
+![Status](https://img.shields.io/badge/Status-Complete-success)
 <table>
   <tr>
     <td width="150" align="center" valign="center">
@@ -33,8 +33,8 @@
 - [Struktura e Repozitorit](#struktura-e-repozitorit)
 - [Përshkrimi i Datasetit](#përshkrimi-i-datasetit)
 - [FAZA 1 : Përgatitja e modelit](#faza-1--përgatitja-e-modelit)
-- [FAZA 2 : Trajnimi i Modeleve (Machine Learning)](#faza-2--trajnimi-i-modeleve)
-- [FAZA 3 : Analiza dhe Vlerësimi](#faza-3--analiza-dhe-vlerësimi)
+- [FAZA 2 : Trajnimi i Modeleve (Machine Learning)](#faza-2-trajnimi-i-modeleve)
+- [FAZA 3 : Analiza dhe Evaluimi](#faza-3-analiza-dhe-evaluimi)
 - [Teknologjitë e Përdorura](#teknologjitë-e-përdorura)
 - [Instalimi & Konfigurimi](#instalimi--konfigurimi)
 - [Profilet e kontribuesve](#profilet-e-kontribuesve)
@@ -45,8 +45,8 @@ Ky repozitor implementon një tubacion (pipeline) gjithëpërfshirës të Machin
 Projekti demonstron një cikël të plotë jetësor (end-to-end) të shkencës së të dhënave, duke u shtrirë në tri faza kryesore:
 
 1. **Faza 1 (Përgatitja e të Dhënave):** Mbledhja e të dhënave historike përmes API-ve për të tria qytetet, pastrimi inteligjent i anomalive (Metoda Hibride e bazuar në Njohuritë e Domenit), integrimi i serive kohore, inxhinieria e veçorive dhe krijimi i një **Dataseti Global** të unifikuar.
-2. **Faza 2 (Trajnimi i Modelit):** Aplikimi dhe optimizimi i algoritmeve të Machine Learning (si Random Forest, XGBoost, ose Regression) për të gjetur lidhjet e fshehura mes kushteve meteorologjike, lokacionit gjeografik dhe ndotjes së ajrit.
-3. **Faza 3 (Analiza dhe Vlerësimi):** Testimi i saktësisë së modeleve, nxjerrja e metrikave dhe krijimi i raporteve vizuale për të kuptuar se cilët faktorë ndikojnë më shumë në smog-un sipas rajoneve.
+2. **Faza 2 (Trajnimi i Modelit):** Aplikimi i algoritmeve të Machine Learning (si Random Forest, XGBoost, ose Regression) për të gjetur lidhjet e fshehura mes kushteve meteorologjike, lokacionit gjeografik dhe ndotjes së ajrit.
+3. **Faza 3 (Analiza dhe Vlerësimi):** Optimizimi i algoritmeve,testimi i saktësisë së modeleve, nxjerrja e metrikave dhe krijimi i raporteve vizuale për të kuptuar se cilët faktorë ndikojnë më shumë në smog-un sipas rajoneve.
 
 ### Qëllimet e Projektit
 
@@ -174,7 +174,7 @@ Kjo fazë zbaton një rrjedhë të fuqishme të paraprocesimit të të dhënave 
 
     * **Çfarë bën:** Merr datasetet e gatshme të të tria qyteteve dhe i shton njëra mbi tjetrën (bashkim vertikal) për të krijuar një *Master Dataset* (`kosova_global_ml_data.csv`).
     * **Logjika:** Shton kolonën e re `qyteti` (Kodet 1, 2, 3) për t'i mundësuar modelit të dallojë lokacionin. Gjithashtu, i jep vlerën `0` sezonit të ngrohjes për Prizrenin dhe Pejën, duke e lënë vlerën `1` vetëm për Prishtinën, për të kapur "Efektin e bllokimit të tymit" tipik të kryeqytetit.
-5.  **`data_assesment.py` (Vlerësimi dhe Sigurimi i Cilësisë)**
+5.  **`data_assessment.py` (Vlerësimi dhe Sigurimi i Cilësisë)**
 
     * **Çfarë bën:** Kryen një "Sanity Check" (kontroll të cilësisë) mbi datasetin master `kosova_global_ml_data.csv` para se të fillojë procesi i trajnimit.
     * **Logjika:** Verifikon nëse dimensionet janë të sakta, konfirmon eliminimin e vlerave `Null`, dhe garanton që të gjitha tiparet janë në format numerik (të gatshme për algoritmet). Gjeneron një raport përmbledhës për shpërndarjen e matjeve sipas qyteteve, balancimin e "sezonit të ngrohjes" dhe ruan formatin e vlerave ekstreme (outliers) për ndotësit kryesorë.
@@ -298,7 +298,6 @@ FAZA-2_Trajnimi_i_modelit/
 | **Unsupervised** | PCA | `pca_reduction.py` | Reduktim dimensionesh meteorologjike |
 | **Unsupervised** | Isolation Forest | `isolation_forest.py` | Zbulim i anomalive të smogut |
 | **Unsupervised** | K-Means Clustering | `kmeans-clustering.py` | Grupim i ditëve në profile ndotjeje |
-| **Evaluation** | Model Evaluation | `model_evaluation.py` | Bashkim i rezultateve në raporte dhe grafe finale |
 
 ### Artefaktet e Gjeneruara
 
@@ -341,13 +340,11 @@ Faza 2 ruan metrikat dhe përmbledhjet në `Modelet/`, ndërsa figurat në `imag
 - **Isolation Forest Heatmap:** Tregon periudhat kohore ku anomalitë e rënda janë më të përqendruara.
 - **K-Means 3D:** Paraqet ndarjen hapësinore të profileve të ndotjes dhe motit.
 
-**Përmbledhje:** Faza 2 ndërton bazën teknike: trajnon modelet, krijon artefaktet dhe prodhon figurat që interpretohen në Fazën 3.
+**Përmbledhje:**  Faza 2 përfaqëson trajnimin fillestar (baseline) të modeleve. Në këtë etapë ndërtohet baza teknike, krijohen artefaktet e para dhe prodhohen figurat analitike, të cilat shërbejnë si pikënisje për optimizimin dhe interpretimin e thelluar që realizohet në Fazën 3.
 
 ---
 
 ## Faza 3: Analiza dhe Evaluimi
-
-## FAZA 3: Analiza dhe Vlerësimi i Avancuar
 
 Faza e tretë e projektit përfaqëson fazën e interpretimit të thelluar dhe vlerësimit kritik të performancës së modeleve. Për të pasur një pasqyrë gjithëpërfshirëse të parashikimit të smogut në Kosovë, analizat janë strukturuar në tri shtylla kryesore metodologjike bazuar në natyrën e algoritmeve të aplikuara:
 
@@ -380,11 +377,12 @@ Gjatë kësaj faze, të gjitha modelet krahasohen në mënyrë sistematike përm
 3.  **Interpretueshmëria SHAP:** Përdorimi i vlerave SHAP për të vizualizuar kontributin pozitiv ose negativ të secilit faktor (erë, temperaturë, lagështi) në parashikimin final të nivelit të smogut.
 Në këtë version të përditësuar janë përfshirë edhe skriptat e reja:
 
-| Skripta | Përshkrimi |
-| :--- | :--- |
+| Skripta | Përshkrimi                                                                                    |
+| :--- |:----------------------------------------------------------------------------------------------|
 | `retrain_xgboost_regressor.py` | Ritrajnim i XGBoost me temporal split, lag features, rolling average, SHAP dhe learning curve |
 | `retrain_random_forest_regressor.py` | Ritrajnim i Random Forest Model B pa data leakage dhe gjenerim i metrikave/feature importance |
-| `retrain_linear_ridge_regression.py` | Ritrajnim për Linear/Ridge me feature engineering të avancuar dhe figura të reja |
+| `retrain_linear_ridge_regression.py` | Ritrajnim për Linear/Ridge me feature engineering të avancuar dhe figura të reja              |
+|  `model_evaluation.py` | Krahasimi i rezultateve te modeleve në raporte dhe grafe finale                               |
 
 ---
 
@@ -486,7 +484,6 @@ Vizualizimet e K-Means:
 
 ## 2. Analiza e Pemëve të Vendimit dhe Detektimi i Anomalive (Non-Linear & Robustness)
 
-
 ### Supervised: Random Forest Regressor
 
 **Random Forest Regressor** përdoret për të analizuar marrëdhëniet jo-lineare dhe për të nxjerrë **Feature Importance**. Versioni final, `Model B`, shmang data leakage duke mos përdorur `PM10` dhe `pm2_5_lag_1h`.
@@ -585,12 +582,12 @@ Vizualizimet e Isolation Forest:
 
 Nga raportet aktuale:
 
-| Modeli | R² | MAE | RMSE | Burimi |
-| :--- | ---: | ---: | ---: | :--- |
-| Linear Regression - Faza 2 | 0.3802 | 6.7161 | 10.1904 | `linear_regression.json` |
-| Ridge Regression - Faza 2 | 0.3802 | 6.7161 | 10.1904 | `ridge_regression.json` |
-| **Linear Regression - Faza 3** | **0.4765** | **5.7024** | **9.4601** | `supervised_comparison_table.csv` |
-| Ridge Regression - Faza 3 | 0.4765 | 5.7024 | 9.4601 | `faza3_ridge_regression.json` |
+| Modeli | R² | MAE | RMSE | Burimi                         |
+| :--- | ---: | ---: | ---: |:-------------------------------|
+| Linear Regression - Faza 2 | 0.3802 | 6.7161 | 10.1904 | `linear_regression.json`       |
+| Ridge Regression - Faza 2 | 0.3802 | 6.7161 | 10.1904 | `ridge_regression.json`        |
+| **Linear Regression - Faza 3** | **0.4765** | **5.7024** | **9.4601** | `faza3_linear_regression.json` |
+| Ridge Regression - Faza 3 | 0.4765 | 5.7024 | 9.4601 | `faza3_ridge_regression.json`  |
 
 **Interpretim:** Ritrajnimi i Fazës 3 e përmirëson baseline-in linear, por performanca mbetet dukshëm më e ulët se XGBoost dhe Random Forest. Kjo e forcon përfundimin se të dhënat kanë natyrë jo-lineare.
 
@@ -683,17 +680,37 @@ Vizualizimet finale:
 ---
 
 ## Përfundim
+Faza e tretë ka shërbyer si ura lidhëse midis trajnimit teknik dhe interpretimit shkencor të fenomenit të smogut në Kosovë. Më poshtë janë pikat kyçe të nxjerra nga vlerësimi i modeleve:
 
-Rezultatet e përditësuara tregojnë se:
+### 1. Superioriteti i Modeleve Jo-Lineare
+Analiza krahasuese vërtetoi se ndotja e ajrit në Kosovë është një fenomen kompleks që nuk mund të shpjegohet plotësisht përmes lidhjeve të thjeshta lineare.
+* **XGBoost** dhe **Random Forest** arritën performancë superiore (**$R^2 \approx 0.84$**), duke treguar se algoritmet e bazuara në pemë janë rruga e duhur për të kapur ndërveprimet dinamike mes motit dhe emetimeve.
+* Modele **Linear/Ridge**, edhe pse u optimizuan, mbetën në nivelin e një *baseline-i* (referencë), duke vërtetuar se marrëdhënia mes variablave si temperatura dhe PM2.5 është thellësisht jo-lineare.
 
-- **XGBoost Regressor** është modeli më i mirë final për parashikimin e PM2.5.
-- **Random Forest Regressor - Model B** është shumë afër në R² dhe jep shpjegueshmëri të mirë përmes Feature Importance.
-- **Linear/Ridge Regression** janë përmirësuar në Fazën 3, por mbeten baseline dhe nuk arrijnë performancën e modeleve tree-based.
-- **K-Means** zbulon profile të dobishme ditësh, veçanërisht profilin kritik me PM2.5 të lartë.
-- **Isolation Forest** kap anomalitë ekstreme të smogut.
-- **PCA** thjeshton dimensionet meteorologjike duke ruajtur informacionin kryesor.
+### 2. Fuqia e "Memorjes Kohore" (Lag Features)
+Një nga zbulimet më kritike të kësaj faze ishte ndikimi i historisë së afërt të ndotjes në saktësinë e parashikimit.
+* Përfshirja e **Lag Features** (ndotja para 6 dhe 24 orëve) rriti saktësinë e modelit nga **64% në 84%**.
+* Kjo vërteton se ndotja në qytetet tona ka një "inerci" të lartë: nëse ajri është i ndotur tani, ai ka prirje të qëndrojë i tillë për orët në vijim, përveç nëse ndodh një ndryshim drastik i shpejtësisë së erës.
 
-Në tërësi, Faza 2 ndërton modelet dhe figurat, ndërsa Faza 3 i bashkon ato në një analizë të qartë: ndotja e ajrit është fenomen jo-linear, i lidhur ngushtë me kohën, motin, historinë e afërt të PM2.5 dhe kushtet lokale.
+### 3. Identifikimi i "Skenarit Kritik" të Smogut
+Përmes klasterizimit (**K-Means**) dhe detektimit të anomalive (**Isolation Forest**), kemi izoluar profilin e saktë kur ndodh smogu ekstrem:
+* **Kombinimi "vdekjeprurës":** Temperaturë e ulët (< 3°C), shpejtësi e ulët e erës (< 4 km/h) dhe lagështi e lartë.
+* Ky profil (Klasteri 3) shpjegon shkencërisht fenomenin e **inversionit termik** (sidomos në Prishtinë), ku ajri i ftohtë e bllokon tymin pranë sipërfaqes si pasojë e mungesës së ventilimit natyror.
+
+### 4. Shpjegueshmëria dhe Transparenca (XAI)
+Përdorimi i **SHAP Values** bëri që modeli të mos jetë më një "black box".
+* Kemi vërtetuar se **Sezoni i Ngrohjes** dhe **Ora e Ditës** janë faktorë dominues, duke konfirmuar hipotezën se djegia e lëndëve fosile për ngrohje shtëpiake është shkaktari kryesor i smogut në mbrëmje.
+* **Era** doli të jetë faktori i vetëm "pastrues" me ndikim të menjëhershëm në uljen e niveleve të grimcave PM2.5.
+
+### 5. Thjeshtimi i të Dhënave (PCA)
+Përmes **PCA**, vërtetuam se mund të reduktojmë kompleksitetin e të dhënave meteorologjike duke ruajtur pjesën dërrmuese të variancës. Kjo e bën modelin më efikas dhe më të shpejtë për t'u integruar në sisteme parashikimi në kohë reale pa sakrifikuar saktësinë.
+
+---
+
+## Vlera Praktike e Rezultateve
+Në fund, ky projekt dëshmon se suksesi i parashikimit të cilësisë së ajrit varet nga balanca mes **Inxhinierisë së Veçorive (Feature Engineering)** dhe fuqisë llogaritëse të algoritmeve të avancuara. Sistemi i zhvilluar është tashmë i gatshëm për:
+1.  **Paralajmërim të hershëm:** Parashikimi i kulmeve të ndotjes deri në 24 orë përpara.
+2.  **Vendimmarrje Institucionale:** Të dhënat vërtetojnë se politikat duhet të fokusohen te ngrohja shtëpiake gjatë netëve të dimrit.
 
 ## Teknologjitë e Përdorura
 
@@ -792,12 +809,11 @@ cd FAZA-3_Analiza_dhe_Evaluimi
 python retrain_xgboost_regressor.py
 python retrain_random_forest_regressor.py
 python retrain_linear_ridge_regression.py
-python model_evaluation.py
 cd ..
 ```
 **Vlerësimi dhe krahasimi i modeleve:**
 ```bash
-cd FAZA-3_Analiza_dhe_Evaluim
+cd FAZA-3_Analiza_dhe_Evaluimi
 python model_evaluation.py
 cd ..
 ```
