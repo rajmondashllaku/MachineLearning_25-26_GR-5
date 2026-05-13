@@ -670,7 +670,7 @@ Vizualizimet finale:
 
 | Krahasimi i R² | Krahasimi i Gabimeve |
 | :---: | :---: |
-| ![Evaluation R2](images/eval_r2_comparison6.png) | ![Evaluation Errors](images/faza3_eval_error_comparison6.png) |
+| ![Evaluation R2](images/eval_r2_comparison7.png) | ![Evaluation Errors](images/faza3_eval_error_comparison7.png) |
 
 **Komentet:**
 

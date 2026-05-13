@@ -97,7 +97,7 @@ def evaluate_supervised(models):
                  f'{width:.4f}', va='center', fontsize=11, fontweight='bold', color='#333333')
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'eval_r2_comparison6.png', dpi=300)
+    plt.savefig(OUTPUT_DIR / 'eval_r2_comparison7.png', dpi=300)
     plt.close()
 
     df_errors = df_metrics.melt(id_vars=['Modeli'], value_vars=['MAE', 'RMSE'],
@@ -117,7 +117,7 @@ def evaluate_supervised(models):
                      f'{width:.2f}', va='center', fontsize=10, fontweight='bold', color='black')
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'faza3_eval_error_comparison6.png', dpi=300)
+    plt.savefig(OUTPUT_DIR / 'faza3_eval_error_comparison7.png', dpi=300)
     plt.close()
 
     print(f"\n   -> Grafiqet e Modeleve Supervised u ruajtën në '{OUTPUT_DIR.name}'")
