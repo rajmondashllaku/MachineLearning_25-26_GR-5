@@ -46,9 +46,9 @@ def trajner_xgboost(file_path):
     xg_model = xgb.XGBRegressor(
         objective='reg:squarederror',
         n_estimators=200,
-        learning_rate=0.05,
-        max_depth=7,
-        subsample=0.8,
+        learning_rate=0.15,
+        max_depth=3,
+        subsample=0.5,
         colsample_bytree=0.8,
         random_state=42
     )
