@@ -1,7 +1,7 @@
 
 # Zhvillimi i një Modeli parashikues të smogut në Kosovë (Prishtinë, Prizren, Pejë)
 ![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
-![Machine Learning](https://img.shields.io/badge/Machine%20Learning-%20%7C%20XGBoost%20%7C%20RandomForest%20%7C%20KMeans%20%7C%20IsolationForest%20%7C%20LinearRegression%20%7C%20RidgeRegression%20%7C%20PCA-orange)
+![Machine Learning](https://img.shields.io/badge/Machine%20Learning-%20XGBoost%20%7C%20RandomForest%20%7C%20KMeans%20%7C%20IsolationForest%20%7C%20LinearRegression%20%7C%20RidgeRegression%20%7C%20PCA-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Complete-success)
 <table>
@@ -708,16 +708,41 @@ Përmes **PCA**, vërtetuam se mund të reduktojmë kompleksitetin e të dhënav
 ---
 
 ## Vlera Praktike e Rezultateve
-Në fund, ky projekt dëshmon se suksesi i parashikimit të cilësisë së ajrit varet nga balanca mes **Inxhinierisë së Veçorive (Feature Engineering)** dhe fuqisë llogaritëse të algoritmeve të avancuara. Sistemi i zhvilluar është tashmë i gatshëm për:
-1.  **Paralajmërim të hershëm:** Parashikimi i kulmeve të ndotjes deri në 24 orë përpara.
-2.  **Vendimmarrje Institucionale:** Të dhënat vërtetojnë se politikat duhet të fokusohen te ngrohja shtëpiake gjatë netëve të dimrit.
+
+Në përfundim, ky projekt dëshmon se suksesi i parashikimit të cilësisë së ajrit nuk varet vetëm nga përzgjedhja e algoritmit, por nga balanca e saktë mes **Inxhinierisë së Veçorive (Feature Engineering)** dhe fuqisë llogaritëse të modeleve të avancuara. Sistemi i zhvilluar ofron një bazë solide për aplikime praktike në disa drejtime:
+
+* **Sistem për Paralajmërim të Hershëm (Early Warning):** Përmes integrimit të vlerave *Lag* dhe serive kohore, modeli mundëson parashikimin e kulmeve të ndotjes deri në **24 orë përpara**. Kjo i lejon qytetarët, veçanërisht grupet e ndjeshme, të marrin masa mbrojtëse paraprake bazuar në parashikimet meteorologjike.
+
+* **Optimizimi i Politikave Mjedisore:** Të dhënat vërtetojnë shkencërisht se politikat për përmirësimin e cilësisë së ajrit duhet të fokusohen me prioritet te **ngrohja shtëpiake** gjatë netëve të dimrit. Rezultatet treguan se rritja e ndotjes pas orës 17:00 është e lidhur drejtpërdrejt me emetimet nga djegia e lëndëve fosile për ngrohje, duke ofruar dëshmi për nevojën e subvencionimit të metodave alternative të ngrohjes.
+
+* **Menaxhimi i Krizave dhe Anomalive:** Përmes detektimit automatik të anomalive (**Isolation Forest**), institucionet mund të identifikojnë në kohë reale episodet e ndotjes ekstreme që devijojnë nga trendet normale meteorologjike, duke mundësuar reagime të shpejta në zonat më të prekura.
+
+* **Hapësirë për Inteligjencën Urbane:** Arkitektura e modelit lejon integrimin e lehtë me rrjetet e sensorëve inteligjentë (IoT) në qytetet e Kosovës. Kjo mundëson që të dhënat e papërpunuara të sensorëve të transformohen në informacion të shpjegueshëm dhe të parashikueshëm për publikun dhe vendimmarrësit.
+
+Në tërësi, ky projekt ofron një kornizë analitike që kalon nga thjesht monitorimi i ndotjes drejt **parashikimit inteligjent** dhe shpjegimit të shkaqeve, duke kontribuar drejtpërdrejt në strategjitë për një mjedis më të pastër dhe më të shëndetshëm.
+
+---
 
 ## Teknologjitë e Përdorura
 
-  - **Python 3.x** - Gjuha kryesore e programimit
-  - **pandas / numpy** - Manipulimi i të dhënave dhe integrimi i serive kohore
-  - **matplotlib / seaborn** - Vizualizimi shkencor i të dhënave (EDA)
-  - **requests** - Për marrjen e të dhënave përmes API
+Ky projekt është zhvilluar duke përdorur një kombinim teknologjish për përpunimin e të dhënave, ndërtimin e modeleve të machine learning dhe vizualizimin e rezultateve:
+
+- **Python** – gjuha kryesore programuese e përdorur në të gjithë projektin.
+- **Pandas** – për ngarkimin, pastrimin, transformimin dhe analizën e të dhënave.
+- **NumPy** – për operacione numerike dhe përpunim efikas të matricave.
+- **Scikit-learn** – për ndërtimin dhe vlerësimin e modeleve si:
+  - Linear Regression
+  - Ridge Regression
+  - Random Forest Regressor
+  - K-Means Clustering
+  - Isolation Forest
+  - PCA (Principal Component Analysis)
+- **XGBoost** – për modelin e avancuar të regresionit me performancën më të lartë në parashikimin e PM2.5.
+- **SHAP** – për interpretimin e ndikimit të variablave në modelin XGBoost.
+- **Matplotlib** dhe **Seaborn** – për krijimin e grafikëve dhe vizualizimeve analitike.
+- **Streamlit** – për ndërtimin e aplikacionit interaktiv për paraqitjen e rezultateve.
+- **Requests** – për marrjen e të dhënave nga burime të jashtme.
+- **JSON** dhe **CSV** – për ruajtjen e metrikave, raporteve dhe rezultateve të modeleve.
 
 -----
 ## Instalimi & Konfigurimi
@@ -739,12 +764,12 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-**3. Instaloni libraritë e nevojshme:**
+**3. Instaloni varësitë e projektit:**
 
 ```bash
-pip install pandas numpy matplotlib seaborn requests xgboost shap scikit-learn
+pip install -r requirements.txt
 ```
-
+---
 ### Udhëzuesi i Ekzekutimit
 
 Pasi të keni përfunduar instalimin e librarive, ndiqni këtë radhë ekzekutimi për të riprodhuar tubacionin e plotë të të dhënave dhe modeleve. Sigurohuni që terminali juaj ndodhet në dosjen kryesore të projektit (`MachineLearning_25-26_GR-5`).
