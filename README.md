@@ -1,7 +1,7 @@
 
 # Zhvillimi i një Modeli parashikues të smogut në Kosovë (Prishtinë, Prizren, Pejë)
 ![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
-![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Scikit--Learn%20%7C%20XGBoost%20%7C%20RandomForest%20%7C%20KMeans%20%7C%20IsolationForest-orange)
+![Machine Learning](https://img.shields.io/badge/Machine%20Learning-%20%7C%20XGBoost%20%7C%20RandomForest%20%7C%20KMeans%20%7C%20IsolationForest%20%7C%20LinearRegression%20%7C%20RidgeRegression%20%7C%20PCA-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Complete-success)
 <table>
