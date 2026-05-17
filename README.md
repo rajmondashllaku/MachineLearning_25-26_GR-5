@@ -4,26 +4,6 @@
 ![Machine Learning](https://img.shields.io/badge/Machine%20Learning-%20XGBoost%20%7C%20RandomForest%20%7C%20KMeans%20%7C%20IsolationForest%20%7C%20LinearRegression%20%7C%20RidgeRegression%20%7C%20PCA-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Complete-success)
-<table>
-  <tr>
-    <td width="150" align="center" valign="center">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/University_of_Prishtina_logo.svg/1200px-University_of_Prishtina_logo.svg.png" width="120" alt="University Logo" />
-    </td>
-    <td valign="top">
-      <p><strong>Universiteti i Prishtinës</strong></p>
-      <p>Fakulteti i Inxhinierisë Elektrike dhe Kompjuterike</p>
-      <p>Inxhinieri Kompjuterike dhe Softuerike - Programi Master </p>
-      <p><strong>Profesorët:</strong> Prof. Dr. Lule Ahmedi, PhD Mergim Hoti </p>
-      <p><strong>Lënda:</strong> “Machine Learning”</p>
-      <p><strong>Grupi 5:</strong></p>
-      <ul>
-        <li>Endrita Vllasaliu</li>
-        <li>Fleta Mujaj</li>
-        <li>Rajmondë Shllaku</li>
-      </ul>
-    </td>
-  </tr>
-</table>
 
 ---
 
